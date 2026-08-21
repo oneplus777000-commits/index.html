@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Photo Card Auto-Formatter (1013x360)</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background: #f0f2f5; padding: 25px; display: flex; flex-direction: column; align-items: center; }
+    .container { background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 1060px; text-align: center; }
+    h2 { color: #1a73e8; margin-bottom: 8px; }
+    p { color: #555; margin-bottom: 20px; font-size: 14px; }
+    
+    .upload-box { border: 2px dashed #1a73e8; padding: 25px; border-radius: 8px; cursor: pointer; background: #f8fbff; margin-bottom: 20px; }
+    .upload-box:hover { background: #eef5fc; }
+    input[type="file"] { display: none; }
+    
+    .preview-wrapper { overflow-x: auto; margin: 20px 0; border: 1px solid #ddd; padding: 10px; background: #fafafa; border-radius: 6px; }
+    canvas { max-width: 100%; height: auto; display: block; margin: 0 auto; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+    
+    .btn-group { display: flex; gap: 15px; justify-content: center; margin-top: 15px; }
+    button { padding: 10px 24px; font-size: 15px; font-weight: 600; border: none; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+    .btn-download { background: #28a745; color: white; }
+    .btn-download:hover { background: #218838; }
+    .btn-print { background: #1a73e8; color: white; }
+    .btn-print:hover { background: #1558b0; }
+    button:disabled { background: #ccc; cursor: not-allowed; }
+
+    @media print {
+      body * { visibility: hidden; }
+      #cardCanvas, #cardCanvas * { visibility: visible; }
+      #cardCanvas { position: absolute; left: 0; top: 0; width: 1013px; height: 360px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Auto Card Formatter (1013 × 360 px)</h2>
+  <p>फोटो सिलेक्ट करते ही अपने-आप परफेक्ट साइज में फिट और रेडी हो जाएगी।</p>
+
+  <label class="upload-box" for="imageInput">
+    <strong>📁 फोटो अपलोड करने के लिए यहाँ क्लिक करें</strong> (JPG / PNG)
+  </label>
+  <input type="file" id="imageInput" accept="image/*">
+
+  <div class="preview-wrapper">
+    <canvas id="cardCanvas" width="1013" height="360"></canvas>
+  </div>
+
+  <div class="btn-group">
+    <button id="downloadBtn" class="btn-download" disabled>📥 कार्ड इमेज डाउनलोड करें</button>
+    <button id="printBtn" class="btn-print" disabled>🖨️ डायरेक्ट प्रिंट करें</button>
+  </div>
+</div>
+
+<script>
+  const imageInput = document.getElementById('imageInput');
+  const canvas = document.getElementById('cardCanvas');
+  const ctx = canvas.getContext('2d');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const printBtn = document.getElementById('printBtn');
+
+  // Canvas Initial Setup
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, 1013, 360);
+  ctx.fillStyle = '#888888';
+  ctx.font = '20px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('1013 x 360 Card Preview Area', 1013 / 2, 360 / 2);
+
+  imageInput.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      const img = new Image();
+      img.onload = function() {
+        // Canvas Clear & Fill White Background
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, 1013, 360);
+
+        // Aspect ratio maintain karte hue center me draw karega
+        const hRatio = 1013 / img.width;
+        const vRatio = 360 / img.height;
+        const ratio  = Math.min(hRatio, vRatio);
+        
+        const centerShift_x = (1013 - img.width * ratio) / 2;
+        const centerShift_y = (360 - img.height * ratio) / 2;  
+
+        ctx.drawImage(img, 0, 0, img.width, img.height,
+                           centerShift_x, centerShift_y, img.width * ratio, img.height * ratio);
+
+        downloadBtn.disabled = false;
+        printBtn.disabled = false;
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  downloadBtn.addEventListener('click', function() {
+    const link = document.createElement('a');
+    link.download = 'card_1013x360.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  });
+
+  printBtn.addEventListener('click', function() {
+    window.print();
+  });
+</script>
+
+</body>
+</html>
