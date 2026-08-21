@@ -382,11 +382,11 @@
 
     <div class="preview-container">
       <div class="preview-box">
-        <h4>Front Card (1013x638)</h4>
+        <h4>Front Card</h4>
         <canvas id="canvas1" width="1013" height="638" style="width: 200px;"></canvas>
       </div>
       <div class="preview-box">
-        <h4>Back Card (1013x638)</h4>
+        <h4>Back Card</h4>
         <canvas id="canvas2" width="1013" height="638" style="width: 200px;"></canvas>
       </div>
     </div>
@@ -397,7 +397,7 @@
     </div>
 
     <div style="margin-top: 30px; border-top: 1px solid var(--border-color); padding-top: 20px;">
-      <h3 style="font-size: 16px; color: var(--accent-blue); margin-bottom: 6px;">A4 Sheet Preview (2480 × 3508 px)</h3>
+      <h3 style="font-size: 16px; color: var(--accent-blue); margin-bottom: 6px;">A4 Sheet Preview</h3>
       <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">2.5 mm गैप और ब्रॉड ब्लैक बॉर्डर के साथ तैयार A4 शीट प्रीव्यू:</p>
       
       <div style="display:inline-block; max-width: 280px; background:#fff; border-radius:6px; overflow:hidden; border: 1px solid #475569;">
@@ -422,7 +422,7 @@
     <img id="imageToCrop" src="">
   </div>
   <div class="btn-group">
-    <button id="cropSaveBtn" class="action-btn btn-download">✂️ Crop & Set (1013x638)</button>
+    <button id="cropSaveBtn" class="action-btn btn-download">✂️ Crop & Set</button>
     <button id="cropCancelBtn" class="action-btn" style="background:#ef4444;">रद्द करें</button>
   </div>
 </div>
