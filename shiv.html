@@ -309,29 +309,29 @@
     <div class="badge">Direct PDF Tool</div>
     <h1>Card Generator System</h1>
     <div style="font-size: 13px; color: var(--accent-purple); font-weight: 600; margin-bottom: 4px;">by Shiv Bhavsar</div>
-    <p class="subtitle">1013 × 638 Auto-Fit • Zero Gap Merge • Direct A4 PDF</p>
+    <p class="subtitle">1013 × 638 Auto-Crop • Zero Gap Merge • Direct A4 PDF</p>
 
     <div class="upload-section">
       <label class="upload-box" for="card1Input">
         <strong>📁 Front Side (Card 1)</strong>
-        <div id="file1Name" class="file-status">फ़ाइल चुनें (JPG / PNG)</div>
+        <div id="file1Name" class="file-status">फ़ोटो चुनें (JPG / PNG)</div>
       </label>
       <input type="file" id="card1Input" accept="image/*">
 
       <label class="upload-box" for="card2Input">
         <strong>📁 Back Side (Card 2)</strong>
-        <div id="file2Name" class="file-status">फ़ाइल चुनें (JPG / PNG)</div>
+        <div id="file2Name" class="file-status">फ़ोटो चुनें (JPG / PNG)</div>
       </label>
       <input type="file" id="card2Input" accept="image/*">
     </div>
 
     <div class="preview-container">
       <div class="preview-box">
-        <h4>Card 1 Preview (1013x638)</h4>
+        <h4>Card 1 Preview (1013x638 Auto-Cut)</h4>
         <canvas id="canvas1" width="1013" height="638" style="width: 220px;"></canvas>
       </div>
       <div class="preview-box">
-        <h4>Card 2 Preview (1013x638)</h4>
+        <h4>Card 2 Preview (1013x638 Auto-Cut)</h4>
         <canvas id="canvas2" width="1013" height="638" style="width: 220px;"></canvas>
       </div>
     </div>
@@ -342,7 +342,7 @@
 
     <div class="merged-section">
       <h3>A4 Sheet Preview (2480 × 3508 px)</h3>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">बिना किसी गैप के दोनों कार्ड A4 शीट पर सीधे PDF डाउनलोड के लिए तैयार हैं।</p>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">1013x638 में ऑटो-क्रॉप होकर दोनों कार्ड A4 शीट पर सीधे PDF डाउनलोड के लिए तैयार हैं।</p>
       
       <div class="preview-box" style="display:inline-block; max-width: 260px;">
         <canvas id="a4Canvas" width="2480" height="3508" style="width: 100%; border: 1px solid rgba(255,255,255,0.2);"></canvas>
@@ -435,7 +435,7 @@
       ctx.fillStyle = '#94a3b8';
       ctx.font = 'bold 24px Poppins, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(`Card ${i+1} Preview`, CARD_W / 2, CARD_H / 2);
+      ctx.fillText(`Card ${i+1} Preview (1013x638)`, CARD_W / 2, CARD_H / 2);
     });
 
     a4Ctx.fillStyle = '#ffffff';
@@ -446,6 +446,7 @@
     a4Ctx.fillText('A4 Sheet Canvas (2480 x 3508)', A4_W / 2, A4_H / 2);
   }
 
+  // Smart Auto-Crop / Auto-Cut Logic (Aspect Fill to 1013x638)
   function loadCard(file, ctx, callback) {
     const reader = new FileReader();
     reader.onload = function(e) {
@@ -454,14 +455,23 @@
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, CARD_W, CARD_H);
 
-        const hRatio = CARD_W / img.width;
-        const vRatio = CARD_H / img.height;
-        const ratio = Math.min(hRatio, vRatio);
-        
-        const cx = (CARD_W - img.width * ratio) / 2;
-        const cy = (CARD_H - img.height * ratio) / 2;
+        const targetAspect = CARD_W / CARD_H; // 1013 / 638 ≈ 1.5877
+        const imgAspect = img.width / img.height;
 
-        ctx.drawImage(img, 0, 0, img.width, img.height, cx, cy, img.width * ratio, img.height * ratio);
+        let srcX = 0, srcY = 0, srcW = img.width, srcH = img.height;
+
+        if (imgAspect > targetAspect) {
+          // Source image is wider -> crop sides evenly
+          srcW = img.height * targetAspect;
+          srcX = (img.width - srcW) / 2;
+        } else {
+          // Source image is taller -> crop top/bottom evenly
+          srcH = img.width / targetAspect;
+          srcY = (img.height - srcH) / 2;
+        }
+
+        // Draw cropped portion directly onto 1013x638 canvas without distortion
+        ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, CARD_W, CARD_H);
         callback();
       };
       img.src = e.target.result;
