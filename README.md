@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sequential 5 Card Generator by SHIV BHAVSAR</title>
+  <title>5 Card Generator System by SHIV BHAVSAR</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -204,7 +204,7 @@
       height: auto; 
       display: block; 
       margin: 0 auto; 
-      border-radius: 6px;
+      border-radius: 4px;
       background: #fff; 
     }
 
@@ -292,10 +292,10 @@
 <div id="mainApp">
   <div class="container">
     <button id="logoutBtn" class="logout-btn">🔒 Logout</button>
-    <div class="badge">Step-by-Step 5 Card Accumulator</div>
+    <div class="badge">2.5mm Gap • Black Border • 5 Cards</div>
     <h1>Card Generator System</h1>
     <div style="font-size: 13px; color: var(--accent-purple); font-weight: 600; margin-bottom: 4px;">by Shiv Bhavsar</div>
-    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">एक-एक करके 5 कार्ड्स जोड़ें, वे A4 शीट पर क्रम से नीचे सेट होते जाएँगे।</p>
+    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">एक-एक करके कार्ड्स जोड़ें। दोनों कार्ड के बीच 2.5 mm गैप और ब्लैक कटिंग बॉर्डर अपने-आप आएगी।</p>
     
     <div id="slotCounter" class="slot-counter-badge">Cards on Page: 0 / 5 (Next Slot: #1)</div>
 
@@ -332,8 +332,8 @@
 
     <!-- Accumulated A4 Canvas Section -->
     <div style="margin-top: 30px; border-top: 1px solid var(--border-color); padding-top: 20px;">
-      <h3 style="font-size: 16px; color: var(--accent-blue); margin-bottom: 6px;">Accumulated A4 Sheet Preview (2480 × 3508 px)</h3>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">हर नया कार्ड पिछले कार्ड के नीचे बिना किसी बदलाव के सुरक्षित जुड़ता रहेगा।</p>
+      <h3 style="font-size: 16px; color: var(--accent-blue); margin-bottom: 6px;">A4 Sheet Preview (2480 × 3508 px)</h3>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">2.5 mm गैप और ब्लैक बॉर्डर के साथ तैयार A4 शीट प्रीव्यू:</p>
       
       <div style="display:inline-block; max-width: 280px; background:#fff; border-radius:6px; overflow:hidden; border: 1px solid #475569;">
         <canvas id="a4Canvas" width="2480" height="3508" style="width: 100%; display:block;"></canvas>
@@ -403,6 +403,7 @@
   const CARD_H = 638;
   const A4_W = 2480;
   const A4_H = 3508;
+  const GAP_MM_PX = 30; // Exact 2.5 mm gap at 300 DPI (2.5 * 11.811 ≈ 30px)
   const MAX_CARDS = 5;
 
   let addedCardsCount = 0;
@@ -451,17 +452,21 @@
     a4Ctx.fillStyle = '#ffffff';
     a4Ctx.fillRect(0, 0, A4_W, A4_H);
 
-    // Initial background guide outlines for all 5 slots
-    const totalWidth = CARD_W * 2;
-    const startX = (A4_W - totalWidth) / 2;
-    const startY = 50;
-    const verticalGap = 50;
+    // Layout configuration with 2.5mm center gap
+    const totalPairWidth = (CARD_W * 2) + GAP_MM_PX;
+    const startX = (A4_W - totalPairWidth) / 2;
+    const startY = 45;
+    const verticalGap = 45;
 
+    // Draw clean initial guide boxes for all 5 slots
     for (let i = 0; i < MAX_CARDS; i++) {
       const currentY = startY + (i * (CARD_H + verticalGap));
-      a4Ctx.strokeStyle = '#f1f5f9';
+      
+      // Light placeholder border
+      a4Ctx.strokeStyle = '#e2e8f0';
       a4Ctx.lineWidth = 2;
-      a4Ctx.strokeRect(startX, currentY, totalWidth, CARD_H);
+      a4Ctx.strokeRect(startX, currentY, CARD_W, CARD_H);
+      a4Ctx.strokeRect(startX + CARD_W + GAP_MM_PX, currentY, CARD_W, CARD_H);
     }
 
     updateCounter();
@@ -557,29 +562,32 @@
     }
   }
 
-  // Sequentially Append Card to A4 Canvas
+  // Sequentially Append Card to A4 Canvas with 2.5mm Gap & Black Border
   addCardBtn.addEventListener('click', () => {
     if (addedCardsCount >= MAX_CARDS) {
       alert('यह A4 शीट भर चुकी है (अधिकतम 5 कार्ड्स)। कृपया PDF डाउनलोड करें।');
       return;
     }
 
-    const totalWidth = CARD_W * 2;
-    const startX = (A4_W - totalWidth) / 2;
-    const startY = 50;
-    const verticalGap = 50;
+    const totalPairWidth = (CARD_W * 2) + GAP_MM_PX;
+    const startX = (A4_W - totalPairWidth) / 2;
+    const startY = 45;
+    const verticalGap = 45;
 
     const currentY = startY + (addedCardsCount * (CARD_H + verticalGap));
 
-    // Draw Front Side (Left)
+    // 1. Draw Front Side (Left)
     a4Ctx.drawImage(canvas1, startX, currentY, CARD_W, CARD_H);
-    // Draw Back Side (Right - Zero Gap)
-    a4Ctx.drawImage(canvas2, startX + CARD_W, currentY, CARD_W, CARD_H);
+    
+    // 2. Draw Back Side (Right with exact 2.5mm / 30px gap)
+    const backCardX = startX + CARD_W + GAP_MM_PX;
+    a4Ctx.drawImage(canvas2, backCardX, currentY, CARD_W, CARD_H);
 
-    // Cutting guide boundary
-    a4Ctx.strokeStyle = '#cbd5e1';
-    a4Ctx.lineWidth = 2;
-    a4Ctx.strokeRect(startX, currentY, totalWidth, CARD_H);
+    // 3. Draw Sharp Black Cutting Border around both cards
+    a4Ctx.strokeStyle = '#000000';
+    a4Ctx.lineWidth = 3; // Crisp 3px cutting outline
+    a4Ctx.strokeRect(startX, currentY, CARD_W, CARD_H);
+    a4Ctx.strokeRect(backCardX, currentY, CARD_W, CARD_H);
 
     addedCardsCount++;
     updateCounter();
@@ -595,7 +603,7 @@
     }
   });
 
-  // Direct A4 PDF Download
+  // Direct High Quality A4 PDF Generator
   downloadPdfBtn.addEventListener('click', () => {
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({
