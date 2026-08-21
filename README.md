@@ -37,10 +37,12 @@
       display: flex; 
       flex-direction: column; 
       align-items: center; 
+      justify-content: center;
       color: var(--text-main);
     }
 
-    #loginScreen {
+    /* Login & Password Box Styling */
+    .auth-box {
       background: var(--card-bg);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
@@ -51,7 +53,6 @@
       width: 100%;
       max-width: 400px;
       text-align: center;
-      margin-top: 10vh;
     }
 
     .badge {
@@ -92,6 +93,11 @@
       outline: none;
     }
 
+    .login-input:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+    }
+
     .login-btn {
       width: 100%;
       padding: 13px;
@@ -102,6 +108,26 @@
       border-radius: 10px;
       cursor: pointer;
       font-size: 15px;
+      transition: 0.3s;
+    }
+
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(37, 99, 235, 0.4);
+    }
+
+    .auth-link {
+      display: inline-block;
+      margin-top: 15px;
+      font-size: 13px;
+      color: var(--accent-blue);
+      cursor: pointer;
+      text-decoration: underline;
+      transition: 0.2s;
+    }
+
+    .auth-link:hover {
+      color: #fff;
     }
 
     .error-msg {
@@ -111,6 +137,7 @@
       display: none;
     }
 
+    /* Main App Styling */
     #mainApp {
       display: none;
       width: 100%;
@@ -127,38 +154,22 @@
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4); 
       width: 100%; 
       text-align: center; 
-      position: relative;
+      position: relative; 
     }
 
-    .top-actions {
+    .logout-btn {
       position: absolute;
       top: 15px;
       right: 15px;
-      display: flex;
-      gap: 8px;
-    }
-
-    .top-btn {
-      padding: 6px 12px;
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+      padding: 6px 14px;
       font-size: 12px;
       border-radius: 8px;
       cursor: pointer;
-      border: 1px solid;
-      transition: 0.2s;
     }
 
-    .pwd-btn {
-      background: rgba(56, 189, 248, 0.15);
-      border-color: rgba(56, 189, 248, 0.4);
-      color: var(--accent-blue);
-    }
-    .pwd-btn:hover { background: rgba(56, 189, 248, 0.3); }
-
-    .logout-btn {
-      background: rgba(239, 68, 68, 0.2);
-      border-color: rgba(239, 68, 68, 0.4);
-      color: #fca5a5;
-    }
     .logout-btn:hover { background: rgba(239, 68, 68, 0.4); }
 
     h1 { 
@@ -263,8 +274,8 @@
       box-shadow: none;
     }
 
-    /* Modal Layouts */
-    .modal-overlay {
+    /* Modal for Crop */
+    #cropModal {
       display: none;
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -290,22 +301,12 @@
       max-height: 70vh;
       display: block;
     }
-
-    .pwd-modal-content {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      padding: 30px;
-      border-radius: 16px;
-      width: 100%;
-      max-width: 380px;
-      text-align: center;
-    }
   </style>
 </head>
 <body>
 
-<!-- Login Screen -->
-<div id="loginScreen">
+<!-- 1. Login Screen -->
+<div id="loginScreen" class="auth-box">
   <div class="badge">Protected Access</div>
   <h2 style="font-size: 22px; margin-bottom: 6px;">Sign In</h2>
   <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">Card Generator System by Shiv Bhavsar</p>
@@ -314,16 +315,34 @@
   <input type="password" id="loginPass" class="login-input" placeholder="पासवर्ड दर्ज करें">
   <button id="authBtn" class="login-btn">लॉगिन करें</button>
   <div id="errorMsg" class="error-msg">⚠️ गलत ईमेल आईडी या पासवर्ड!</div>
+  
+  <div>
+    <span id="goToChangePwd" class="auth-link">🔑 Change Password?</span>
+  </div>
 </div>
 
-<!-- Main App -->
+<!-- 2. Change Password Screen (On Login Page) -->
+<div id="changePwdScreen" class="auth-box" style="display:none;">
+  <div class="badge">Security Settings</div>
+  <h2 style="font-size: 20px; margin-bottom: 6px; color: var(--accent-blue);">🔑 Change Password</h2>
+  <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">पुराने पासवर्ड का उपयोग करके नया पासवर्ड सेट करें</p>
+
+  <input type="password" id="oldPassInput" class="login-input" placeholder="पुराना पासवर्ड (Old Password)">
+  <input type="password" id="newPassInput" class="login-input" placeholder="नया पासवर्ड (New Password)">
+  <input type="password" id="confirmPassInput" class="login-input" placeholder="नया पासवर्ड कन्फर्म करें">
+  
+  <button id="saveNewPwdBtn" class="login-btn" style="background: var(--btn-download);">💾 नया पासवर्ड सेव करें</button>
+  <div id="pwdStatusMsg" style="font-size:13px; margin-top:12px; display:none; font-weight:500;"></div>
+
+  <div>
+    <span id="backToLogin" class="auth-link">⬅️ Back to Login</span>
+  </div>
+</div>
+
+<!-- 3. Main Application -->
 <div id="mainApp">
   <div class="container">
-    <div class="top-actions">
-      <button id="openPwdBtn" class="top-btn pwd-btn">🔑 Change Password</button>
-      <button id="logoutBtn" class="top-btn logout-btn">🔒 Logout</button>
-    </div>
-    
+    <button id="logoutBtn" class="logout-btn">🔒 Logout</button>
     <div class="badge" style="margin-top: 10px;">2.5mm Gap • Broad Black Border • 5 Cards</div>
     <h1>Card Generator System</h1>
     <div style="font-size: 13px; color: var(--accent-purple); font-weight: 600; margin-bottom: 4px;">by Shiv Bhavsar</div>
@@ -382,25 +401,8 @@
   </div>
 </div>
 
-<!-- Change Password Modal -->
-<div id="pwdModal" class="modal-overlay">
-  <div class="pwd-modal-content">
-    <h3 style="color:var(--accent-blue); font-size:18px; margin-bottom:15px;">🔑 Change Password</h3>
-    <input type="password" id="oldPassInput" class="login-input" placeholder="पुराना पासवर्ड (Old Password)">
-    <input type="password" id="newPassInput" class="login-input" placeholder="नया पासवर्ड (New Password)">
-    <input type="password" id="confirmPassInput" class="login-input" placeholder="नया पासवर्ड कन्फर्म करें">
-    
-    <div id="pwdModalMsg" style="font-size:12px; margin-bottom:12px; display:none;"></div>
-
-    <div class="btn-group" style="margin-top:10px;">
-      <button id="saveNewPwdBtn" class="action-btn btn-download" style="padding:10px 20px;">सेव करें</button>
-      <button id="closePwdBtn" class="action-btn" style="background:#64748b; padding:10px 20px;">रद्द करें</button>
-    </div>
-  </div>
-</div>
-
 <!-- Crop Modal -->
-<div id="cropModal" class="modal-overlay">
+<div id="cropModal">
   <div style="color:#fff; margin-bottom: 10px; font-weight: 600;">कार्ड का सही हिस्सा सेलेक्ट (Crop) करें:</div>
   <div class="crop-wrapper">
     <img id="imageToCrop" src="">
@@ -415,28 +417,93 @@
   const AUTH_EMAIL = "oneplus777000@gmail.com";
   const DEFAULT_PASS = "Pass@123";
 
-  // Password Retrieval from LocalStorage
   function getStoredPassword() {
     return localStorage.getItem('system_auth_pwd') || DEFAULT_PASS;
   }
 
   const loginScreen = document.getElementById('loginScreen');
+  const changePwdScreen = document.getElementById('changePwdScreen');
   const mainApp = document.getElementById('mainApp');
+  
   const loginEmail = document.getElementById('loginEmail');
   const loginPass = document.getElementById('loginPass');
   const authBtn = document.getElementById('authBtn');
   const errorMsg = document.getElementById('errorMsg');
   const logoutBtn = document.getElementById('logoutBtn');
 
-  sessionStorage.removeItem('isLoggedIn');
-  loginScreen.style.display = 'block';
-  mainApp.style.display = 'none';
+  const goToChangePwd = document.getElementById('goToChangePwd');
+  const backToLogin = document.getElementById('backToLogin');
+  const oldPassInput = document.getElementById('oldPassInput');
+  const newPassInput = document.getElementById('newPassInput');
+  const confirmPassInput = document.getElementById('confirmPassInput');
+  const saveNewPwdBtn = document.getElementById('saveNewPwdBtn');
+  const pwdStatusMsg = document.getElementById('pwdStatusMsg');
 
+  sessionStorage.removeItem('isLoggedIn');
+
+  // Toggle Between Login Screen and Change Password Screen
+  goToChangePwd.addEventListener('click', () => {
+    loginScreen.style.display = 'none';
+    changePwdScreen.style.display = 'block';
+    oldPassInput.value = '';
+    newPassInput.value = '';
+    confirmPassInput.value = '';
+    pwdStatusMsg.style.display = 'none';
+  });
+
+  backToLogin.addEventListener('click', () => {
+    changePwdScreen.style.display = 'none';
+    loginScreen.style.display = 'block';
+    errorMsg.style.display = 'none';
+  });
+
+  // Change Password Logic
+  saveNewPwdBtn.addEventListener('click', () => {
+    const oldP = oldPassInput.value.trim();
+    const newP = newPassInput.value.trim();
+    const confP = confirmPassInput.value.trim();
+    const currentActivePass = getStoredPassword();
+
+    if (oldP !== currentActivePass) {
+      pwdStatusMsg.innerText = "❌ पुराना पासवर्ड गलत है!";
+      pwdStatusMsg.style.color = "#ef4444";
+      pwdStatusMsg.style.display = "block";
+      return;
+    }
+
+    if (newP.length < 4) {
+      pwdStatusMsg.innerText = "❌ नया पासवर्ड कम से कम 4 अक्षरों का होना चाहिए!";
+      pwdStatusMsg.style.color = "#ef4444";
+      pwdStatusMsg.style.display = "block";
+      return;
+    }
+
+    if (newP !== confP) {
+      pwdStatusMsg.innerText = "❌ नया पासवर्ड और कन्फर्म पासवर्ड मैच नहीं हो रहे!";
+      pwdStatusMsg.style.color = "#ef4444";
+      pwdStatusMsg.style.display = "block";
+      return;
+    }
+
+    localStorage.setItem('system_auth_pwd', newP);
+    pwdStatusMsg.innerText = "✅ पासवर्ड सफलतापूर्वक बदल गया! अब लॉगिन करें।";
+    pwdStatusMsg.style.color = "#34d399";
+    pwdStatusMsg.style.display = "block";
+
+    setTimeout(() => {
+      changePwdScreen.style.display = 'none';
+      loginScreen.style.display = 'block';
+      loginPass.value = '';
+    }, 1500);
+  });
+
+  // Login Logic
   function handleLogin() {
     const currentPass = getStoredPassword();
     if (loginEmail.value.trim() === AUTH_EMAIL && loginPass.value.trim() === currentPass) {
       sessionStorage.setItem('isLoggedIn', 'true');
       loginScreen.style.display = 'none';
+      changePwdScreen.style.display = 'none';
       mainApp.style.display = 'block';
       errorMsg.style.display = 'none';
       initApp();
@@ -451,77 +518,18 @@
   logoutBtn.addEventListener('click', () => {
     sessionStorage.removeItem('isLoggedIn');
     mainApp.style.display = 'none';
+    changePwdScreen.style.display = 'none';
     loginScreen.style.display = 'block';
     loginEmail.value = '';
     loginPass.value = '';
   });
 
-  // Password Change Modal Logic
-  const pwdModal = document.getElementById('pwdModal');
-  const openPwdBtn = document.getElementById('openPwdBtn');
-  const closePwdBtn = document.getElementById('closePwdBtn');
-  const saveNewPwdBtn = document.getElementById('saveNewPwdBtn');
-  const oldPassInput = document.getElementById('oldPassInput');
-  const newPassInput = document.getElementById('newPassInput');
-  const confirmPassInput = document.getElementById('confirmPassInput');
-  const pwdModalMsg = document.getElementById('pwdModalMsg');
-
-  openPwdBtn.addEventListener('click', () => {
-    oldPassInput.value = '';
-    newPassInput.value = '';
-    confirmPassInput.value = '';
-    pwdModalMsg.style.display = 'none';
-    pwdModal.style.display = 'flex';
-  });
-
-  closePwdBtn.addEventListener('click', () => {
-    pwdModal.style.display = 'none';
-  });
-
-  saveNewPwdBtn.addEventListener('click', () => {
-    const oldP = oldPassInput.value.trim();
-    const newP = newPassInput.value.trim();
-    const confP = confirmPassInput.value.trim();
-    const currentActivePass = getStoredPassword();
-
-    if (oldP !== currentActivePass) {
-      pwdModalMsg.innerText = "❌ पुराना पासवर्ड गलत है!";
-      pwdModalMsg.style.color = "#ef4444";
-      pwdModalMsg.style.display = "block";
-      return;
-    }
-
-    if (newP.length < 4) {
-      pwdModalMsg.innerText = "❌ नया पासवर्ड कम से कम 4 अक्षरों का होना चाहिए!";
-      pwdModalMsg.style.color = "#ef4444";
-      pwdModalMsg.style.display = "block";
-      return;
-    }
-
-    if (newP !== confP) {
-      pwdModalMsg.innerText = "❌ नया पासवर्ड और कन्फर्म पासवर्ड मैच नहीं हो रहे!";
-      pwdModalMsg.style.color = "#ef4444";
-      pwdModalMsg.style.display = "block";
-      return;
-    }
-
-    // Save newly updated password permanently
-    localStorage.setItem('system_auth_pwd', newP);
-    pwdModalMsg.innerText = "✅ पासवर्ड सफलतापूर्वक बदल गया!";
-    pwdModalMsg.style.color = "#34d399";
-    pwdModalMsg.style.display = "block";
-
-    setTimeout(() => {
-      pwdModal.style.display = 'none';
-    }, 1200);
-  });
-
-  // Card Generator Constants & Functions
+  // 5 Card Generator Logic
   const CARD_W = 1013;
   const CARD_H = 638;
   const A4_W = 2480;
   const A4_H = 3508;
-  const GAP_2_5MM_PX = 30; // Exact 2.5 mm gap at 300 DPI (2.5 * 11.811 ≈ 30px)
+  const GAP_2_5MM_PX = 30; // 2.5 mm gap at 300 DPI
   const MAX_CARDS = 5;
 
   let addedCardsCount = 0;
