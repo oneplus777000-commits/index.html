@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dual Card Auto-Formatter & A4 Print Sheet</title>
+  <title>Dual Card Auto-Formatter & A4 Print Sheet (Zero Gap)</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { background: #f0f2f5; padding: 20px; display: flex; flex-direction: column; align-items: center; }
@@ -34,7 +34,6 @@
     .btn-print:hover { background: #1558b0; }
     button:disabled { background: #ccc; cursor: not-allowed; }
 
-    /* Print exclusively the A4 canvas */
     @media print {
       @page { size: A4 portrait; margin: 0; }
       body { background: #fff; padding: 0; margin: 0; }
@@ -47,8 +46,8 @@
 <body>
 
 <div class="container">
-  <h2>Dual Card Formatter & A4 Print Sheet</h2>
-  <p>दोनों कार्ड अपलोड करें, 1013x638 में ऑटो-फिट होंगे और A4 शीट (2480x3508 px) पर सीधे प्रिंट के लिए सेट हो जाएंगे।</p>
+  <h2>Dual Card Formatter & A4 Sheet (Zero Gap Continuous)</h2>
+  <p>दोनों कार्ड 1013x638 में ऑटो-फिट होकर बिना किसी गैप के बिल्कुल सटकर A4 शीट पर सेट होंगे।</p>
 
   <div class="upload-section">
     <label class="upload-box" for="card1Input">
@@ -76,12 +75,12 @@
   </div>
 
   <div class="btn-group">
-    <button id="mergeBtn" class="btn-merge" disabled>⚡ Merge & Fit into A4 Sheet</button>
+    <button id="mergeBtn" class="btn-merge" disabled>⚡ Merge Cards (Zero Gap Continuous)</button>
   </div>
 
   <div class="merged-section">
-    <h3 style="font-size: 16px; color: #1a73e8; margin-bottom: 8px;">A4 शीट प्रीव्यू (2480 × 3508 px - Print Ready)</h3>
-    <p style="font-size: 12px; color: #666;">मर्ज किया हुआ कार्ड A4 शीट के ऊपर सटीक 1013x638 प्रिंट साइज में प्लेस हो चुका है।</p>
+    <h3 style="font-size: 16px; color: #1a73e8; margin-bottom: 8px;">A4 शीट प्रीव्यू (2480 × 3508 px - No Gap Layout)</h3>
+    <p style="font-size: 12px; color: #666;">दोनों कार्ड बिना गैप के लगातार जुड़े हुए हैं।</p>
     
     <div class="preview-box" style="display:inline-block; max-width: 320px;">
       <canvas id="a4Canvas" width="2480" height="3508" style="width: 100%; border: 1px solid #999;"></canvas>
@@ -158,7 +157,7 @@
         ctx.drawImage(img, 0, 0, img.width, img.height, cx, cy, img.width * ratio, img.height * ratio);
         callback();
       };
-      img.src = e.target.result;
+      img.src = event.target.result;
     };
     reader.readAsDataURL(file);
   }
@@ -186,21 +185,15 @@
     a4Ctx.fillStyle = '#ffffff';
     a4Ctx.fillRect(0, 0, A4_W, A4_H);
 
-    // Calculate side-by-side positioning centered horizontally on A4
-    const totalCardsWidth = (CARD_W * 2) + 50; // 50px space between cards
+    // Continuous placement (Zero gap: Total Width = CARD_W * 2)
+    const totalCardsWidth = CARD_W * 2; 
     const startX = (A4_W - totalCardsWidth) / 2;
-    const startY = 150; // Top margin on A4 sheet
+    const startY = 150; // Top margin
 
-    // Draw Card 1 (Front)
+    // Draw Card 1 (Left side)
     a4Ctx.drawImage(canvas1, startX, startY);
-    // Draw Card 2 (Back)
-    a4Ctx.drawImage(canvas2, startX + CARD_W + 50, startY);
-
-    // Thin cutting guide border around cards
-    a4Ctx.strokeStyle = '#cccccc';
-    a4Ctx.lineWidth = 2;
-    a4Ctx.strokeRect(startX, startY, CARD_W, CARD_H);
-    a4Ctx.strokeRect(startX + CARD_W + 50, startY, CARD_W, CARD_H);
+    // Draw Card 2 (Right side directly connected without gap)
+    a4Ctx.drawImage(canvas2, startX + CARD_W, startY);
 
     downloadA4Btn.disabled = false;
     printBtn.disabled = false;
@@ -208,7 +201,7 @@
 
   downloadA4Btn.addEventListener('click', () => {
     const link = document.createElement('a');
-    link.download = 'A4_Print_Ready_Cards_2480x3508.png';
+    link.download = 'A4_Continuous_Cards_2480x3508.png';
     link.href = a4Canvas.toDataURL('image/png', 1.0);
     link.click();
   });
