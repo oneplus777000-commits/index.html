@@ -3,36 +3,210 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dual Card Auto-Formatter & A4 Print Sheet (Zero Gap)</title>
+  <title>Card Generator System by Shiv Bhavsar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background: #f0f2f5; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-    .container { background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 1100px; text-align: center; }
-    h2 { color: #1a73e8; margin-bottom: 5px; font-size: 22px; }
-    p { color: #555; margin-bottom: 15px; font-size: 13px; }
+    :root {
+      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --accent-blue: #38bdf8;
+      --accent-purple: #818cf8;
+      --accent-gradient: linear-gradient(135deg, #38bdf8 0%, #6366f1 100%);
+      --btn-merge: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      --btn-download: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      --btn-print: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
     
-    .upload-section { display: flex; gap: 15px; justify-content: center; margin-bottom: 15px; flex-wrap: wrap; }
-    .upload-box { border: 2px dashed #1a73e8; padding: 15px; border-radius: 8px; cursor: pointer; background: #f8fbff; flex: 1; min-width: 280px; text-align: center; }
-    .upload-box:hover { background: #eef5fc; }
+    body { 
+      background: var(--bg-gradient); 
+      min-height: 100vh;
+      padding: 30px 15px; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      color: var(--text-main);
+    }
+
+    .container { 
+      background: var(--card-bg); 
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      padding: 35px 25px; 
+      border-radius: 20px; 
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4); 
+      width: 100%; 
+      max-width: 1050px; 
+      text-align: center; 
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 14px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent-blue);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+
+    h1 { 
+      background: linear-gradient(to right, #38bdf8, #a855f7, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 28px; 
+      font-weight: 700;
+      margin-bottom: 6px; 
+    }
+
+    .subtitle { 
+      color: var(--text-muted); 
+      margin-bottom: 30px; 
+      font-size: 13px; 
+    }
+    
+    .upload-section { 
+      display: flex; 
+      gap: 20px; 
+      justify-content: center; 
+      margin-bottom: 25px; 
+      flex-wrap: wrap; 
+    }
+
+    .upload-box { 
+      border: 2px dashed rgba(56, 189, 248, 0.4); 
+      padding: 22px 15px; 
+      border-radius: 14px; 
+      cursor: pointer; 
+      background: rgba(15, 23, 42, 0.6); 
+      flex: 1; 
+      min-width: 280px; 
+      text-align: center; 
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .upload-box:hover { 
+      border-color: var(--accent-blue);
+      background: rgba(56, 189, 248, 0.05);
+      transform: translateY(-2px);
+    }
+
+    .upload-box strong {
+      display: block;
+      font-size: 14px;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .file-status {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    
     input[type="file"] { display: none; }
     
-    .preview-container { display: flex; justify-content: center; gap: 10px; margin: 15px 0; flex-wrap: wrap; }
-    .preview-box { border: 1px solid #ddd; padding: 8px; background: #fafafa; border-radius: 6px; }
-    .preview-box h4 { font-size: 13px; color: #444; margin-bottom: 5px; }
+    .preview-container { 
+      display: flex; 
+      justify-content: center; 
+      gap: 20px; 
+      margin: 25px 0; 
+      flex-wrap: wrap; 
+    }
+
+    .preview-box { 
+      border: 1px solid var(--border-color); 
+      padding: 12px; 
+      background: rgba(15, 23, 42, 0.8); 
+      border-radius: 12px; 
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+
+    .preview-box h4 { 
+      font-size: 12px; 
+      color: var(--text-muted); 
+      margin-bottom: 8px; 
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
     
-    canvas { max-width: 100%; height: auto; display: block; margin: 0 auto; box-shadow: 0 2px 6px rgba(0,0,0,0.15); background: #fff; }
+    canvas { 
+      max-width: 100%; 
+      height: auto; 
+      display: block; 
+      margin: 0 auto; 
+      border-radius: 6px;
+      background: #fff; 
+    }
     
-    .merged-section { margin-top: 15px; border-top: 2px solid #eee; padding-top: 15px; }
+    .merged-section { 
+      margin-top: 30px; 
+      border-top: 1px solid var(--border-color); 
+      padding-top: 25px; 
+    }
+
+    .merged-section h3 {
+      font-size: 17px;
+      color: var(--accent-blue);
+      margin-bottom: 6px;
+    }
     
-    .btn-group { display: flex; gap: 12px; justify-content: center; margin-top: 12px; flex-wrap: wrap; }
-    button { padding: 10px 20px; font-size: 14px; font-weight: 600; border: none; border-radius: 6px; cursor: pointer; transition: 0.2s; }
-    .btn-merge { background: #ff9800; color: white; }
-    .btn-merge:hover { background: #e68900; }
-    .btn-download { background: #28a745; color: white; }
-    .btn-download:hover { background: #218838; }
-    .btn-print { background: #1a73e8; color: white; }
-    .btn-print:hover { background: #1558b0; }
-    button:disabled { background: #ccc; cursor: not-allowed; }
+    .btn-group { 
+      display: flex; 
+      gap: 15px; 
+      justify-content: center; 
+      margin-top: 20px; 
+      flex-wrap: wrap; 
+    }
+
+    button { 
+      padding: 12px 28px; 
+      font-size: 14px; 
+      font-weight: 600; 
+      border: none; 
+      border-radius: 10px; 
+      cursor: pointer; 
+      transition: all 0.3s ease; 
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #fff;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+
+    .btn-merge { background: var(--btn-merge); }
+    .btn-download { background: var(--btn-download); }
+    .btn-print { background: var(--btn-print); }
+
+    button:disabled { 
+      background: #334155; 
+      color: #64748b; 
+      cursor: not-allowed; 
+      box-shadow: none;
+      transform: none;
+    }
+
+    footer {
+      margin-top: 25px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
 
     @media print {
       @page { size: A4 portrait; margin: 0; }
@@ -46,51 +220,57 @@
 <body>
 
 <div class="container">
-  <h2>Dual Card Formatter & A4 Sheet (Zero Gap Continuous)</h2>
-  <p>दोनों कार्ड 1013x638 में ऑटो-फिट होकर बिना किसी गैप के बिल्कुल सटकर A4 शीट पर सेट होंगे।</p>
+  <div class="badge">Professional Tool</div>
+  <h1>Card Generator System</h1>
+  <div style="font-size: 13px; color: var(--accent-purple); font-weight: 600; margin-bottom: 4px;">by Shiv Bhavsar</div>
+  <p class="subtitle">1013 × 638 Auto-Fit • Zero Gap Merge • A4 Print Ready</p>
 
   <div class="upload-section">
     <label class="upload-box" for="card1Input">
-      <strong>📁 पहला कार्ड (Front) चुनें</strong>
-      <div id="file1Name" style="font-size:12px; color:#666; margin-top:4px;">कोई फाइल नहीं</div>
+      <strong>📁 Front Side (Card 1)</strong>
+      <div id="file1Name" class="file-status">फ़ाइल चुनें (JPG / PNG)</div>
     </label>
     <input type="file" id="card1Input" accept="image/*">
 
     <label class="upload-box" for="card2Input">
-      <strong>📁 दूसरा कार्ड (Back) चुनें</strong>
-      <div id="file2Name" style="font-size:12px; color:#666; margin-top:4px;">कोई फाइल नहीं</div>
+      <strong>📁 Back Side (Card 2)</strong>
+      <div id="file2Name" class="file-status">फ़ाइल चुनें (JPG / PNG)</div>
     </label>
     <input type="file" id="card2Input" accept="image/*">
   </div>
 
   <div class="preview-container">
     <div class="preview-box">
-      <h4>कार्ड 1 (1013x638)</h4>
-      <canvas id="canvas1" width="1013" height="638" style="width: 250px;"></canvas>
+      <h4>Card 1 Preview (1013x638)</h4>
+      <canvas id="canvas1" width="1013" height="638" style="width: 220px;"></canvas>
     </div>
     <div class="preview-box">
-      <h4>कार्ड 2 (1013x638)</h4>
-      <canvas id="canvas2" width="1013" height="638" style="width: 250px;"></canvas>
+      <h4>Card 2 Preview (1013x638)</h4>
+      <canvas id="canvas2" width="1013" height="638" style="width: 220px;"></canvas>
     </div>
   </div>
 
   <div class="btn-group">
-    <button id="mergeBtn" class="btn-merge" disabled>⚡ Merge Cards (Zero Gap Continuous)</button>
+    <button id="mergeBtn" class="btn-merge" disabled>⚡ Merge Cards (Zero Gap)</button>
   </div>
 
   <div class="merged-section">
-    <h3 style="font-size: 16px; color: #1a73e8; margin-bottom: 8px;">A4 शीट प्रीव्यू (2480 × 3508 px - No Gap Layout)</h3>
-    <p style="font-size: 12px; color: #666;">दोनों कार्ड बिना गैप के लगातार जुड़े हुए हैं।</p>
+    <h3>A4 Print Sheet Preview (2480 × 3508 px)</h3>
+    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">बिना किसी गैप के दोनों कार्ड A4 शीट पर प्रिंट के लिए तैयार हैं।</p>
     
-    <div class="preview-box" style="display:inline-block; max-width: 320px;">
-      <canvas id="a4Canvas" width="2480" height="3508" style="width: 100%; border: 1px solid #999;"></canvas>
+    <div class="preview-box" style="display:inline-block; max-width: 260px;">
+      <canvas id="a4Canvas" width="2480" height="3508" style="width: 100%; border: 1px solid rgba(255,255,255,0.2);"></canvas>
     </div>
 
     <div class="btn-group">
-      <button id="downloadA4Btn" class="btn-download" disabled>📥 A4 शीट डाउनलोड करें (PNG)</button>
-      <button id="printBtn" class="btn-print" disabled>🖨️ डायरेक्ट A4 प्रिंट करें</button>
+      <button id="downloadA4Btn" class="btn-download" disabled>📥 A4 Sheet Download</button>
+      <button id="printBtn" class="btn-print" disabled>🖨️ Direct Print A4</button>
     </div>
   </div>
+
+  <footer>
+    Designed & Developed by <strong>Shiv Bhavsar</strong>
+  </footer>
 </div>
 
 <script>
@@ -124,18 +304,18 @@
     [ctx1, ctx2].forEach((ctx, i) => {
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, CARD_W, CARD_H);
-      ctx.fillStyle = '#999';
-      ctx.font = '22px sans-serif';
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = 'bold 24px Poppins, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(`Card ${i+1} Preview (1013x638)`, CARD_W / 2, CARD_H / 2);
+      ctx.fillText(`Card ${i+1} Preview`, CARD_W / 2, CARD_H / 2);
     });
 
     a4Ctx.fillStyle = '#ffffff';
     a4Ctx.fillRect(0, 0, A4_W, A4_H);
-    a4Ctx.fillStyle = '#aaa';
-    a4Ctx.font = '60px sans-serif';
+    a4Ctx.fillStyle = '#94a3b8';
+    a4Ctx.font = 'bold 60px Poppins, sans-serif';
     a4Ctx.textAlign = 'center';
-    a4Ctx.fillText('A4 Sheet Canvas (2480 x 3508 px)', A4_W / 2, A4_H / 2);
+    a4Ctx.fillText('A4 Print Canvas (2480 x 3508)', A4_W / 2, A4_H / 2);
   }
   initCanvases();
 
@@ -157,7 +337,7 @@
         ctx.drawImage(img, 0, 0, img.width, img.height, cx, cy, img.width * ratio, img.height * ratio);
         callback();
       };
-      img.src = event.target.result;
+      img.src = e.target.result;
     };
     reader.readAsDataURL(file);
   }
@@ -181,18 +361,15 @@
   });
 
   mergeBtn.addEventListener('click', () => {
-    // Fill full A4 canvas with crisp white
     a4Ctx.fillStyle = '#ffffff';
     a4Ctx.fillRect(0, 0, A4_W, A4_H);
 
-    // Continuous placement (Zero gap: Total Width = CARD_W * 2)
+    // Exact Zero-Gap Continuous Layout
     const totalCardsWidth = CARD_W * 2; 
     const startX = (A4_W - totalCardsWidth) / 2;
-    const startY = 150; // Top margin
+    const startY = 150;
 
-    // Draw Card 1 (Left side)
     a4Ctx.drawImage(canvas1, startX, startY);
-    // Draw Card 2 (Right side directly connected without gap)
     a4Ctx.drawImage(canvas2, startX + CARD_W, startY);
 
     downloadA4Btn.disabled = false;
