@@ -8,13 +8,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
   
-  <!-- jsPDF Library for Direct High-Quality PDF Generation -->
+  <!-- jsPDF Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <style>
     :root {
       --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
-      --card-bg: rgba(30, 41, 59, 0.7);
+      --card-bg: rgba(30, 41, 59, 0.75);
       --accent-blue: #38bdf8;
       --accent-purple: #818cf8;
       --btn-merge: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
@@ -30,7 +30,7 @@
     body { 
       background: var(--bg-gradient); 
       min-height: 100vh;
-      padding: 30px 15px; 
+      padding: 20px 15px; 
       display: flex; 
       flex-direction: column; 
       align-items: center; 
@@ -38,25 +38,39 @@
       color: var(--text-main);
     }
 
-    /* Login Screen Styling */
+    /* Strict Login Screen Design */
     #loginScreen {
       background: var(--card-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border: 1px solid var(--border-color);
       padding: 40px 30px;
       border-radius: 20px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
       width: 100%;
-      max-width: 420px;
+      max-width: 400px;
       text-align: center;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 14px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent-blue);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 20px;
+      margin-bottom: 12px;
     }
 
     .login-input {
       width: 100%;
-      padding: 12px 16px;
+      padding: 13px 16px;
       margin-bottom: 15px;
-      background: rgba(15, 23, 42, 0.8);
+      background: rgba(15, 23, 42, 0.9);
       border: 1px solid rgba(56, 189, 248, 0.3);
       border-radius: 10px;
       color: #fff;
@@ -67,12 +81,12 @@
 
     .login-input:focus {
       border-color: var(--accent-blue);
-      box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
     }
 
     .login-btn {
       width: 100%;
-      padding: 12px;
+      padding: 13px;
       background: var(--btn-print);
       color: #fff;
       font-weight: 600;
@@ -91,11 +105,12 @@
     .error-msg {
       color: #ef4444;
       font-size: 13px;
-      margin-top: 10px;
+      margin-top: 12px;
       display: none;
+      font-weight: 500;
     }
 
-    /* Main Tool Styling */
+    /* Main App - Strictly Hidden on Load */
     #mainApp {
       display: none;
       width: 100%;
@@ -131,20 +146,6 @@
 
     .logout-btn:hover {
       background: rgba(239, 68, 68, 0.4);
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 4px 14px;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      background: rgba(56, 189, 248, 0.15);
-      color: var(--accent-blue);
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      border-radius: 20px;
-      margin-bottom: 12px;
     }
 
     h1 { 
@@ -292,7 +293,6 @@
       color: var(--text-muted);
     }
 
-    /* Print Formatting */
     @page {
       size: A4 portrait;
       margin: 0;
@@ -307,15 +307,12 @@
         background: #fff !important;
         overflow: hidden;
       }
-      
       body * {
         visibility: hidden;
       }
-
       #mainApp, .merged-section, .preview-box, #a4Canvas {
         visibility: visible !important;
       }
-
       #a4Canvas {
         position: fixed;
         left: 0;
@@ -344,7 +341,7 @@
   <div id="errorMsg" class="error-msg">⚠️ गलत ईमेल आईडी या पासवर्ड!</div>
 </div>
 
-<!-- Main Application -->
+<!-- Main Application (Hidden by Default) -->
 <div id="mainApp">
   <div class="container">
     <button id="logoutBtn" class="logout-btn">🔒 Logout</button>
@@ -403,7 +400,7 @@
 </div>
 
 <script>
-  // Authentication Logic
+  // Strictly Enforced Login Details
   const AUTH_EMAIL = "oneplus777888@gmail.com";
   const AUTH_PASS = "Pass@123";
 
@@ -415,15 +412,12 @@
   const errorMsg = document.getElementById('errorMsg');
   const logoutBtn = document.getElementById('logoutBtn');
 
-  function checkSession() {
-    if (sessionStorage.getItem('isLoggedIn') === 'true') {
-      loginScreen.style.display = 'none';
-      mainApp.style.display = 'block';
-    }
-  }
-  checkSession();
+  // Clear any old session on refresh so login always shows first
+  sessionStorage.removeItem('isLoggedIn');
+  loginScreen.style.display = 'block';
+  mainApp.style.display = 'none';
 
-  authBtn.addEventListener('click', () => {
+  function handleLogin() {
     const inputEmail = loginEmail.value.trim();
     const inputPass = loginPass.value.trim();
 
@@ -432,9 +426,15 @@
       loginScreen.style.display = 'none';
       mainApp.style.display = 'block';
       errorMsg.style.display = 'none';
+      initCanvases();
     } else {
       errorMsg.style.display = 'block';
     }
+  }
+
+  authBtn.addEventListener('click', handleLogin);
+  loginPass.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') handleLogin();
   });
 
   logoutBtn.addEventListener('click', () => {
@@ -445,7 +445,7 @@
     loginPass.value = '';
   });
 
-  // Card Processing Logic
+  // Card Generator Logic
   const card1Input = document.getElementById('card1Input');
   const card2Input = document.getElementById('card2Input');
   const file1Name = document.getElementById('file1Name');
@@ -489,7 +489,6 @@
     a4Ctx.textAlign = 'center';
     a4Ctx.fillText('A4 Print Canvas (2480 x 3508)', A4_W / 2, A4_H / 2);
   }
-  initCanvases();
 
   function loadCard(file, ctx, callback) {
     const reader = new FileReader();
