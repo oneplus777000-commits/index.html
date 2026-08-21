@@ -38,7 +38,6 @@
       color: var(--text-main);
     }
 
-    /* Strict Login Screen Design */
     #loginScreen {
       background: var(--card-bg);
       backdrop-filter: blur(20px);
@@ -110,7 +109,6 @@
       font-weight: 500;
     }
 
-    /* Main App - Strictly Hidden on Load */
     #mainApp {
       display: none;
       width: 100%;
@@ -292,44 +290,10 @@
       font-size: 12px;
       color: var(--text-muted);
     }
-
-    @page {
-      size: A4 portrait;
-      margin: 0;
-    }
-
-    @media print {
-      html, body {
-        width: 210mm;
-        height: 297mm;
-        margin: 0 !important;
-        padding: 0 !important;
-        background: #fff !important;
-        overflow: hidden;
-      }
-      body * {
-        visibility: hidden;
-      }
-      #mainApp, .merged-section, .preview-box, #a4Canvas {
-        visibility: visible !important;
-      }
-      #a4Canvas {
-        position: fixed;
-        left: 0;
-        top: 0;
-        width: 210mm !important;
-        height: 297mm !important;
-        object-fit: fill;
-        z-index: 9999;
-        border: none !important;
-        border-radius: 0 !important;
-      }
-    }
   </style>
 </head>
 <body>
 
-<!-- Login Container -->
 <div id="loginScreen">
   <div class="badge">Protected Access</div>
   <h2 style="font-size: 22px; margin-bottom: 6px;">Sign In</h2>
@@ -341,7 +305,6 @@
   <div id="errorMsg" class="error-msg">⚠️ गलत ईमेल आईडी या पासवर्ड!</div>
 </div>
 
-<!-- Main Application (Hidden by Default) -->
 <div id="mainApp">
   <div class="container">
     <button id="logoutBtn" class="logout-btn">🔒 Logout</button>
@@ -400,7 +363,6 @@
 </div>
 
 <script>
-  // Strictly Enforced Login Details
   const AUTH_EMAIL = "oneplus777000@gmail.com";
   const AUTH_PASS = "Pass@123";
 
@@ -412,7 +374,6 @@
   const errorMsg = document.getElementById('errorMsg');
   const logoutBtn = document.getElementById('logoutBtn');
 
-  // Clear any old session on refresh so login always shows first
   sessionStorage.removeItem('isLoggedIn');
   loginScreen.style.display = 'block';
   mainApp.style.display = 'none';
@@ -445,7 +406,6 @@
     loginPass.value = '';
   });
 
-  // Card Generator Logic
   const card1Input = document.getElementById('card1Input');
   const card2Input = document.getElementById('card2Input');
   const file1Name = document.getElementById('file1Name');
@@ -559,8 +519,38 @@
     pdf.save('A4_Print_Card_Sheet.pdf');
   });
 
+  // Pixel-Perfect A4 Direct Print Engine
   printBtn.addEventListener('click', () => {
-    window.print();
+    const imgData = a4Canvas.toDataURL('image/png', 1.0);
+    const printFrame = document.createElement('iframe');
+    printFrame.style.position = 'fixed';
+    printFrame.style.right = '0';
+    printFrame.style.bottom = '0';
+    printFrame.style.width = '0';
+    printFrame.style.height = '0';
+    printFrame.style.border = '0';
+
+    document.body.appendChild(printFrame);
+
+    const frameDoc = printFrame.contentWindow.document;
+    frameDoc.open();
+    frameDoc.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Print</title>
+        <style>
+          @page { size: A4 portrait; margin: 0; }
+          html, body { margin: 0; padding: 0; width: 210mm; height: 297mm; }
+          img { width: 210mm; height: 297mm; display: block; object-fit: contain; }
+        </style>
+      </head>
+      <body>
+        <img src="${imgData}" onload="window.print(); window.onafterprint = function(){ parent.document.body.removeChild(window.frameElement); };">
+      </body>
+      </html>
+    `);
+    frameDoc.close();
   });
 </script>
 
