@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>5 Card Generator System by SHIV BHAVSAR</title>
+  <title>Sequential 5 Card Generator by SHIV BHAVSAR</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -11,7 +11,7 @@
   <!-- jsPDF Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-  <!-- Cropper.js for Manual Crop -->
+  <!-- Cropper.js for Precise Crop -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
@@ -21,7 +21,7 @@
       --card-bg: rgba(30, 41, 59, 0.8);
       --accent-blue: #38bdf8;
       --accent-purple: #818cf8;
-      --btn-merge: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      --btn-add: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
       --btn-download: linear-gradient(135deg, #10b981 0%, #059669 100%);
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
@@ -68,6 +68,18 @@
       margin-bottom: 12px;
     }
 
+    .slot-counter-badge {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      padding: 4px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 20px;
+      display: inline-block;
+      margin-bottom: 15px;
+    }
+
     .login-input {
       width: 100%;
       padding: 13px 16px;
@@ -102,7 +114,7 @@
     #mainApp {
       display: none;
       width: 100%;
-      max-width: 1100px;
+      max-width: 1050px;
     }
 
     .container { 
@@ -137,76 +149,70 @@
       -webkit-text-fill-color: transparent;
       font-size: 26px; 
       font-weight: 700;
-      margin-bottom: 4px;
+      margin-bottom: 4px; 
     }
 
-    .card-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 15px;
-      background: rgba(15, 23, 42, 0.6);
-      padding: 15px;
-      border-radius: 12px;
-      margin-bottom: 12px;
-      border: 1px solid var(--border-color);
-      flex-wrap: wrap;
+    .upload-section { 
+      display: flex; 
+      gap: 15px; 
+      justify-content: center; 
+      margin: 20px 0; 
+      flex-wrap: wrap; 
     }
 
-    .card-row-title {
-      font-weight: 600;
-      font-size: 14px;
-      color: var(--accent-blue);
-      min-width: 120px;
-      text-align: left;
+    .upload-box { 
+      border: 2px dashed rgba(56, 189, 248, 0.4); 
+      padding: 18px 15px; 
+      border-radius: 14px; 
+      cursor: pointer; 
+      background: rgba(15, 23, 42, 0.6); 
+      flex: 1; 
+      min-width: 260px; 
+      transition: 0.3s;
     }
 
-    .upload-pair {
-      display: flex;
-      gap: 10px;
-      flex: 1;
-      min-width: 280px;
-      flex-wrap: wrap;
-    }
-
-    .upload-btn-box {
-      border: 1px dashed rgba(56, 189, 248, 0.4);
-      padding: 10px 12px;
-      border-radius: 8px;
-      cursor: pointer;
-      background: rgba(15, 23, 42, 0.8);
-      flex: 1;
-      min-width: 130px;
-      font-size: 12px;
-      text-align: center;
-      transition: 0.2s;
-    }
-
-    .upload-btn-box:hover {
+    .upload-box:hover { 
       border-color: var(--accent-blue);
-      background: rgba(56, 189, 248, 0.1);
+      background: rgba(56, 189, 248, 0.08);
     }
 
     input[type="file"] { display: none; }
 
-    .mini-preview {
-      display: flex;
-      gap: 8px;
+    .preview-container { 
+      display: flex; 
+      justify-content: center; 
+      gap: 20px; 
+      margin: 15px 0; 
+      flex-wrap: wrap; 
     }
 
-    .mini-canvas {
-      width: 80px;
-      height: 50px;
-      background: #fff;
-      border-radius: 4px;
-      border: 1px solid #475569;
+    .preview-box { 
+      border: 1px solid var(--border-color); 
+      padding: 10px; 
+      background: rgba(15, 23, 42, 0.8); 
+      border-radius: 12px; 
+    }
+
+    .preview-box h4 { 
+      font-size: 12px; 
+      color: var(--text-muted); 
+      margin-bottom: 6px; 
+    }
+    
+    canvas { 
+      max-width: 100%; 
+      height: auto; 
+      display: block; 
+      margin: 0 auto; 
+      border-radius: 6px;
+      background: #fff; 
     }
 
     .btn-group { 
       display: flex; 
       gap: 15px; 
       justify-content: center; 
-      margin-top: 25px; 
+      margin-top: 20px; 
       flex-wrap: wrap; 
     }
 
@@ -217,8 +223,8 @@
       border: none; 
       border-radius: 10px; 
       cursor: pointer; 
+      transition: all 0.3s ease; 
       color: #fff;
-      transition: 0.3s;
     }
 
     .action-btn:hover:not(:disabled) {
@@ -226,13 +232,17 @@
       box-shadow: 0 6px 20px rgba(0,0,0,0.4);
     }
 
-    .btn-merge { background: var(--btn-merge); }
+    .btn-add { background: var(--btn-add); }
     .btn-download { background: var(--btn-download); }
+    .btn-reset { background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; }
+    .btn-reset:hover { background: rgba(239, 68, 68, 0.4); }
 
     .action-btn:disabled { 
       background: #334155; 
       color: #64748b; 
       cursor: not-allowed; 
+      transform: none;
+      box-shadow: none;
     }
 
     /* Modal for Crop */
@@ -270,7 +280,7 @@
 <div id="loginScreen">
   <div class="badge">Protected Access</div>
   <h2 style="font-size: 22px; margin-bottom: 6px;">Sign In</h2>
-  <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">5 Card Generator System by Shiv Bhavsar</p>
+  <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">Card Generator System by Shiv Bhavsar</p>
 
   <input type="email" id="loginEmail" class="login-input" placeholder="ईमेल आईडी दर्ज करें">
   <input type="password" id="loginPass" class="login-input" placeholder="पासवर्ड दर्ज करें">
@@ -278,27 +288,54 @@
   <div id="errorMsg" class="error-msg">⚠️ गलत ईमेल आईडी या पासवर्ड!</div>
 </div>
 
-<!-- Main Application -->
+<!-- Main App -->
 <div id="mainApp">
   <div class="container">
     <button id="logoutBtn" class="logout-btn">🔒 Logout</button>
-    <div class="badge">5 Cards in 1 A4 Sheet</div>
-    <h1>5 Card Generator System</h1>
+    <div class="badge">Step-by-Step 5 Card Accumulator</div>
+    <h1>Card Generator System</h1>
     <div style="font-size: 13px; color: var(--accent-purple); font-weight: 600; margin-bottom: 4px;">by Shiv Bhavsar</div>
-    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">5 अलग-अलग कार्ड्स अपलोड करें और सीधे 1 A4 पेपर PDF में डाउनलोड करें।</p>
+    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">एक-एक करके 5 कार्ड्स जोड़ें, वे A4 शीट पर क्रम से नीचे सेट होते जाएँगे।</p>
+    
+    <div id="slotCounter" class="slot-counter-badge">Cards on Page: 0 / 5 (Next Slot: #1)</div>
 
-    <!-- 5 Upload Sections -->
-    <div id="cardsList"></div>
+    <!-- Upload Current Card Pair -->
+    <div class="upload-section">
+      <label class="upload-box" for="card1Input">
+        <strong style="display:block; font-size:14px; margin-bottom:4px;">📁 Current Front Side</strong>
+        <div id="file1Name" style="font-size: 12px; color: var(--text-muted);">फ़ोटो चुनें व क्रॉप करें</div>
+      </label>
+      <input type="file" id="card1Input" accept="image/*">
 
-    <div class="btn-group">
-      <button id="mergeBtn" class="action-btn btn-merge">⚡ Merge All to 1 A4 Sheet</button>
+      <label class="upload-box" for="card2Input">
+        <strong style="display:block; font-size:14px; margin-bottom:4px;">📁 Current Back Side</strong>
+        <div id="file2Name" style="font-size: 12px; color: var(--text-muted);">फ़ोटो चुनें व क्रॉप करें</div>
+      </label>
+      <input type="file" id="card2Input" accept="image/*">
     </div>
 
+    <div class="preview-container">
+      <div class="preview-box">
+        <h4>Front Card (1013x638)</h4>
+        <canvas id="canvas1" width="1013" height="638" style="width: 200px;"></canvas>
+      </div>
+      <div class="preview-box">
+        <h4>Back Card (1013x638)</h4>
+        <canvas id="canvas2" width="1013" height="638" style="width: 200px;"></canvas>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button id="addCardBtn" class="action-btn btn-add" disabled>➕ Add This Card to A4 Sheet</button>
+      <button id="resetPageBtn" class="action-btn btn-reset">🔄 Clear A4 Page</button>
+    </div>
+
+    <!-- Accumulated A4 Canvas Section -->
     <div style="margin-top: 30px; border-top: 1px solid var(--border-color); padding-top: 20px;">
-      <h3 style="font-size: 16px; color: var(--accent-blue); margin-bottom: 6px;">A4 Sheet Preview (2480 × 3508 px)</h3>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">5 कार्ड्स एक ही शीट पर प्रिंट के लिए व्यवस्थित हो चुके हैं।</p>
+      <h3 style="font-size: 16px; color: var(--accent-blue); margin-bottom: 6px;">Accumulated A4 Sheet Preview (2480 × 3508 px)</h3>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">हर नया कार्ड पिछले कार्ड के नीचे बिना किसी बदलाव के सुरक्षित जुड़ता रहेगा।</p>
       
-      <div style="display:inline-block; max-width: 260px; background:#fff; border-radius:6px; overflow:hidden; border: 1px solid #475569;">
+      <div style="display:inline-block; max-width: 280px; background:#fff; border-radius:6px; overflow:hidden; border: 1px solid #475569;">
         <canvas id="a4Canvas" width="2480" height="3508" style="width: 100%; display:block;"></canvas>
       </div>
 
@@ -366,78 +403,96 @@
   const CARD_H = 638;
   const A4_W = 2480;
   const A4_H = 3508;
+  const MAX_CARDS = 5;
 
-  const cardSlots = [
-    { front: null, back: null },
-    { front: null, back: null },
-    { front: null, back: null },
-    { front: null, back: null },
-    { front: null, back: null }
-  ];
+  let addedCardsCount = 0;
 
-  let currentSlot = 0;
-  let currentSide = 'front';
+  const canvas1 = document.getElementById('canvas1');
+  const ctx1 = canvas1.getContext('2d');
+  const canvas2 = document.getElementById('canvas2');
+  const ctx2 = canvas2.getContext('2d');
+  const a4Canvas = document.getElementById('a4Canvas');
+  const a4Ctx = a4Canvas.getContext('2d');
+
+  const addCardBtn = document.getElementById('addCardBtn');
+  const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+  const resetPageBtn = document.getElementById('resetPageBtn');
+  const slotCounter = document.getElementById('slotCounter');
+
+  let img1Loaded = false;
+  let img2Loaded = false;
+
+  function initApp() {
+    clearCurrentInputs();
+    resetA4Sheet();
+  }
+
+  function clearCurrentInputs() {
+    [ctx1, ctx2].forEach((ctx, i) => {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, CARD_W, CARD_H);
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = 'bold 24px Poppins, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(`${i === 0 ? 'Front' : 'Back'} Card Preview`, CARD_W / 2, CARD_H / 2);
+    });
+
+    document.getElementById('file1Name').innerText = 'फ़ोटो चुनें व क्रॉप करें';
+    document.getElementById('file2Name').innerText = 'फ़ोटो चुनें व क्रॉप करें';
+    document.getElementById('card1Input').value = '';
+    document.getElementById('card2Input').value = '';
+    img1Loaded = false;
+    img2Loaded = false;
+    addCardBtn.disabled = true;
+  }
+
+  function resetA4Sheet() {
+    addedCardsCount = 0;
+    a4Ctx.fillStyle = '#ffffff';
+    a4Ctx.fillRect(0, 0, A4_W, A4_H);
+
+    // Initial background guide outlines for all 5 slots
+    const totalWidth = CARD_W * 2;
+    const startX = (A4_W - totalWidth) / 2;
+    const startY = 50;
+    const verticalGap = 50;
+
+    for (let i = 0; i < MAX_CARDS; i++) {
+      const currentY = startY + (i * (CARD_H + verticalGap));
+      a4Ctx.strokeStyle = '#f1f5f9';
+      a4Ctx.lineWidth = 2;
+      a4Ctx.strokeRect(startX, currentY, totalWidth, CARD_H);
+    }
+
+    updateCounter();
+    downloadPdfBtn.disabled = true;
+  }
+
+  function updateCounter() {
+    if (addedCardsCount < MAX_CARDS) {
+      slotCounter.innerText = `Cards on Page: ${addedCardsCount} / ${MAX_CARDS} (Next Slot: #${addedCardsCount + 1})`;
+      slotCounter.style.color = '#fbbf24';
+    } else {
+      slotCounter.innerText = `✅ Page Full: 5 / 5 Cards Added!`;
+      slotCounter.style.color = '#34d399';
+    }
+  }
+
+  // Cropper Variables
   let cropper = null;
-
+  let currentTarget = 1;
   const cropModal = document.getElementById('cropModal');
   const imageToCrop = document.getElementById('imageToCrop');
   const cropSaveBtn = document.getElementById('cropSaveBtn');
   const cropCancelBtn = document.getElementById('cropCancelBtn');
 
-  function initApp() {
-    const cardsList = document.getElementById('cardsList');
-    cardsList.innerHTML = '';
-
-    for (let i = 0; i < 5; i++) {
-      const row = document.createElement('div');
-      row.className = 'card-row';
-      row.innerHTML = `
-        <div class="card-row-title">📄 Card ${i + 1}</div>
-        <div class="upload-pair">
-          <label class="upload-btn-box" for="input_${i}_f">
-            <strong>📁 Front Side</strong>
-            <div id="label_${i}_f" style="color:#94a3b8; font-size:11px;">अपलोड करें</div>
-          </label>
-          <input type="file" id="input_${i}_f" accept="image/*">
-
-          <label class="upload-btn-box" for="input_${i}_b">
-            <strong>📁 Back Side</strong>
-            <div id="label_${i}_b" style="color:#94a3b8; font-size:11px;">अपलोड करें</div>
-          </label>
-          <input type="file" id="input_${i}_b" accept="image/*">
-        </div>
-        <div class="mini-preview">
-          <canvas id="mini_${i}_f" class="mini-canvas" width="1013" height="638"></canvas>
-          <canvas id="mini_${i}_b" class="mini-canvas" width="1013" height="638"></canvas>
-        </div>
-      `;
-      cardsList.appendChild(row);
-
-      document.getElementById(`input_${i}_f`).addEventListener('change', (e) => {
-        if (e.target.files[0]) openCropper(e.target.files[0], i, 'front');
-      });
-      document.getElementById(`input_${i}_b`).addEventListener('change', (e) => {
-        if (e.target.files[0]) openCropper(e.target.files[0], i, 'back');
-      });
+  function openCropper(file, target) {
+    if (addedCardsCount >= MAX_CARDS) {
+      alert('A4 शीट पर 5 कार्ड्स की जगह पूरी हो चुकी है! नई शीट के लिए "Clear A4 Page" दबाएँ या PDF डाउनलोड करें।');
+      return;
     }
 
-    initA4Canvas();
-  }
-
-  function initA4Canvas() {
-    const a4Canvas = document.getElementById('a4Canvas');
-    const ctx = a4Canvas.getContext('2d');
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, A4_W, A4_H);
-    ctx.fillStyle = '#94a3b8';
-    ctx.font = 'bold 60px Poppins, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('A4 Print Sheet (5 Cards Layout)', A4_W / 2, A4_H / 2);
-  }
-
-  function openCropper(file, slotIndex, side) {
-    currentSlot = slotIndex;
-    currentSide = side;
+    currentTarget = target;
     const reader = new FileReader();
     reader.onload = function(e) {
       imageToCrop.src = e.target.result;
@@ -452,6 +507,20 @@
     reader.readAsDataURL(file);
   }
 
+  document.getElementById('card1Input').addEventListener('change', (e) => {
+    if (e.target.files[0]) {
+      document.getElementById('file1Name').innerText = e.target.files[0].name;
+      openCropper(e.target.files[0], 1);
+    }
+  });
+
+  document.getElementById('card2Input').addEventListener('change', (e) => {
+    if (e.target.files[0]) {
+      document.getElementById('file2Name').innerText = e.target.files[0].name;
+      openCropper(e.target.files[0], 2);
+    }
+  });
+
   cropSaveBtn.addEventListener('click', () => {
     if (!cropper) return;
     const croppedCanvas = cropper.getCroppedCanvas({
@@ -461,12 +530,19 @@
       imageSmoothingQuality: 'high'
     });
 
-    const miniCanvas = document.getElementById(`mini_${currentSlot}_${currentSide === 'front' ? 'f' : 'b'}`);
-    const miniCtx = miniCanvas.getContext('2d');
-    miniCtx.drawImage(croppedCanvas, 0, 0);
+    if (currentTarget === 1) {
+      ctx1.clearRect(0, 0, CARD_W, CARD_H);
+      ctx1.drawImage(croppedCanvas, 0, 0);
+      img1Loaded = true;
+    } else {
+      ctx2.clearRect(0, 0, CARD_W, CARD_H);
+      ctx2.drawImage(croppedCanvas, 0, 0);
+      img2Loaded = true;
+    }
 
-    cardSlots[currentSlot][currentSide] = croppedCanvas;
-    document.getElementById(`label_${currentSlot}_${currentSide === 'front' ? 'f' : 'b'}`).innerText = '✅ Loaded';
+    if (img1Loaded && img2Loaded) {
+      addCardBtn.disabled = false;
+    }
 
     closeCropper();
   });
@@ -481,57 +557,46 @@
     }
   }
 
-  // Merge All 5 Cards onto Single A4 Sheet
-  document.getElementById('mergeBtn').addEventListener('click', () => {
-    const a4Canvas = document.getElementById('a4Canvas');
-    const a4Ctx = a4Canvas.getContext('2d');
-
-    a4Ctx.fillStyle = '#ffffff';
-    a4Ctx.fillRect(0, 0, A4_W, A4_H);
+  // Sequentially Append Card to A4 Canvas
+  addCardBtn.addEventListener('click', () => {
+    if (addedCardsCount >= MAX_CARDS) {
+      alert('यह A4 शीट भर चुकी है (अधिकतम 5 कार्ड्स)। कृपया PDF डाउनलोड करें।');
+      return;
+    }
 
     const totalWidth = CARD_W * 2;
     const startX = (A4_W - totalWidth) / 2;
-    
-    // Vertical spacing for 5 cards: Top margin 70px, gap 50px between rows
-    const startY = 70;
+    const startY = 50;
     const verticalGap = 50;
 
-    let hasAnyCard = false;
+    const currentY = startY + (addedCardsCount * (CARD_H + verticalGap));
 
-    for (let i = 0; i < 5; i++) {
-      const currentY = startY + (i * (CARD_H + verticalGap));
-      
-      const frontCanvas = cardSlots[i].front;
-      const backCanvas = cardSlots[i].back;
+    // Draw Front Side (Left)
+    a4Ctx.drawImage(canvas1, startX, currentY, CARD_W, CARD_H);
+    // Draw Back Side (Right - Zero Gap)
+    a4Ctx.drawImage(canvas2, startX + CARD_W, currentY, CARD_W, CARD_H);
 
-      if (frontCanvas || backCanvas) hasAnyCard = true;
+    // Cutting guide boundary
+    a4Ctx.strokeStyle = '#cbd5e1';
+    a4Ctx.lineWidth = 2;
+    a4Ctx.strokeRect(startX, currentY, totalWidth, CARD_H);
 
-      // Draw Front Card (Left)
-      if (frontCanvas) {
-        a4Ctx.drawImage(frontCanvas, startX, currentY, CARD_W, CARD_H);
-      } else {
-        // Empty slot placeholder
-        a4Ctx.strokeStyle = '#e2e8f0';
-        a4Ctx.strokeRect(startX, currentY, CARD_W, CARD_H);
-      }
+    addedCardsCount++;
+    updateCounter();
 
-      // Draw Back Card (Right - Zero Gap)
-      if (backCanvas) {
-        a4Ctx.drawImage(backCanvas, startX + CARD_W, currentY, CARD_W, CARD_H);
-      } else {
-        // Empty slot placeholder
-        a4Ctx.strokeStyle = '#e2e8f0';
-        a4Ctx.strokeRect(startX + CARD_W, currentY, CARD_W, CARD_H);
-      }
-    }
+    downloadPdfBtn.disabled = false;
+    clearCurrentInputs();
+  });
 
-    if (hasAnyCard) {
-      document.getElementById('downloadPdfBtn').disabled = false;
+  resetPageBtn.addEventListener('click', () => {
+    if (confirm('क्या आप सच में पूरी A4 शीट को खाली (Reset) करना चाहते हैं?')) {
+      resetA4Sheet();
+      clearCurrentInputs();
     }
   });
 
-  // Direct High Quality A4 PDF Generator
-  document.getElementById('downloadPdfBtn').addEventListener('click', () => {
+  // Direct A4 PDF Download
+  downloadPdfBtn.addEventListener('click', () => {
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({
       orientation: 'portrait',
@@ -539,10 +604,9 @@
       format: 'a4'
     });
 
-    const a4Canvas = document.getElementById('a4Canvas');
     const imgData = a4Canvas.toDataURL('image/jpeg', 1.0);
     pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
-    pdf.save('5_Cards_A4_Sheet.pdf');
+    pdf.save(`A4_Cards_Sheet_${addedCardsCount}_Cards.pdf`);
   });
 </script>
 
