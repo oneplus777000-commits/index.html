@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>5 Card Generator System by SHIV BHAVSAR</title>
+  <title>ID CARD PRINT PORTAL BY ONEPLUS</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   
   <!-- jsPDF Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -18,7 +18,7 @@
   <style>
     :root {
       --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
-      --card-bg: rgba(30, 41, 59, 0.8);
+      --card-bg: rgba(30, 41, 59, 0.85);
       --accent-blue: #38bdf8;
       --accent-purple: #818cf8;
       --btn-add: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
@@ -33,12 +33,26 @@
     body { 
       background: var(--bg-gradient); 
       min-height: 100vh;
-      padding: 20px 10px; 
+      padding: 30px 10px; 
       display: flex; 
       flex-direction: column; 
       align-items: center; 
       justify-content: center;
       color: var(--text-main);
+    }
+
+    /* Top Branding Header */
+    .portal-main-heading {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #38bdf8 0%, #a855f7 50%, #f43f5e 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 25px;
+      text-align: center;
+      text-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
     }
 
     /* Login & Password Box Styling */
@@ -47,7 +61,7 @@
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border: 1px solid var(--border-color);
-      padding: 40px 30px;
+      padding: 35px 30px;
       border-radius: 20px;
       box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
       width: 100%;
@@ -305,6 +319,11 @@
 </head>
 <body>
 
+<!-- Global Header Text -->
+<div class="portal-main-heading">
+  ID CARD PRINT PORTAL BY ONEPLUS
+</div>
+
 <!-- 1. Login Screen -->
 <div id="loginScreen" class="auth-box">
   <div class="badge">Protected Access</div>
@@ -321,7 +340,7 @@
   </div>
 </div>
 
-<!-- 2. Change Password Screen (On Login Page) -->
+<!-- 2. Change Password Screen -->
 <div id="changePwdScreen" class="auth-box" style="display:none;">
   <div class="badge">Security Settings</div>
   <h2 style="font-size: 20px; margin-bottom: 6px; color: var(--accent-blue);">🔑 Change Password</h2>
@@ -441,7 +460,6 @@
 
   sessionStorage.removeItem('isLoggedIn');
 
-  // Toggle Between Login Screen and Change Password Screen
   goToChangePwd.addEventListener('click', () => {
     loginScreen.style.display = 'none';
     changePwdScreen.style.display = 'block';
@@ -457,7 +475,6 @@
     errorMsg.style.display = 'none';
   });
 
-  // Change Password Logic
   saveNewPwdBtn.addEventListener('click', () => {
     const oldP = oldPassInput.value.trim();
     const newP = newPassInput.value.trim();
@@ -497,7 +514,6 @@
     }, 1500);
   });
 
-  // Login Logic
   function handleLogin() {
     const currentPass = getStoredPassword();
     if (loginEmail.value.trim() === AUTH_EMAIL && loginPass.value.trim() === currentPass) {
@@ -524,12 +540,11 @@
     loginPass.value = '';
   });
 
-  // 5 Card Generator Logic
   const CARD_W = 1013;
   const CARD_H = 638;
   const A4_W = 2480;
   const A4_H = 3508;
-  const GAP_2_5MM_PX = 30; // 2.5 mm gap at 300 DPI
+  const GAP_2_5MM_PX = 30;
   const MAX_CARDS = 5;
 
   let addedCardsCount = 0;
