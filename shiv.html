@@ -8,8 +8,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
   
-  <!-- jsPDF Library for Direct High-Quality PDF Generation -->
+  <!-- jsPDF Library for A4 PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <!-- Cropper.js for Manual Selection & Crop -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
   <style>
     :root {
@@ -283,6 +287,34 @@
       box-shadow: none;
     }
 
+    /* Manual Crop Modal Popup */
+    #cropModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 20px;
+    }
+
+    .crop-wrapper {
+      max-width: 90vw;
+      max-height: 70vh;
+      background: #000;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 15px;
+    }
+
+    .crop-wrapper img {
+      max-width: 100%;
+      max-height: 70vh;
+      display: block;
+    }
+
     footer {
       margin-top: 25px;
       font-size: 12px;
@@ -292,6 +324,7 @@
 </head>
 <body>
 
+<!-- Login Screen -->
 <div id="loginScreen">
   <div class="badge">Protected Access</div>
   <h2 style="font-size: 22px; margin-bottom: 6px;">Sign In</h2>
@@ -303,35 +336,36 @@
   <div id="errorMsg" class="error-msg">⚠️ गलत ईमेल आईडी या पासवर्ड!</div>
 </div>
 
+<!-- Main App -->
 <div id="mainApp">
   <div class="container">
     <button id="logoutBtn" class="logout-btn">🔒 Logout</button>
-    <div class="badge">Direct PDF Tool</div>
+    <div class="badge">Manual Select & Crop</div>
     <h1>Card Generator System</h1>
     <div style="font-size: 13px; color: var(--accent-purple); font-weight: 600; margin-bottom: 4px;">by Shiv Bhavsar</div>
-    <p class="subtitle">1013 × 638 Auto-Crop • Zero Gap Merge • Direct A4 PDF</p>
+    <p class="subtitle">Select Custom Area • 1013 × 638 Fit • Direct A4 PDF</p>
 
     <div class="upload-section">
       <label class="upload-box" for="card1Input">
         <strong>📁 Front Side (Card 1)</strong>
-        <div id="file1Name" class="file-status">फ़ोटो चुनें (JPG / PNG)</div>
+        <div id="file1Name" class="file-status">फ़ोटो चुनें व क्रॉप करें</div>
       </label>
       <input type="file" id="card1Input" accept="image/*">
 
       <label class="upload-box" for="card2Input">
         <strong>📁 Back Side (Card 2)</strong>
-        <div id="file2Name" class="file-status">फ़ोटो चुनें (JPG / PNG)</div>
+        <div id="file2Name" class="file-status">फ़ोटो चुनें व क्रॉप करें</div>
       </label>
       <input type="file" id="card2Input" accept="image/*">
     </div>
 
     <div class="preview-container">
       <div class="preview-box">
-        <h4>Card 1 Preview (1013x638 Auto-Cut)</h4>
+        <h4>Card 1 Selected (1013x638)</h4>
         <canvas id="canvas1" width="1013" height="638" style="width: 220px;"></canvas>
       </div>
       <div class="preview-box">
-        <h4>Card 2 Preview (1013x638 Auto-Cut)</h4>
+        <h4>Card 2 Selected (1013x638)</h4>
         <canvas id="canvas2" width="1013" height="638" style="width: 220px;"></canvas>
       </div>
     </div>
@@ -342,7 +376,7 @@
 
     <div class="merged-section">
       <h3>A4 Sheet Preview (2480 × 3508 px)</h3>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">1013x638 में ऑटो-क्रॉप होकर दोनों कार्ड A4 शीट पर सीधे PDF डाउनलोड के लिए तैयार हैं।</p>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">बिना किसी गैप के दोनों कार्ड A4 शीट पर सीधे PDF डाउनलोड के लिए तैयार हैं।</p>
       
       <div class="preview-box" style="display:inline-block; max-width: 260px;">
         <canvas id="a4Canvas" width="2480" height="3508" style="width: 100%; border: 1px solid rgba(255,255,255,0.2);"></canvas>
@@ -356,6 +390,18 @@
     <footer>
       Designed & Developed by <strong>Shiv Bhavsar</strong>
     </footer>
+  </div>
+</div>
+
+<!-- Crop Modal Box -->
+<div id="cropModal">
+  <div style="color:#fff; margin-bottom: 10px; font-weight: 600;">कार्ड का सही हिस्सा सेलेक्ट (Crop) करें:</div>
+  <div class="crop-wrapper">
+    <img id="imageToCrop" src="">
+  </div>
+  <div class="btn-group">
+    <button id="cropSaveBtn" class="action-btn btn-download">✂️ Crop & Set (1013x638)</button>
+    <button id="cropCancelBtn" class="action-btn" style="background:#ef4444;">रद्द करें</button>
   </div>
 </div>
 
@@ -435,7 +481,7 @@
       ctx.fillStyle = '#94a3b8';
       ctx.font = 'bold 24px Poppins, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(`Card ${i+1} Preview (1013x638)`, CARD_W / 2, CARD_H / 2);
+      ctx.fillText(`Card ${i+1} Preview`, CARD_W / 2, CARD_H / 2);
     });
 
     a4Ctx.fillStyle = '#ffffff';
@@ -446,35 +492,29 @@
     a4Ctx.fillText('A4 Sheet Canvas (2480 x 3508)', A4_W / 2, A4_H / 2);
   }
 
-  // Smart Auto-Crop / Auto-Cut Logic (Aspect Fill to 1013x638)
-  function loadCard(file, ctx, callback) {
+  // Cropper Variables
+  let cropper = null;
+  let currentTarget = null;
+  const cropModal = document.getElementById('cropModal');
+  const imageToCrop = document.getElementById('imageToCrop');
+  const cropSaveBtn = document.getElementById('cropSaveBtn');
+  const cropCancelBtn = document.getElementById('cropCancelBtn');
+
+  function openCropper(file, target) {
+    currentTarget = target;
     const reader = new FileReader();
     reader.onload = function(e) {
-      const img = new Image();
-      img.onload = function() {
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, CARD_W, CARD_H);
+      imageToCrop.src = e.target.result;
+      cropModal.style.display = 'flex';
 
-        const targetAspect = CARD_W / CARD_H; // 1013 / 638 ≈ 1.5877
-        const imgAspect = img.width / img.height;
+      if (cropper) cropper.destroy();
 
-        let srcX = 0, srcY = 0, srcW = img.width, srcH = img.height;
-
-        if (imgAspect > targetAspect) {
-          // Source image is wider -> crop sides evenly
-          srcW = img.height * targetAspect;
-          srcX = (img.width - srcW) / 2;
-        } else {
-          // Source image is taller -> crop top/bottom evenly
-          srcH = img.width / targetAspect;
-          srcY = (img.height - srcH) / 2;
-        }
-
-        // Draw cropped portion directly onto 1013x638 canvas without distortion
-        ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, CARD_W, CARD_H);
-        callback();
-      };
-      img.src = e.target.result;
+      cropper = new Cropper(imageToCrop, {
+        aspectRatio: CARD_W / CARD_H, // 1013 / 638 ratio lock
+        viewMode: 1,
+        autoCropArea: 0.95,
+        responsive: true
+      });
     };
     reader.readAsDataURL(file);
   }
@@ -482,20 +522,54 @@
   card1Input.addEventListener('change', (e) => {
     if (!e.target.files[0]) return;
     file1Name.innerText = e.target.files[0].name;
-    loadCard(e.target.files[0], ctx1, () => {
-      img1Loaded = true;
-      if (img1Loaded && img2Loaded) mergeBtn.disabled = false;
-    });
+    openCropper(e.target.files[0], 1);
   });
 
   card2Input.addEventListener('change', (e) => {
     if (!e.target.files[0]) return;
     file2Name.innerText = e.target.files[0].name;
-    loadCard(e.target.files[0], ctx2, () => {
-      img2Loaded = true;
-      if (img1Loaded && img2Loaded) mergeBtn.disabled = false;
-    });
+    openCropper(e.target.files[0], 2);
   });
+
+  cropSaveBtn.addEventListener('click', () => {
+    if (!cropper) return;
+
+    // Get exact 1013x638 cropped canvas
+    const croppedCanvas = cropper.getCroppedCanvas({
+      width: CARD_W,
+      height: CARD_H,
+      imageSmoothingEnabled: true,
+      imageSmoothingQuality: 'high'
+    });
+
+    if (currentTarget === 1) {
+      ctx1.clearRect(0, 0, CARD_W, CARD_H);
+      ctx1.drawImage(croppedCanvas, 0, 0);
+      img1Loaded = true;
+    } else if (currentTarget === 2) {
+      ctx2.clearRect(0, 0, CARD_W, CARD_H);
+      ctx2.drawImage(croppedCanvas, 0, 0);
+      img2Loaded = true;
+    }
+
+    if (img1Loaded && img2Loaded) {
+      mergeBtn.disabled = false;
+    }
+
+    closeCropper();
+  });
+
+  cropCancelBtn.addEventListener('click', closeCropper);
+
+  function closeCropper() {
+    cropModal.style.display = 'none';
+    if (cropper) {
+      cropper.destroy();
+      cropper = null;
+    }
+    card1Input.value = '';
+    card2Input.value = '';
+  }
 
   mergeBtn.addEventListener('click', () => {
     a4Ctx.fillStyle = '#ffffff';
