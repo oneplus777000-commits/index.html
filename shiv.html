@@ -33,12 +33,26 @@
     body { 
       background: var(--bg-gradient); 
       min-height: 100vh;
-      padding: 20px 10px; 
+      padding: 30px 10px; 
       display: flex; 
       flex-direction: column; 
       align-items: center; 
       justify-content: center;
       color: var(--text-main);
+    }
+
+    /* Main Branding Heading */
+    .portal-main-heading {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #38bdf8 0%, #a855f7 50%, #f43f5e 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 25px;
+      text-align: center;
+      text-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
     }
 
     /* Login & Password Box Styling */
@@ -301,6 +315,11 @@
   </style>
 </head>
 <body>
+
+<!-- ID CARD PRINT PORTAL BY ONEPLUS Heading -->
+<div class="portal-main-heading">
+  ID CARD PRINT PORTAL BY ONEPLUS
+</div>
 
 <!-- 1. Login Screen -->
 <div id="loginScreen" class="auth-box">
