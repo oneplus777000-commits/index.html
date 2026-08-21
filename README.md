@@ -3,16 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Card Generator & Document Editor by SHIV BHAVSAR</title>
+  <title>5 Card Generator System by SHIV BHAVSAR</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
   
-  <!-- Fabric.js for Interactive Object Drag/Edit -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
   <!-- jsPDF Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <!-- Cropper.js -->
+
+  <!-- Cropper.js for Manual Crop -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
@@ -103,7 +102,7 @@
     #mainApp {
       display: none;
       width: 100%;
-      max-width: 1150px;
+      max-width: 1100px;
     }
 
     .container { 
@@ -111,7 +110,7 @@
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid var(--border-color);
-      padding: 25px 20px; 
+      padding: 30px 20px; 
       border-radius: 20px; 
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4); 
       width: 100%; 
@@ -138,90 +137,76 @@
       -webkit-text-fill-color: transparent;
       font-size: 26px; 
       font-weight: 700;
-    }
-    
-    .upload-section { 
-      display: flex; 
-      gap: 15px; 
-      justify-content: center; 
-      margin: 20px 0; 
-      flex-wrap: wrap; 
+      margin-bottom: 4px;
     }
 
-    .upload-box { 
-      border: 2px dashed rgba(56, 189, 248, 0.4); 
-      padding: 15px; 
-      border-radius: 12px; 
-      cursor: pointer; 
-      background: rgba(15, 23, 42, 0.6); 
-      flex: 1; 
-      min-width: 260px; 
+    .card-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      background: rgba(15, 23, 42, 0.6);
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      border: 1px solid var(--border-color);
+      flex-wrap: wrap;
+    }
+
+    .card-row-title {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--accent-blue);
+      min-width: 120px;
+      text-align: left;
+    }
+
+    .upload-pair {
+      display: flex;
+      gap: 10px;
+      flex: 1;
+      min-width: 280px;
+      flex-wrap: wrap;
+    }
+
+    .upload-btn-box {
+      border: 1px dashed rgba(56, 189, 248, 0.4);
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      background: rgba(15, 23, 42, 0.8);
+      flex: 1;
+      min-width: 130px;
+      font-size: 12px;
+      text-align: center;
+      transition: 0.2s;
+    }
+
+    .upload-btn-box:hover {
+      border-color: var(--accent-blue);
+      background: rgba(56, 189, 248, 0.1);
     }
 
     input[type="file"] { display: none; }
 
-    /* Custom Toolbar for Editing */
-    .editor-toolbar {
+    .mini-preview {
       display: flex;
-      gap: 10px;
-      justify-content: center;
-      align-items: center;
-      background: rgba(15, 23, 42, 0.9);
-      padding: 12px;
-      border-radius: 12px;
-      border: 1px solid var(--border-color);
-      margin-bottom: 20px;
-      flex-wrap: wrap;
+      gap: 8px;
     }
 
-    .tool-btn {
-      padding: 8px 14px;
-      background: #334155;
-      color: #fff;
-      font-size: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 500;
+    .mini-canvas {
+      width: 80px;
+      height: 50px;
+      background: #fff;
+      border-radius: 4px;
+      border: 1px solid #475569;
     }
 
-    .tool-btn:hover { background: #475569; }
-
-    .preview-container { 
-      display: flex; 
-      justify-content: center; 
-      gap: 20px; 
-      margin: 15px 0; 
-      flex-wrap: wrap; 
-    }
-
-    .canvas-card-box { 
-      border: 1px solid var(--border-color); 
-      padding: 10px; 
-      background: rgba(15, 23, 42, 0.9); 
-      border-radius: 12px; 
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .canvas-card-box h4 { 
-      font-size: 12px; 
-      color: var(--text-muted); 
-      margin-bottom: 8px; 
-    }
-
-    .canvas-container {
-      border-radius: 6px;
-      overflow: hidden;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    }
-    
     .btn-group { 
       display: flex; 
       gap: 15px; 
       justify-content: center; 
-      margin-top: 20px; 
+      margin-top: 25px; 
       flex-wrap: wrap; 
     }
 
@@ -233,6 +218,12 @@
       border-radius: 10px; 
       cursor: pointer; 
       color: #fff;
+      transition: 0.3s;
+    }
+
+    .action-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
     }
 
     .btn-merge { background: var(--btn-merge); }
@@ -244,7 +235,7 @@
       cursor: not-allowed; 
     }
 
-    /* Modal */
+    /* Modal for Crop */
     #cropModal {
       display: none;
       position: fixed;
@@ -279,7 +270,7 @@
 <div id="loginScreen">
   <div class="badge">Protected Access</div>
   <h2 style="font-size: 22px; margin-bottom: 6px;">Sign In</h2>
-  <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">Card Generator & Editor by Shiv Bhavsar</p>
+  <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">5 Card Generator System by Shiv Bhavsar</p>
 
   <input type="email" id="loginEmail" class="login-input" placeholder="ईमेल आईडी दर्ज करें">
   <input type="password" id="loginPass" class="login-input" placeholder="पासवर्ड दर्ज करें">
@@ -291,57 +282,23 @@
 <div id="mainApp">
   <div class="container">
     <button id="logoutBtn" class="logout-btn">🔒 Logout</button>
-    <div class="badge">Interactive Canvas Editor</div>
-    <h1>Card Generator & Live Editor</h1>
+    <div class="badge">5 Cards in 1 A4 Sheet</div>
+    <h1>5 Card Generator System</h1>
     <div style="font-size: 13px; color: var(--accent-purple); font-weight: 600; margin-bottom: 4px;">by Shiv Bhavsar</div>
-    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">डॉक्युमेंट अपलोड करें, कुछ भी नया जोड़ें/एडिट करें और सीधे A4 PDF निकालें।</p>
+    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">5 अलग-अलग कार्ड्स अपलोड करें और सीधे 1 A4 पेपर PDF में डाउनलोड करें।</p>
 
-    <div class="upload-section">
-      <label class="upload-box" for="card1Input">
-        <strong>📁 Front Side (Card 1)</strong>
-        <div id="file1Name" style="font-size: 12px; color: var(--text-muted);">फ़ोटो चुनें व एडिट करें</div>
-      </label>
-      <input type="file" id="card1Input" accept="image/*">
-
-      <label class="upload-box" for="card2Input">
-        <strong>📁 Back Side (Card 2)</strong>
-        <div id="file2Name" style="font-size: 12px; color: var(--text-muted);">फ़ोटो चुनें व एडिट करें</div>
-      </label>
-      <input type="file" id="card2Input" accept="image/*">
-    </div>
-
-    <!-- Custom Edit Tools -->
-    <div class="editor-toolbar">
-      <span style="font-size: 12px; color: var(--accent-blue); font-weight:600;">🛠️ एडिट टूल्स:</span>
-      <button class="tool-btn" id="addTextBtn">➕ नया टेक्स्ट जोड़ें</button>
-      <button class="tool-btn" id="addWhiteBoxBtn">⬜ व्हाइट पैच (इरेज़र/व्हाइटनर)</button>
-      <label class="tool-btn" style="cursor:pointer;" for="overlayImgInput">
-        🖼️ ऊपर फ़ोटो/लोगो जोड़ें
-      </label>
-      <input type="file" id="overlayImgInput" accept="image/*">
-      <button class="tool-btn" id="deleteSelectedBtn" style="background:#ef4444;">🗑️ सिलेक्टेड डिलीट करें</button>
-    </div>
-
-    <div class="preview-container">
-      <div class="canvas-card-box">
-        <h4>Front Card (1013x638 - Editable)</h4>
-        <canvas id="fCanvas1" width="506" height="319"></canvas>
-      </div>
-      <div class="canvas-card-box">
-        <h4>Back Card (1013x638 - Editable)</h4>
-        <canvas id="fCanvas2" width="506" height="319"></canvas>
-      </div>
-    </div>
+    <!-- 5 Upload Sections -->
+    <div id="cardsList"></div>
 
     <div class="btn-group">
-      <button id="mergeBtn" class="action-btn btn-merge" disabled>⚡ Merge Cards (Zero Gap)</button>
+      <button id="mergeBtn" class="action-btn btn-merge">⚡ Merge All to 1 A4 Sheet</button>
     </div>
 
     <div style="margin-top: 30px; border-top: 1px solid var(--border-color); padding-top: 20px;">
       <h3 style="font-size: 16px; color: var(--accent-blue); margin-bottom: 6px;">A4 Sheet Preview (2480 × 3508 px)</h3>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">एडिट किया हुआ डॉक्युमेंट A4 शीट पर सीधे PDF डाउनलोड के लिए तैयार है।</p>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">5 कार्ड्स एक ही शीट पर प्रिंट के लिए व्यवस्थित हो चुके हैं।</p>
       
-      <div style="display:inline-block; max-width: 250px; background:#fff; border-radius:6px; overflow:hidden;">
+      <div style="display:inline-block; max-width: 260px; background:#fff; border-radius:6px; overflow:hidden; border: 1px solid #475569;">
         <canvas id="a4Canvas" width="2480" height="3508" style="width: 100%; display:block;"></canvas>
       </div>
 
@@ -363,7 +320,7 @@
     <img id="imageToCrop" src="">
   </div>
   <div class="btn-group">
-    <button id="cropSaveBtn" class="action-btn btn-download">✂️ Set in Editor (1013x638)</button>
+    <button id="cropSaveBtn" class="action-btn btn-download">✂️ Crop & Set (1013x638)</button>
     <button id="cropCancelBtn" class="action-btn" style="background:#ef4444;">रद्द करें</button>
   </div>
 </div>
@@ -384,28 +341,13 @@
   loginScreen.style.display = 'block';
   mainApp.style.display = 'none';
 
-  let fabric1, fabric2;
-  let activeFabric = null;
-
-  function initFabric() {
-    fabric1 = new fabric.Canvas('fCanvas1', { selection: true, preserveObjectStacking: true });
-    fabric2 = new fabric.Canvas('fCanvas2', { selection: true, preserveObjectStacking: true });
-
-    fabric1.setBackgroundColor('#ffffff', fabric1.renderAll.bind(fabric1));
-    fabric2.setBackgroundColor('#ffffff', fabric2.renderAll.bind(fabric2));
-
-    fabric1.on('mouse:down', () => activeFabric = fabric1);
-    fabric2.on('mouse:down', () => activeFabric = fabric2);
-    activeFabric = fabric1;
-  }
-
   function handleLogin() {
     if (loginEmail.value.trim() === AUTH_EMAIL && loginPass.value.trim() === AUTH_PASS) {
       sessionStorage.setItem('isLoggedIn', 'true');
       loginScreen.style.display = 'none';
       mainApp.style.display = 'block';
       errorMsg.style.display = 'none';
-      setTimeout(initFabric, 100);
+      initApp();
     } else {
       errorMsg.style.display = 'block';
     }
@@ -420,22 +362,89 @@
     loginScreen.style.display = 'block';
   });
 
-  // Cropper Setup
-  let cropper = null, currentTarget = 1;
+  const CARD_W = 1013;
+  const CARD_H = 638;
+  const A4_W = 2480;
+  const A4_H = 3508;
+
+  const cardSlots = [
+    { front: null, back: null },
+    { front: null, back: null },
+    { front: null, back: null },
+    { front: null, back: null },
+    { front: null, back: null }
+  ];
+
+  let currentSlot = 0;
+  let currentSide = 'front';
+  let cropper = null;
+
   const cropModal = document.getElementById('cropModal');
   const imageToCrop = document.getElementById('imageToCrop');
   const cropSaveBtn = document.getElementById('cropSaveBtn');
   const cropCancelBtn = document.getElementById('cropCancelBtn');
 
-  function openCropper(file, target) {
-    currentTarget = target;
+  function initApp() {
+    const cardsList = document.getElementById('cardsList');
+    cardsList.innerHTML = '';
+
+    for (let i = 0; i < 5; i++) {
+      const row = document.createElement('div');
+      row.className = 'card-row';
+      row.innerHTML = `
+        <div class="card-row-title">📄 Card ${i + 1}</div>
+        <div class="upload-pair">
+          <label class="upload-btn-box" for="input_${i}_f">
+            <strong>📁 Front Side</strong>
+            <div id="label_${i}_f" style="color:#94a3b8; font-size:11px;">अपलोड करें</div>
+          </label>
+          <input type="file" id="input_${i}_f" accept="image/*">
+
+          <label class="upload-btn-box" for="input_${i}_b">
+            <strong>📁 Back Side</strong>
+            <div id="label_${i}_b" style="color:#94a3b8; font-size:11px;">अपलोड करें</div>
+          </label>
+          <input type="file" id="input_${i}_b" accept="image/*">
+        </div>
+        <div class="mini-preview">
+          <canvas id="mini_${i}_f" class="mini-canvas" width="1013" height="638"></canvas>
+          <canvas id="mini_${i}_b" class="mini-canvas" width="1013" height="638"></canvas>
+        </div>
+      `;
+      cardsList.appendChild(row);
+
+      document.getElementById(`input_${i}_f`).addEventListener('change', (e) => {
+        if (e.target.files[0]) openCropper(e.target.files[0], i, 'front');
+      });
+      document.getElementById(`input_${i}_b`).addEventListener('change', (e) => {
+        if (e.target.files[0]) openCropper(e.target.files[0], i, 'back');
+      });
+    }
+
+    initA4Canvas();
+  }
+
+  function initA4Canvas() {
+    const a4Canvas = document.getElementById('a4Canvas');
+    const ctx = a4Canvas.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, A4_W, A4_H);
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = 'bold 60px Poppins, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('A4 Print Sheet (5 Cards Layout)', A4_W / 2, A4_H / 2);
+  }
+
+  function openCropper(file, slotIndex, side) {
+    currentSlot = slotIndex;
+    currentSide = side;
     const reader = new FileReader();
     reader.onload = function(e) {
       imageToCrop.src = e.target.result;
       cropModal.style.display = 'flex';
       if (cropper) cropper.destroy();
       cropper = new Cropper(imageToCrop, {
-        aspectRatio: 1013 / 638,
+        aspectRatio: CARD_W / CARD_H,
         viewMode: 1,
         autoCropArea: 0.98
       });
@@ -443,136 +452,97 @@
     reader.readAsDataURL(file);
   }
 
-  document.getElementById('card1Input').addEventListener('change', (e) => {
-    if (e.target.files[0]) openCropper(e.target.files[0], 1);
-  });
-
-  document.getElementById('card2Input').addEventListener('change', (e) => {
-    if (e.target.files[0]) openCropper(e.target.files[0], 2);
-  });
-
-  let img1Loaded = false, img2Loaded = false;
-
   cropSaveBtn.addEventListener('click', () => {
     if (!cropper) return;
-    const croppedDataUrl = cropper.getCroppedCanvas({ width: 1013, height: 638 }).toDataURL('image/png');
-    
-    fabric.Image.fromURL(croppedDataUrl, (img) => {
-      img.scaleToWidth(506);
-      img.scaleToHeight(319);
-      img.set({ selectable: false, evented: false });
-
-      if (currentTarget === 1) {
-        fabric1.clear();
-        fabric1.add(img);
-        fabric1.sendToBack(img);
-        img1Loaded = true;
-      } else {
-        fabric2.clear();
-        fabric2.add(img);
-        fabric2.sendToBack(img);
-        img2Loaded = true;
-      }
-
-      if (img1Loaded && img2Loaded) document.getElementById('mergeBtn').disabled = false;
+    const croppedCanvas = cropper.getCroppedCanvas({
+      width: CARD_W,
+      height: CARD_H,
+      imageSmoothingEnabled: true,
+      imageSmoothingQuality: 'high'
     });
 
+    const miniCanvas = document.getElementById(`mini_${currentSlot}_${currentSide === 'front' ? 'f' : 'b'}`);
+    const miniCtx = miniCanvas.getContext('2d');
+    miniCtx.drawImage(croppedCanvas, 0, 0);
+
+    cardSlots[currentSlot][currentSide] = croppedCanvas;
+    document.getElementById(`label_${currentSlot}_${currentSide === 'front' ? 'f' : 'b'}`).innerText = '✅ Loaded';
+
+    closeCropper();
+  });
+
+  cropCancelBtn.addEventListener('click', closeCropper);
+
+  function closeCropper() {
     cropModal.style.display = 'none';
-    cropper.destroy();
-    cropper = null;
-  });
-
-  cropCancelBtn.addEventListener('click', () => {
-    cropModal.style.display = 'none';
-    if (cropper) cropper.destroy();
-  });
-
-  // Tools: Add Text, White Patch, Overlay Image & Delete
-  document.getElementById('addTextBtn').addEventListener('click', () => {
-    if (!activeFabric) return;
-    const text = new fabric.IText('यहाँ लिखें...', {
-      left: 50, top: 50,
-      fontFamily: 'Poppins',
-      fontSize: 16,
-      fill: '#000000',
-      editable: true
-    });
-    activeFabric.add(text);
-    activeFabric.setActiveObject(text);
-  });
-
-  document.getElementById('addWhiteBoxBtn').addEventListener('click', () => {
-    if (!activeFabric) return;
-    const rect = new fabric.Rect({
-      left: 60, top: 60,
-      width: 120, height: 35,
-      fill: '#ffffff',
-      stroke: '#dddddd',
-      strokeWidth: 1
-    });
-    activeFabric.add(rect);
-    activeFabric.setActiveObject(rect);
-  });
-
-  document.getElementById('overlayImgInput').addEventListener('change', (e) => {
-    if (!e.target.files[0] || !activeFabric) return;
-    const reader = new FileReader();
-    reader.onload = function(evt) {
-      fabric.Image.fromURL(evt.target.result, (img) => {
-        img.scaleToWidth(100);
-        img.set({ left: 80, top: 80 });
-        activeFabric.add(img);
-        activeFabric.setActiveObject(img);
-      });
-    };
-    reader.readAsDataURL(e.target.files[0]);
-  });
-
-  document.getElementById('deleteSelectedBtn').addEventListener('click', () => {
-    if (!activeFabric) return;
-    const activeObj = activeFabric.getActiveObject();
-    if (activeObj && activeObj.selectable !== false) {
-      activeFabric.remove(activeObj);
+    if (cropper) {
+      cropper.destroy();
+      cropper = null;
     }
-  });
+  }
 
-  // Merge to A4 Logic
-  const a4Canvas = document.getElementById('a4Canvas');
-  const a4Ctx = a4Canvas.getContext('2d');
-  const CARD_W = 1013, CARD_H = 638, A4_W = 2480, A4_H = 3508;
-
+  // Merge All 5 Cards onto Single A4 Sheet
   document.getElementById('mergeBtn').addEventListener('click', () => {
+    const a4Canvas = document.getElementById('a4Canvas');
+    const a4Ctx = a4Canvas.getContext('2d');
+
     a4Ctx.fillStyle = '#ffffff';
     a4Ctx.fillRect(0, 0, A4_W, A4_H);
 
-    // Export High-Res (Multiplier 2 to reach 1013x638)
-    const imgData1 = fabric1.toDataURL({ format: 'png', multiplier: 2 });
-    const imgData2 = fabric2.toDataURL({ format: 'png', multiplier: 2 });
+    const totalWidth = CARD_W * 2;
+    const startX = (A4_W - totalWidth) / 2;
+    
+    // Vertical spacing for 5 cards: Top margin 70px, gap 50px between rows
+    const startY = 70;
+    const verticalGap = 50;
 
-    const img1 = new Image();
-    img1.onload = () => {
-      const img2 = new Image();
-      img2.onload = () => {
-        const totalCardsWidth = CARD_W * 2;
-        const startX = (A4_W - totalCardsWidth) / 2;
-        const startY = 150;
+    let hasAnyCard = false;
 
-        a4Ctx.drawImage(img1, startX, startY, CARD_W, CARD_H);
-        a4Ctx.drawImage(img2, startX + CARD_W, startY, CARD_W, CARD_H);
+    for (let i = 0; i < 5; i++) {
+      const currentY = startY + (i * (CARD_H + verticalGap));
+      
+      const frontCanvas = cardSlots[i].front;
+      const backCanvas = cardSlots[i].back;
 
-        document.getElementById('downloadPdfBtn').disabled = false;
-      };
-      img2.src = imgData2;
-    };
-    img1.src = imgData1;
+      if (frontCanvas || backCanvas) hasAnyCard = true;
+
+      // Draw Front Card (Left)
+      if (frontCanvas) {
+        a4Ctx.drawImage(frontCanvas, startX, currentY, CARD_W, CARD_H);
+      } else {
+        // Empty slot placeholder
+        a4Ctx.strokeStyle = '#e2e8f0';
+        a4Ctx.strokeRect(startX, currentY, CARD_W, CARD_H);
+      }
+
+      // Draw Back Card (Right - Zero Gap)
+      if (backCanvas) {
+        a4Ctx.drawImage(backCanvas, startX + CARD_W, currentY, CARD_W, CARD_H);
+      } else {
+        // Empty slot placeholder
+        a4Ctx.strokeStyle = '#e2e8f0';
+        a4Ctx.strokeRect(startX + CARD_W, currentY, CARD_W, CARD_H);
+      }
+    }
+
+    if (hasAnyCard) {
+      document.getElementById('downloadPdfBtn').disabled = false;
+    }
   });
 
+  // Direct High Quality A4 PDF Generator
   document.getElementById('downloadPdfBtn').addEventListener('click', () => {
     const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4'
+    });
+
+    const a4Canvas = document.getElementById('a4Canvas');
     const imgData = a4Canvas.toDataURL('image/jpeg', 1.0);
     pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
-    pdf.save('Edited_A4_Print_Cards.pdf');
+    pdf.save('5_Cards_A4_Sheet.pdf');
   });
 </script>
 
