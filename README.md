@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
   
-  <!-- jsPDF Library -->
+  <!-- jsPDF Library for Direct High-Quality PDF Generation -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <style>
@@ -19,7 +19,6 @@
       --accent-purple: #818cf8;
       --btn-merge: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
       --btn-download: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      --btn-print: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --border-color: rgba(255, 255, 255, 0.1);
@@ -86,7 +85,7 @@
     .login-btn {
       width: 100%;
       padding: 13px;
-      background: var(--btn-print);
+      background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
       color: #fff;
       font-weight: 600;
       border: none;
@@ -275,7 +274,6 @@
 
     .btn-merge { background: var(--btn-merge); }
     .btn-download { background: var(--btn-download); }
-    .btn-print { background: var(--btn-print); }
 
     .action-btn:disabled { 
       background: #334155; 
@@ -308,10 +306,10 @@
 <div id="mainApp">
   <div class="container">
     <button id="logoutBtn" class="logout-btn">🔒 Logout</button>
-    <div class="badge">Direct PDF & Print Tool</div>
+    <div class="badge">Direct PDF Tool</div>
     <h1>Card Generator System</h1>
     <div style="font-size: 13px; color: var(--accent-purple); font-weight: 600; margin-bottom: 4px;">by Shiv Bhavsar</div>
-    <p class="subtitle">1013 × 638 Auto-Fit • Zero Gap Merge • Direct A4 PDF / Print</p>
+    <p class="subtitle">1013 × 638 Auto-Fit • Zero Gap Merge • Direct A4 PDF</p>
 
     <div class="upload-section">
       <label class="upload-box" for="card1Input">
@@ -344,7 +342,7 @@
 
     <div class="merged-section">
       <h3>A4 Print Sheet Preview (2480 × 3508 px)</h3>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">बिना किसी गैप के दोनों कार्ड A4 शीट पर सीधे PDF व प्रिंट के लिए तैयार हैं।</p>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">बिना किसी गैप के दोनों कार्ड A4 शीट पर सीधे PDF डाउनलोड के लिए तैयार हैं।</p>
       
       <div class="preview-box" style="display:inline-block; max-width: 260px;">
         <canvas id="a4Canvas" width="2480" height="3508" style="width: 100%; border: 1px solid rgba(255,255,255,0.2);"></canvas>
@@ -352,7 +350,6 @@
 
       <div class="btn-group">
         <button id="downloadPdfBtn" class="action-btn btn-download" disabled>📥 Direct A4 PDF Download</button>
-        <button id="printBtn" class="action-btn btn-print" disabled>🖨️ Direct Print A4</button>
       </div>
     </div>
 
@@ -422,7 +419,6 @@
 
   const mergeBtn = document.getElementById('mergeBtn');
   const downloadPdfBtn = document.getElementById('downloadPdfBtn');
-  const printBtn = document.getElementById('printBtn');
 
   const CARD_W = 1013;
   const CARD_H = 638;
@@ -503,7 +499,6 @@
     a4Ctx.drawImage(canvas2, startX + CARD_W, startY);
 
     downloadPdfBtn.disabled = false;
-    printBtn.disabled = false;
   });
 
   downloadPdfBtn.addEventListener('click', () => {
@@ -517,40 +512,6 @@
     const imgData = a4Canvas.toDataURL('image/jpeg', 1.0);
     pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
     pdf.save('A4_Print_Card_Sheet.pdf');
-  });
-
-  // Pixel-Perfect A4 Direct Print Engine
-  printBtn.addEventListener('click', () => {
-    const imgData = a4Canvas.toDataURL('image/png', 1.0);
-    const printFrame = document.createElement('iframe');
-    printFrame.style.position = 'fixed';
-    printFrame.style.right = '0';
-    printFrame.style.bottom = '0';
-    printFrame.style.width = '0';
-    printFrame.style.height = '0';
-    printFrame.style.border = '0';
-
-    document.body.appendChild(printFrame);
-
-    const frameDoc = printFrame.contentWindow.document;
-    frameDoc.open();
-    frameDoc.write(`
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>Print</title>
-        <style>
-          @page { size: A4 portrait; margin: 0; }
-          html, body { margin: 0; padding: 0; width: 210mm; height: 297mm; }
-          img { width: 210mm; height: 297mm; display: block; object-fit: contain; }
-        </style>
-      </head>
-      <body>
-        <img src="${imgData}" onload="window.print(); window.onafterprint = function(){ parent.document.body.removeChild(window.frameElement); };">
-      </body>
-      </html>
-    `);
-    frameDoc.close();
   });
 </script>
 
