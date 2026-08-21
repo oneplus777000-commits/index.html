@@ -341,7 +341,7 @@
     </div>
 
     <div class="merged-section">
-      <h3>A4 Print Sheet Preview (2480 × 3508 px)</h3>
+      <h3>A4 Sheet Preview (2480 × 3508 px)</h3>
       <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">बिना किसी गैप के दोनों कार्ड A4 शीट पर सीधे PDF डाउनलोड के लिए तैयार हैं।</p>
       
       <div class="preview-box" style="display:inline-block; max-width: 260px;">
@@ -443,7 +443,7 @@
     a4Ctx.fillStyle = '#94a3b8';
     a4Ctx.font = 'bold 60px Poppins, sans-serif';
     a4Ctx.textAlign = 'center';
-    a4Ctx.fillText('A4 Print Canvas (2480 x 3508)', A4_W / 2, A4_H / 2);
+    a4Ctx.fillText('A4 Sheet Canvas (2480 x 3508)', A4_W / 2, A4_H / 2);
   }
 
   function loadCard(file, ctx, callback) {
