@@ -1,5 +1,5 @@
-<!ID CARD PRINT PORTAL BY ONEPLUS html>
-<html lang="Portal">
+<!DOCTYPE html>
+<html lang="hi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -322,7 +322,7 @@
 <div id="loginScreen" class="auth-box">
   <div class="badge">Protected Access</div>
   <h2 style="font-size: 22px; margin-bottom: 6px;">Sign In</h2>
-  <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">Card Generator System by Shiv Bhavsar</p>
+  <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">ID Card Generator System by ONEPLUS</p>
 
   <input type="email" id="loginEmail" class="login-input" placeholder="ईमेल आईडी दर्ज करें">
   <input type="password" id="loginPass" class="login-input" placeholder="पासवर्ड दर्ज करें">
@@ -358,7 +358,7 @@
     <button id="logoutBtn" class="logout-btn">🔒 Logout</button>
     <div class="badge" style="margin-top: 10px;">2.5mm Gap • Broad Black Border • 5 Cards</div>
     <h1>Card Generator System</h1>
-    <div style="font-size: 13px; color: var(--accent-purple); font-weight: 600; margin-bottom: 4px;">by Shiv Bhavsar</div>
+    <div style="font-size: 13px; color: var(--accent-purple); font-weight: 600; margin-bottom: 4px;">by ONEPLUS</div>
     <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">एक-एक करके कार्ड्स जोड़ें। दोनों कार्ड के बीच 2.5 mm गैप और Broad Black Border आएगी।</p>
     
     <div id="slotCounter" class="slot-counter-badge">Cards on Page: 0 / 5 (Next Slot: #1)</div>
@@ -407,7 +407,7 @@
     </div>
 
     <footer style="margin-top: 25px; font-size: 12px; color: var(--text-muted);">
-      Designed & Developed by <strong>Shiv Bhavsar</strong>
+      Designed & Developed by <strong>ONEPLUS</strong>
     </footer>
   </div>
 </div>
