@@ -41,7 +41,6 @@
       color: var(--text-main);
     }
 
-    /* Top Branding Header */
     .portal-main-heading {
       font-size: 26px;
       font-weight: 800;
@@ -55,7 +54,6 @@
       text-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
     }
 
-    /* Login & Password Box Styling */
     .auth-box {
       background: var(--card-bg);
       backdrop-filter: blur(20px);
@@ -140,9 +138,7 @@
       transition: 0.2s;
     }
 
-    .auth-link:hover {
-      color: #fff;
-    }
+    .auth-link:hover { color: #fff; }
 
     .error-msg {
       color: #ef4444;
@@ -151,7 +147,6 @@
       display: none;
     }
 
-    /* Main App Styling */
     #mainApp {
       display: none;
       width: 100%;
@@ -288,7 +283,6 @@
       box-shadow: none;
     }
 
-    /* Modal for Crop */
     #cropModal {
       display: none;
       position: fixed;
@@ -369,7 +363,6 @@
     
     <div id="slotCounter" class="slot-counter-badge">Cards on Page: 0 / 5 (Next Slot: #1)</div>
 
-    <!-- Upload Current Card Pair -->
     <div class="upload-section">
       <label class="upload-box" for="card1Input">
         <strong style="display:block; font-size:14px; margin-bottom:4px;">📁 Current Front Side</strong>
@@ -400,7 +393,6 @@
       <button id="resetPageBtn" class="action-btn btn-reset">🔄 Clear A4 Page</button>
     </div>
 
-    <!-- Accumulated A4 Canvas Section -->
     <div style="margin-top: 30px; border-top: 1px solid var(--border-color); padding-top: 20px;">
       <h3 style="font-size: 16px; color: var(--accent-blue); margin-bottom: 6px;">A4 Sheet Preview (2480 × 3508 px)</h3>
       <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">2.5 mm गैप और ब्रॉड ब्लैक बॉर्डर के साथ तैयार A4 शीट प्रीव्यू:</p>
@@ -711,14 +703,11 @@
 
     const currentY = startY + (addedCardsCount * (CARD_H + verticalGap));
 
-    // 1. Front Card
     a4Ctx.drawImage(canvas1, startX, currentY, CARD_W, CARD_H);
     
-    // 2. Back Card (2.5mm / 30px Gap)
     const backCardX = startX + CARD_W + GAP_2_5MM_PX;
     a4Ctx.drawImage(canvas2, backCardX, currentY, CARD_W, CARD_H);
 
-    // 3. Broad Black Border (6px)
     a4Ctx.strokeStyle = '#000000';
     a4Ctx.lineWidth = 6;
     a4Ctx.strokeRect(startX, currentY, CARD_W, CARD_H);
