@@ -130,18 +130,36 @@
       position: relative;
     }
 
-    .logout-btn {
+    .top-actions {
       position: absolute;
       top: 15px;
       right: 15px;
-      background: rgba(239, 68, 68, 0.2);
-      border: 1px solid rgba(239, 68, 68, 0.4);
-      color: #fca5a5;
-      padding: 6px 14px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .top-btn {
+      padding: 6px 12px;
       font-size: 12px;
       border-radius: 8px;
       cursor: pointer;
+      border: 1px solid;
+      transition: 0.2s;
     }
+
+    .pwd-btn {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: rgba(56, 189, 248, 0.4);
+      color: var(--accent-blue);
+    }
+    .pwd-btn:hover { background: rgba(56, 189, 248, 0.3); }
+
+    .logout-btn {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+    .logout-btn:hover { background: rgba(239, 68, 68, 0.4); }
 
     h1 { 
       background: linear-gradient(to right, #38bdf8, #a855f7, #ec4899);
@@ -245,8 +263,8 @@
       box-shadow: none;
     }
 
-    /* Modal for Crop */
-    #cropModal {
+    /* Modal Layouts */
+    .modal-overlay {
       display: none;
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -272,6 +290,16 @@
       max-height: 70vh;
       display: block;
     }
+
+    .pwd-modal-content {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 30px;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 380px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -291,8 +319,12 @@
 <!-- Main App -->
 <div id="mainApp">
   <div class="container">
-    <button id="logoutBtn" class="logout-btn">🔒 Logout</button>
-    <div class="badge">2.5mm Gap • Broad Black Border • 5 Cards</div>
+    <div class="top-actions">
+      <button id="openPwdBtn" class="top-btn pwd-btn">🔑 Change Password</button>
+      <button id="logoutBtn" class="top-btn logout-btn">🔒 Logout</button>
+    </div>
+    
+    <div class="badge" style="margin-top: 10px;">2.5mm Gap • Broad Black Border • 5 Cards</div>
     <h1>Card Generator System</h1>
     <div style="font-size: 13px; color: var(--accent-purple); font-weight: 600; margin-bottom: 4px;">by Shiv Bhavsar</div>
     <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">एक-एक करके कार्ड्स जोड़ें। दोनों कार्ड के बीच 2.5 mm गैप और Broad Black Border आएगी।</p>
@@ -350,8 +382,25 @@
   </div>
 </div>
 
+<!-- Change Password Modal -->
+<div id="pwdModal" class="modal-overlay">
+  <div class="pwd-modal-content">
+    <h3 style="color:var(--accent-blue); font-size:18px; margin-bottom:15px;">🔑 Change Password</h3>
+    <input type="password" id="oldPassInput" class="login-input" placeholder="पुराना पासवर्ड (Old Password)">
+    <input type="password" id="newPassInput" class="login-input" placeholder="नया पासवर्ड (New Password)">
+    <input type="password" id="confirmPassInput" class="login-input" placeholder="नया पासवर्ड कन्फर्म करें">
+    
+    <div id="pwdModalMsg" style="font-size:12px; margin-bottom:12px; display:none;"></div>
+
+    <div class="btn-group" style="margin-top:10px;">
+      <button id="saveNewPwdBtn" class="action-btn btn-download" style="padding:10px 20px;">सेव करें</button>
+      <button id="closePwdBtn" class="action-btn" style="background:#64748b; padding:10px 20px;">रद्द करें</button>
+    </div>
+  </div>
+</div>
+
 <!-- Crop Modal -->
-<div id="cropModal">
+<div id="cropModal" class="modal-overlay">
   <div style="color:#fff; margin-bottom: 10px; font-weight: 600;">कार्ड का सही हिस्सा सेलेक्ट (Crop) करें:</div>
   <div class="crop-wrapper">
     <img id="imageToCrop" src="">
@@ -364,7 +413,12 @@
 
 <script>
   const AUTH_EMAIL = "oneplus777000@gmail.com";
-  const AUTH_PASS = "Pass@123";
+  const DEFAULT_PASS = "Pass@123";
+
+  // Password Retrieval from LocalStorage
+  function getStoredPassword() {
+    return localStorage.getItem('system_auth_pwd') || DEFAULT_PASS;
+  }
 
   const loginScreen = document.getElementById('loginScreen');
   const mainApp = document.getElementById('mainApp');
@@ -379,7 +433,8 @@
   mainApp.style.display = 'none';
 
   function handleLogin() {
-    if (loginEmail.value.trim() === AUTH_EMAIL && loginPass.value.trim() === AUTH_PASS) {
+    const currentPass = getStoredPassword();
+    if (loginEmail.value.trim() === AUTH_EMAIL && loginPass.value.trim() === currentPass) {
       sessionStorage.setItem('isLoggedIn', 'true');
       loginScreen.style.display = 'none';
       mainApp.style.display = 'block';
@@ -397,13 +452,76 @@
     sessionStorage.removeItem('isLoggedIn');
     mainApp.style.display = 'none';
     loginScreen.style.display = 'block';
+    loginEmail.value = '';
+    loginPass.value = '';
   });
 
+  // Password Change Modal Logic
+  const pwdModal = document.getElementById('pwdModal');
+  const openPwdBtn = document.getElementById('openPwdBtn');
+  const closePwdBtn = document.getElementById('closePwdBtn');
+  const saveNewPwdBtn = document.getElementById('saveNewPwdBtn');
+  const oldPassInput = document.getElementById('oldPassInput');
+  const newPassInput = document.getElementById('newPassInput');
+  const confirmPassInput = document.getElementById('confirmPassInput');
+  const pwdModalMsg = document.getElementById('pwdModalMsg');
+
+  openPwdBtn.addEventListener('click', () => {
+    oldPassInput.value = '';
+    newPassInput.value = '';
+    confirmPassInput.value = '';
+    pwdModalMsg.style.display = 'none';
+    pwdModal.style.display = 'flex';
+  });
+
+  closePwdBtn.addEventListener('click', () => {
+    pwdModal.style.display = 'none';
+  });
+
+  saveNewPwdBtn.addEventListener('click', () => {
+    const oldP = oldPassInput.value.trim();
+    const newP = newPassInput.value.trim();
+    const confP = confirmPassInput.value.trim();
+    const currentActivePass = getStoredPassword();
+
+    if (oldP !== currentActivePass) {
+      pwdModalMsg.innerText = "❌ पुराना पासवर्ड गलत है!";
+      pwdModalMsg.style.color = "#ef4444";
+      pwdModalMsg.style.display = "block";
+      return;
+    }
+
+    if (newP.length < 4) {
+      pwdModalMsg.innerText = "❌ नया पासवर्ड कम से कम 4 अक्षरों का होना चाहिए!";
+      pwdModalMsg.style.color = "#ef4444";
+      pwdModalMsg.style.display = "block";
+      return;
+    }
+
+    if (newP !== confP) {
+      pwdModalMsg.innerText = "❌ नया पासवर्ड और कन्फर्म पासवर्ड मैच नहीं हो रहे!";
+      pwdModalMsg.style.color = "#ef4444";
+      pwdModalMsg.style.display = "block";
+      return;
+    }
+
+    // Save newly updated password permanently
+    localStorage.setItem('system_auth_pwd', newP);
+    pwdModalMsg.innerText = "✅ पासवर्ड सफलतापूर्वक बदल गया!";
+    pwdModalMsg.style.color = "#34d399";
+    pwdModalMsg.style.display = "block";
+
+    setTimeout(() => {
+      pwdModal.style.display = 'none';
+    }, 1200);
+  });
+
+  // Card Generator Constants & Functions
   const CARD_W = 1013;
   const CARD_H = 638;
   const A4_W = 2480;
   const A4_H = 3508;
-  const GAP_2_5MM_PX = 30; // Exact 2.5 mm gap at 300 DPI (2.5 * 11.811 ≈ 29.5px -> 30px)
+  const GAP_2_5MM_PX = 30; // Exact 2.5 mm gap at 300 DPI (2.5 * 11.811 ≈ 30px)
   const MAX_CARDS = 5;
 
   let addedCardsCount = 0;
@@ -452,17 +570,13 @@
     a4Ctx.fillStyle = '#ffffff';
     a4Ctx.fillRect(0, 0, A4_W, A4_H);
 
-    // Layout configuration with 2.5mm center gap
     const totalPairWidth = (CARD_W * 2) + GAP_2_5MM_PX;
     const startX = (A4_W - totalPairWidth) / 2;
     const startY = 45;
     const verticalGap = 45;
 
-    // Draw clean initial guide boxes for all 5 slots
     for (let i = 0; i < MAX_CARDS; i++) {
       const currentY = startY + (i * (CARD_H + verticalGap));
-      
-      // Light placeholder border
       a4Ctx.strokeStyle = '#e2e8f0';
       a4Ctx.lineWidth = 2;
       a4Ctx.strokeRect(startX, currentY, CARD_W, CARD_H);
@@ -483,7 +597,6 @@
     }
   }
 
-  // Cropper Variables
   let cropper = null;
   let currentTarget = 1;
   const cropModal = document.getElementById('cropModal');
@@ -562,7 +675,6 @@
     }
   }
 
-  // Sequentially Append Card to A4 Canvas with 2.5mm Gap & Broad Black Border
   addCardBtn.addEventListener('click', () => {
     if (addedCardsCount >= MAX_CARDS) {
       alert('यह A4 शीट भर चुकी है (अधिकतम 5 कार्ड्स)। कृपया PDF डाउनलोड करें।');
@@ -576,14 +688,14 @@
 
     const currentY = startY + (addedCardsCount * (CARD_H + verticalGap));
 
-    // 1. Draw Front Side (Left)
+    // 1. Front Card
     a4Ctx.drawImage(canvas1, startX, currentY, CARD_W, CARD_H);
     
-    // 2. Draw Back Side (Right with exact 2.5mm / 30px gap)
+    // 2. Back Card (2.5mm / 30px Gap)
     const backCardX = startX + CARD_W + GAP_2_5MM_PX;
     a4Ctx.drawImage(canvas2, backCardX, currentY, CARD_W, CARD_H);
 
-    // 3. Draw Broad Solid Black Cutting Border around both cards (6px width)
+    // 3. Broad Black Border (6px)
     a4Ctx.strokeStyle = '#000000';
     a4Ctx.lineWidth = 6;
     a4Ctx.strokeRect(startX, currentY, CARD_W, CARD_H);
@@ -603,7 +715,6 @@
     }
   });
 
-  // Direct High Quality A4 PDF Generator
   downloadPdfBtn.addEventListener('click', () => {
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({
