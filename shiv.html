@@ -401,7 +401,7 @@
 
 <script>
   // Strictly Enforced Login Details
-  const AUTH_EMAIL = "oneplus777888@gmail.com";
+  const AUTH_EMAIL = "oneplus777000@gmail.com";
   const AUTH_PASS = "Pass@123";
 
   const loginScreen = document.getElementById('loginScreen');
