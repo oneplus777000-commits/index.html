@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dual Card Merger & Formatter (1013x638)</title>
+  <title>Dual Card Auto-Formatter & A4 Print Sheet</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { background: #f0f2f5; padding: 20px; display: flex; flex-direction: column; align-items: center; }
@@ -34,28 +34,31 @@
     .btn-print:hover { background: #1558b0; }
     button:disabled { background: #ccc; cursor: not-allowed; }
 
+    /* Print exclusively the A4 canvas */
     @media print {
+      @page { size: A4 portrait; margin: 0; }
+      body { background: #fff; padding: 0; margin: 0; }
       body * { visibility: hidden; }
-      #mergedCanvas, #mergedCanvas * { visibility: visible; }
-      #mergedCanvas { position: absolute; left: 0; top: 0; width: 100%; height: auto; }
+      #a4Canvas, #a4Canvas * { visibility: visible; }
+      #a4Canvas { position: fixed; left: 0; top: 0; width: 100vw; height: 100vh; object-fit: contain; }
     }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h2>Dual Card Auto-Formatter & Merger (1013 × 638)</h2>
-  <p>दोनों कार्ड अलग अपलोड करें, साइज आटोमैटिक 1013x638 हो जाएगा, फिर Merge करके डाउनलोड करें।</p>
+  <h2>Dual Card Formatter & A4 Print Sheet</h2>
+  <p>दोनों कार्ड अपलोड करें, 1013x638 में ऑटो-फिट होंगे और A4 शीट (2480x3508 px) पर सीधे प्रिंट के लिए सेट हो जाएंगे।</p>
 
   <div class="upload-section">
     <label class="upload-box" for="card1Input">
-      <strong>📁 पहला कार्ड (Front/Card 1) चुनें</strong>
+      <strong>📁 पहला कार्ड (Front) चुनें</strong>
       <div id="file1Name" style="font-size:12px; color:#666; margin-top:4px;">कोई फाइल नहीं</div>
     </label>
     <input type="file" id="card1Input" accept="image/*">
 
     <label class="upload-box" for="card2Input">
-      <strong>📁 दूसरा कार्ड (Back/Card 2) चुनें</strong>
+      <strong>📁 दूसरा कार्ड (Back) चुनें</strong>
       <div id="file2Name" style="font-size:12px; color:#666; margin-top:4px;">कोई फाइल नहीं</div>
     </label>
     <input type="file" id="card2Input" accept="image/*">
@@ -63,28 +66,30 @@
 
   <div class="preview-container">
     <div class="preview-box">
-      <h4>कार्ड 1 प्रीव्यू (1013x638)</h4>
-      <canvas id="canvas1" width="1013" height="638" style="width: 300px;"></canvas>
+      <h4>कार्ड 1 (1013x638)</h4>
+      <canvas id="canvas1" width="1013" height="638" style="width: 250px;"></canvas>
     </div>
     <div class="preview-box">
-      <h4>कार्ड 2 प्रीव्यू (1013x638)</h4>
-      <canvas id="canvas2" width="1013" height="638" style="width: 300px;"></canvas>
+      <h4>कार्ड 2 (1013x638)</h4>
+      <canvas id="canvas2" width="1013" height="638" style="width: 250px;"></canvas>
     </div>
   </div>
 
   <div class="btn-group">
-    <button id="mergeBtn" class="btn-merge" disabled>⚡ Merge Cards (एक साथ जोड़ें)</button>
+    <button id="mergeBtn" class="btn-merge" disabled>⚡ Merge & Fit into A4 Sheet</button>
   </div>
 
   <div class="merged-section">
-    <h3 style="font-size: 15px; color: #333; margin-bottom: 8px;">मर्ज किया हुआ फाइनल आउटपुट (Aadhaar Format)</h3>
-    <div class="preview-box" style="display:inline-block;">
-      <!-- यहाँ होरिजॉन्टल मर्ज होगा: 1013*2 = 2026 चौड़ाई, और 638 ऊँचाई -->
-      <canvas id="mergedCanvas" width="2026" height="638" style="width: 500px;"></canvas>
+    <h3 style="font-size: 16px; color: #1a73e8; margin-bottom: 8px;">A4 शीट प्रीव्यू (2480 × 3508 px - Print Ready)</h3>
+    <p style="font-size: 12px; color: #666;">मर्ज किया हुआ कार्ड A4 शीट के ऊपर सटीक 1013x638 प्रिंट साइज में प्लेस हो चुका है।</p>
+    
+    <div class="preview-box" style="display:inline-block; max-width: 320px;">
+      <canvas id="a4Canvas" width="2480" height="3508" style="width: 100%; border: 1px solid #999;"></canvas>
     </div>
+
     <div class="btn-group">
-      <button id="downloadBtn" class="btn-download" disabled>📥 मर्ज इमेज डाउनलोड करें</button>
-      <button id="printBtn" class="btn-print" disabled>🖨️ डायरेक्ट प्रिंट करें</button>
+      <button id="downloadA4Btn" class="btn-download" disabled>📥 A4 शीट डाउनलोड करें (PNG)</button>
+      <button id="printBtn" class="btn-print" disabled>🖨️ डायरेक्ट A4 प्रिंट करें</button>
     </div>
   </div>
 </div>
@@ -101,122 +106,117 @@
   const canvas2 = document.getElementById('canvas2');
   const ctx2 = canvas2.getContext('2d');
   
-  const mergedCanvas = document.getElementById('mergedCanvas');
-  const mergedCtx = mergedCanvas.getContext('2d');
+  const a4Canvas = document.getElementById('a4Canvas');
+  const a4Ctx = a4Canvas.getContext('2d');
 
   const mergeBtn = document.getElementById('mergeBtn');
-  const downloadBtn = document.getElementById('downloadBtn');
+  const downloadA4Btn = document.getElementById('downloadA4Btn');
   const printBtn = document.getElementById('printBtn');
 
-  const TW = 1013;
-  const TH = 638;
+  const CARD_W = 1013;
+  const CARD_H = 638;
+  const A4_W = 2480;
+  const A4_H = 3508;
 
   let img1Loaded = false;
   let img2Loaded = false;
-  let loadedImg1 = null;
-  let loadedImg2 = null;
 
-  // Blank Placeholders
-  function drawPlaceholder(ctx, text) {
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, TW, TH);
-    ctx.fillStyle = '#888888';
-    ctx.font = '22px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(text, TW / 2, TH / 2);
+  function initCanvases() {
+    [ctx1, ctx2].forEach((ctx, i) => {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, CARD_W, CARD_H);
+      ctx.fillStyle = '#999';
+      ctx.font = '22px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(`Card ${i+1} Preview (1013x638)`, CARD_W / 2, CARD_H / 2);
+    });
+
+    a4Ctx.fillStyle = '#ffffff';
+    a4Ctx.fillRect(0, 0, A4_W, A4_H);
+    a4Ctx.fillStyle = '#aaa';
+    a4Ctx.font = '60px sans-serif';
+    a4Ctx.textAlign = 'center';
+    a4Ctx.fillText('A4 Sheet Canvas (2480 x 3508 px)', A4_W / 2, A4_H / 2);
   }
+  initCanvases();
 
-  drawPlaceholder(ctx1, 'Card 1 Preview (1013x638)');
-  drawPlaceholder(ctx2, 'Card 2 Preview (1013x638)');
-  
-  // Merged placeholder
-  mergedCtx.fillStyle = '#ffffff';
-  mergedCtx.fillRect(0, 0, 2026, 638);
-  mergedCtx.fillStyle = '#888888';
-  mergedCtx.font = '28px sans-serif';
-  mergedCtx.textAlign = 'center';
-  mergedCtx.fillText('Merged Output Preview', 2026 / 2, 638 / 2);
-
-  function processImage(file, ctx, callback) {
+  function loadCard(file, ctx, callback) {
     const reader = new FileReader();
-    reader.onload = function(event) {
+    reader.onload = function(e) {
       const img = new Image();
       img.onload = function() {
         ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, TW, TH);
+        ctx.fillRect(0, 0, CARD_W, CARD_H);
 
-        const hRatio = TW / img.width;
-        const vRatio = TH / img.height;
-        const ratio  = Math.min(hRatio, vRatio);
+        const hRatio = CARD_W / img.width;
+        const vRatio = CARD_H / img.height;
+        const ratio = Math.min(hRatio, vRatio);
         
-        const cx = (TW - img.width * ratio) / 2;
-        const cy = (TH - img.height * ratio) / 2;  
+        const cx = (CARD_W - img.width * ratio) / 2;
+        const cy = (CARD_H - img.height * ratio) / 2;
 
         ctx.drawImage(img, 0, 0, img.width, img.height, cx, cy, img.width * ratio, img.height * ratio);
-        callback(img);
+        callback();
       };
-      img.src = event.target.result;
+      img.src = e.target.result;
     };
     reader.readAsDataURL(file);
   }
 
-  card1Input.addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    file1Name.innerText = file.name;
-    processImage(file, ctx1, function(img) {
-      loadedImg1 = img;
+  card1Input.addEventListener('change', (e) => {
+    if (!e.target.files[0]) return;
+    file1Name.innerText = e.target.files[0].name;
+    loadCard(e.target.files[0], ctx1, () => {
       img1Loaded = true;
-      checkEnableMerge();
+      if (img1Loaded && img2Loaded) mergeBtn.disabled = false;
     });
   });
 
-  card2Input.addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    file2Name.innerText = file.name;
-    processImage(file, ctx2, function(img) {
-      loadedImg2 = img;
+  card2Input.addEventListener('change', (e) => {
+    if (!e.target.files[0]) return;
+    file2Name.innerText = e.target.files[0].name;
+    loadCard(e.target.files[0], ctx2, () => {
       img2Loaded = true;
-      checkEnableMerge();
+      if (img1Loaded && img2Loaded) mergeBtn.disabled = false;
     });
   });
 
-  function checkEnableMerge() {
-    if (img1Loaded && img2Loaded) {
-      mergeBtn.disabled = false;
-    }
-  }
+  mergeBtn.addEventListener('click', () => {
+    // Fill full A4 canvas with crisp white
+    a4Ctx.fillStyle = '#ffffff';
+    a4Ctx.fillRect(0, 0, A4_W, A4_H);
 
-  // Merge Click Action (Sample Format ke mutabiq side-by-side)
-  mergeBtn.addEventListener('click', function() {
-    // Clear merged background
-    mergedCtx.fillStyle = '#ffffff';
-    mergedCtx.fillRect(0, 0, 2026, 638);
+    // Calculate side-by-side positioning centered horizontally on A4
+    const totalCardsWidth = (CARD_W * 2) + 50; // 50px space between cards
+    const startX = (A4_W - totalCardsWidth) / 2;
+    const startY = 150; // Top margin on A4 sheet
 
-    // Draw Card 1 on Left side (0, 0)
-    mergedCtx.drawImage(canvas1, 0, 0);
+    // Draw Card 1 (Front)
+    a4Ctx.drawImage(canvas1, startX, startY);
+    // Draw Card 2 (Back)
+    a4Ctx.drawImage(canvas2, startX + CARD_W + 50, startY);
 
-    // Draw Card 2 on Right side (1013, 0)
-    mergedCtx.drawImage(canvas2, 1013, 0);
+    // Thin cutting guide border around cards
+    a4Ctx.strokeStyle = '#cccccc';
+    a4Ctx.lineWidth = 2;
+    a4Ctx.strokeRect(startX, startY, CARD_W, CARD_H);
+    a4Ctx.strokeRect(startX + CARD_W + 50, startY, CARD_W, CARD_H);
 
-    // Enable Download & Print
-    downloadBtn.disabled = false;
+    downloadA4Btn.disabled = false;
     printBtn.disabled = false;
   });
 
-  downloadBtn.addEventListener('click', function() {
+  downloadA4Btn.addEventListener('click', () => {
     const link = document.createElement('a');
-    link.download = 'Merged_Dual_Card_1013x638.png';
-    link.href = mergedCanvas.toDataURL('image/png', 1.0);
+    link.download = 'A4_Print_Ready_Cards_2480x3508.png';
+    link.href = a4Canvas.toDataURL('image/png', 1.0);
     link.click();
   });
 
-  printBtn.addEventListener('click', function() {
+  printBtn.addEventListener('click', () => {
     window.print();
   });
 </script>
 
 </body>
 </html>
-
