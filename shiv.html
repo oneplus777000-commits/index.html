@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Card Generator System by SHIV BHAVSAR </title>
+  <title>Card Generator System by SHIV BHAVSAR</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -34,7 +34,72 @@
       display: flex; 
       flex-direction: column; 
       align-items: center; 
+      justify-content: center;
       color: var(--text-main);
+    }
+
+    /* Login Screen Styling */
+    #loginScreen {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      padding: 40px 30px;
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+    }
+
+    .login-input {
+      width: 100%;
+      padding: 12px 16px;
+      margin-bottom: 15px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 10px;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+      transition: 0.3s;
+    }
+
+    .login-input:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--btn-print);
+      color: #fff;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 15px;
+      transition: 0.3s;
+    }
+
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(37, 99, 235, 0.4);
+    }
+
+    .error-msg {
+      color: #ef4444;
+      font-size: 13px;
+      margin-top: 10px;
+      display: none;
+    }
+
+    /* Main Tool Styling */
+    #mainApp {
+      display: none;
+      width: 100%;
+      max-width: 1050px;
     }
 
     .container { 
@@ -46,8 +111,26 @@
       border-radius: 20px; 
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4); 
       width: 100%; 
-      max-width: 1050px; 
       text-align: center; 
+      position: relative;
+    }
+
+    .logout-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+      padding: 6px 14px;
+      font-size: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .logout-btn:hover {
+      background: rgba(239, 68, 68, 0.4);
     }
 
     .badge {
@@ -172,7 +255,7 @@
       flex-wrap: wrap; 
     }
 
-    button { 
+    .action-btn { 
       padding: 12px 28px; 
       font-size: 14px; 
       font-weight: 600; 
@@ -186,7 +269,7 @@
       color: #fff;
     }
 
-    button:hover:not(:disabled) {
+    .action-btn:hover:not(:disabled) {
       transform: translateY(-2px);
       box-shadow: 0 8px 20px rgba(0,0,0,0.3);
     }
@@ -195,7 +278,7 @@
     .btn-download { background: var(--btn-download); }
     .btn-print { background: var(--btn-print); }
 
-    button:disabled { 
+    .action-btn:disabled { 
       background: #334155; 
       color: #64748b; 
       cursor: not-allowed; 
@@ -209,7 +292,7 @@
       color: var(--text-muted);
     }
 
-    /* Pixel-Perfect A4 Direct Print Rules */
+    /* Print Formatting */
     @page {
       size: A4 portrait;
       margin: 0;
@@ -229,7 +312,7 @@
         visibility: hidden;
       }
 
-      .merged-section, .preview-box, #a4Canvas {
+      #mainApp, .merged-section, .preview-box, #a4Canvas {
         visibility: visible !important;
       }
 
@@ -249,61 +332,120 @@
 </head>
 <body>
 
-<div class="container">
-  <div class="badge">Direct PDF & Print Tool</div>
-  <h1>Card Generator System</h1>
-  <div style="font-size: 13px; color: var(--accent-purple); font-weight: 600; margin-bottom: 4px;">by Shiv Bhavsar</div>
-  <p class="subtitle">1013 × 638 Auto-Fit • Zero Gap Merge • Direct A4 PDF / Print</p>
+<!-- Login Container -->
+<div id="loginScreen">
+  <div class="badge">Protected Access</div>
+  <h2 style="font-size: 22px; margin-bottom: 6px;">Sign In</h2>
+  <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 25px;">Card Generator System by Shiv Bhavsar</p>
 
-  <div class="upload-section">
-    <label class="upload-box" for="card1Input">
-      <strong>📁 Front Side (Card 1)</strong>
-      <div id="file1Name" class="file-status">फ़ाइल चुनें (JPG / PNG)</div>
-    </label>
-    <input type="file" id="card1Input" accept="image/*">
+  <input type="email" id="loginEmail" class="login-input" placeholder="ईमेल आईडी दर्ज करें">
+  <input type="password" id="loginPass" class="login-input" placeholder="पासवर्ड दर्ज करें">
+  <button id="authBtn" class="login-btn">लॉगिन करें</button>
+  <div id="errorMsg" class="error-msg">⚠️ गलत ईमेल आईडी या पासवर्ड!</div>
+</div>
 
-    <label class="upload-box" for="card2Input">
-      <strong>📁 Back Side (Card 2)</strong>
-      <div id="file2Name" class="file-status">फ़ाइल चुनें (JPG / PNG)</div>
-    </label>
-    <input type="file" id="card2Input" accept="image/*">
-  </div>
+<!-- Main Application -->
+<div id="mainApp">
+  <div class="container">
+    <button id="logoutBtn" class="logout-btn">🔒 Logout</button>
+    <div class="badge">Direct PDF & Print Tool</div>
+    <h1>Card Generator System</h1>
+    <div style="font-size: 13px; color: var(--accent-purple); font-weight: 600; margin-bottom: 4px;">by Shiv Bhavsar</div>
+    <p class="subtitle">1013 × 638 Auto-Fit • Zero Gap Merge • Direct A4 PDF / Print</p>
 
-  <div class="preview-container">
-    <div class="preview-box">
-      <h4>Card 1 Preview (1013x638)</h4>
-      <canvas id="canvas1" width="1013" height="638" style="width: 220px;"></canvas>
+    <div class="upload-section">
+      <label class="upload-box" for="card1Input">
+        <strong>📁 Front Side (Card 1)</strong>
+        <div id="file1Name" class="file-status">फ़ाइल चुनें (JPG / PNG)</div>
+      </label>
+      <input type="file" id="card1Input" accept="image/*">
+
+      <label class="upload-box" for="card2Input">
+        <strong>📁 Back Side (Card 2)</strong>
+        <div id="file2Name" class="file-status">फ़ाइल चुनें (JPG / PNG)</div>
+      </label>
+      <input type="file" id="card2Input" accept="image/*">
     </div>
-    <div class="preview-box">
-      <h4>Card 2 Preview (1013x638)</h4>
-      <canvas id="canvas2" width="1013" height="638" style="width: 220px;"></canvas>
-    </div>
-  </div>
 
-  <div class="btn-group">
-    <button id="mergeBtn" class="btn-merge" disabled>⚡ Merge Cards (Zero Gap)</button>
-  </div>
-
-  <div class="merged-section">
-    <h3>A4 Print Sheet Preview (2480 × 3508 px)</h3>
-    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">बिना किसी गैप के दोनों कार्ड A4 शीट पर सीधे PDF व प्रिंट के लिए तैयार हैं।</p>
-    
-    <div class="preview-box" style="display:inline-block; max-width: 260px;">
-      <canvas id="a4Canvas" width="2480" height="3508" style="width: 100%; border: 1px solid rgba(255,255,255,0.2);"></canvas>
+    <div class="preview-container">
+      <div class="preview-box">
+        <h4>Card 1 Preview (1013x638)</h4>
+        <canvas id="canvas1" width="1013" height="638" style="width: 220px;"></canvas>
+      </div>
+      <div class="preview-box">
+        <h4>Card 2 Preview (1013x638)</h4>
+        <canvas id="canvas2" width="1013" height="638" style="width: 220px;"></canvas>
+      </div>
     </div>
 
     <div class="btn-group">
-      <button id="downloadPdfBtn" class="btn-download" disabled>📥 Direct A4 PDF Download</button>
-      <button id="printBtn" class="btn-print" disabled>🖨️ Direct Print A4</button>
+      <button id="mergeBtn" class="action-btn btn-merge" disabled>⚡ Merge Cards (Zero Gap)</button>
     </div>
-  </div>
 
-  <footer>
-    Designed & Developed by <strong>Shiv Bhavsar</strong>
-  </footer>
+    <div class="merged-section">
+      <h3>A4 Print Sheet Preview (2480 × 3508 px)</h3>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">बिना किसी गैप के दोनों कार्ड A4 शीट पर सीधे PDF व प्रिंट के लिए तैयार हैं।</p>
+      
+      <div class="preview-box" style="display:inline-block; max-width: 260px;">
+        <canvas id="a4Canvas" width="2480" height="3508" style="width: 100%; border: 1px solid rgba(255,255,255,0.2);"></canvas>
+      </div>
+
+      <div class="btn-group">
+        <button id="downloadPdfBtn" class="action-btn btn-download" disabled>📥 Direct A4 PDF Download</button>
+        <button id="printBtn" class="action-btn btn-print" disabled>🖨️ Direct Print A4</button>
+      </div>
+    </div>
+
+    <footer>
+      Designed & Developed by <strong>Shiv Bhavsar</strong>
+    </footer>
+  </div>
 </div>
 
 <script>
+  // Authentication Logic
+  const AUTH_EMAIL = "oneplus777888@gmail.com";
+  const AUTH_PASS = "Pass@123";
+
+  const loginScreen = document.getElementById('loginScreen');
+  const mainApp = document.getElementById('mainApp');
+  const loginEmail = document.getElementById('loginEmail');
+  const loginPass = document.getElementById('loginPass');
+  const authBtn = document.getElementById('authBtn');
+  const errorMsg = document.getElementById('errorMsg');
+  const logoutBtn = document.getElementById('logoutBtn');
+
+  function checkSession() {
+    if (sessionStorage.getItem('isLoggedIn') === 'true') {
+      loginScreen.style.display = 'none';
+      mainApp.style.display = 'block';
+    }
+  }
+  checkSession();
+
+  authBtn.addEventListener('click', () => {
+    const inputEmail = loginEmail.value.trim();
+    const inputPass = loginPass.value.trim();
+
+    if (inputEmail === AUTH_EMAIL && inputPass === AUTH_PASS) {
+      sessionStorage.setItem('isLoggedIn', 'true');
+      loginScreen.style.display = 'none';
+      mainApp.style.display = 'block';
+      errorMsg.style.display = 'none';
+    } else {
+      errorMsg.style.display = 'block';
+    }
+  });
+
+  logoutBtn.addEventListener('click', () => {
+    sessionStorage.removeItem('isLoggedIn');
+    mainApp.style.display = 'none';
+    loginScreen.style.display = 'block';
+    loginEmail.value = '';
+    loginPass.value = '';
+  });
+
+  // Card Processing Logic
   const card1Input = document.getElementById('card1Input');
   const card2Input = document.getElementById('card2Input');
   const file1Name = document.getElementById('file1Name');
@@ -394,7 +536,6 @@
     a4Ctx.fillStyle = '#ffffff';
     a4Ctx.fillRect(0, 0, A4_W, A4_H);
 
-    // Continuous placement (Zero gap)
     const totalCardsWidth = CARD_W * 2; 
     const startX = (A4_W - totalCardsWidth) / 2;
     const startY = 150;
@@ -406,10 +547,8 @@
     printBtn.disabled = false;
   });
 
-  // Direct A4 PDF Generator
   downloadPdfBtn.addEventListener('click', () => {
     const { jsPDF } = window.jspdf;
-    // Standard A4 portrait in millimeters
     const pdf = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
@@ -417,7 +556,6 @@
     });
 
     const imgData = a4Canvas.toDataURL('image/jpeg', 1.0);
-    // 210mm x 297mm full page fit
     pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
     pdf.save('A4_Print_Card_Sheet.pdf');
   });
