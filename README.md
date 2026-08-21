@@ -7,13 +7,16 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- jsPDF Library for Direct High-Quality PDF Generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
   <style>
     :root {
       --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
       --card-bg: rgba(30, 41, 59, 0.7);
       --accent-blue: #38bdf8;
       --accent-purple: #818cf8;
-      --accent-gradient: linear-gradient(135deg, #38bdf8 0%, #6366f1 100%);
       --btn-merge: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
       --btn-download: linear-gradient(135deg, #10b981 0%, #059669 100%);
       --btn-print: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
@@ -94,7 +97,6 @@
       min-width: 280px; 
       text-align: center; 
       transition: all 0.3s ease;
-      position: relative;
     }
 
     .upload-box:hover { 
@@ -139,7 +141,6 @@
       margin-bottom: 8px; 
       font-weight: 500;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
     }
     
     canvas { 
@@ -198,8 +199,8 @@
       background: #334155; 
       color: #64748b; 
       cursor: not-allowed; 
-      box-shadow: none;
       transform: none;
+      box-shadow: none;
     }
 
     footer {
@@ -208,22 +209,51 @@
       color: var(--text-muted);
     }
 
+    /* Pixel-Perfect A4 Direct Print Rules */
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+
     @media print {
-      @page { size: A4 portrait; margin: 0; }
-      body { background: #fff; padding: 0; margin: 0; }
-      body * { visibility: hidden; }
-      #a4Canvas, #a4Canvas * { visibility: visible; }
-      #a4Canvas { position: fixed; left: 0; top: 0; width: 100vw; height: 100vh; object-fit: contain; }
+      html, body {
+        width: 210mm;
+        height: 297mm;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+        overflow: hidden;
+      }
+      
+      body * {
+        visibility: hidden;
+      }
+
+      .merged-section, .preview-box, #a4Canvas {
+        visibility: visible !important;
+      }
+
+      #a4Canvas {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 210mm !important;
+        height: 297mm !important;
+        object-fit: fill;
+        z-index: 9999;
+        border: none !important;
+        border-radius: 0 !important;
+      }
     }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <div class="badge">Professional Tool</div>
+  <div class="badge">Direct PDF & Print Tool</div>
   <h1>Card Generator System</h1>
   <div style="font-size: 13px; color: var(--accent-purple); font-weight: 600; margin-bottom: 4px;">by Shiv Bhavsar</div>
-  <p class="subtitle">1013 × 638 Auto-Fit • Zero Gap Merge • A4 Print Ready</p>
+  <p class="subtitle">1013 × 638 Auto-Fit • Zero Gap Merge • Direct A4 PDF / Print</p>
 
   <div class="upload-section">
     <label class="upload-box" for="card1Input">
@@ -256,14 +286,14 @@
 
   <div class="merged-section">
     <h3>A4 Print Sheet Preview (2480 × 3508 px)</h3>
-    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">बिना किसी गैप के दोनों कार्ड A4 शीट पर प्रिंट के लिए तैयार हैं।</p>
+    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">बिना किसी गैप के दोनों कार्ड A4 शीट पर सीधे PDF व प्रिंट के लिए तैयार हैं।</p>
     
     <div class="preview-box" style="display:inline-block; max-width: 260px;">
       <canvas id="a4Canvas" width="2480" height="3508" style="width: 100%; border: 1px solid rgba(255,255,255,0.2);"></canvas>
     </div>
 
     <div class="btn-group">
-      <button id="downloadA4Btn" class="btn-download" disabled>📥 A4 Sheet Download</button>
+      <button id="downloadPdfBtn" class="btn-download" disabled>📥 Direct A4 PDF Download</button>
       <button id="printBtn" class="btn-print" disabled>🖨️ Direct Print A4</button>
     </div>
   </div>
@@ -289,7 +319,7 @@
   const a4Ctx = a4Canvas.getContext('2d');
 
   const mergeBtn = document.getElementById('mergeBtn');
-  const downloadA4Btn = document.getElementById('downloadA4Btn');
+  const downloadPdfBtn = document.getElementById('downloadPdfBtn');
   const printBtn = document.getElementById('printBtn');
 
   const CARD_W = 1013;
@@ -364,7 +394,7 @@
     a4Ctx.fillStyle = '#ffffff';
     a4Ctx.fillRect(0, 0, A4_W, A4_H);
 
-    // Exact Zero-Gap Continuous Layout
+    // Continuous placement (Zero gap)
     const totalCardsWidth = CARD_W * 2; 
     const startX = (A4_W - totalCardsWidth) / 2;
     const startY = 150;
@@ -372,15 +402,24 @@
     a4Ctx.drawImage(canvas1, startX, startY);
     a4Ctx.drawImage(canvas2, startX + CARD_W, startY);
 
-    downloadA4Btn.disabled = false;
+    downloadPdfBtn.disabled = false;
     printBtn.disabled = false;
   });
 
-  downloadA4Btn.addEventListener('click', () => {
-    const link = document.createElement('a');
-    link.download = 'A4_Continuous_Cards_2480x3508.png';
-    link.href = a4Canvas.toDataURL('image/png', 1.0);
-    link.click();
+  // Direct A4 PDF Generator
+  downloadPdfBtn.addEventListener('click', () => {
+    const { jsPDF } = window.jspdf;
+    // Standard A4 portrait in millimeters
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4'
+    });
+
+    const imgData = a4Canvas.toDataURL('image/jpeg', 1.0);
+    // 210mm x 297mm full page fit
+    pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+    pdf.save('A4_Print_Card_Sheet.pdf');
   });
 
   printBtn.addEventListener('click', () => {
