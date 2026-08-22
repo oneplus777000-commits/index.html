@@ -8,10 +8,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- PDF.js Standalone for Instant Display -->
+  <!-- PDF.js Standalone for High-DPI Rendering -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
   
-  <!-- PDF-LIB (Pure Vector Engine: No JPG/Raster Conversion) -->
+  <!-- PDF-LIB (Pure Vector Engine) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 
   <!-- jsPDF for ID/Photo Tab -->
@@ -20,6 +20,9 @@
   <!-- Cropper.js -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+  <!-- Fabric.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
 
   <style>
     :root {
@@ -342,13 +345,13 @@
     }
 
     /* ==================================================== */
-    /* REAL VECTOR PDF EDITOR CSS */
+    /* REAL VECTOR PDF EDITOR CSS (FIXED) */
     /* ==================================================== */
     .pdffiller-header-bar {
       background: #1e293b;
       border: 1px solid #334155;
       border-radius: 12px 12px 0 0;
-      padding: 8px 15px;
+      padding: 10px 15px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -359,33 +362,33 @@
     .pdffiller-tools {
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
       flex-wrap: wrap;
     }
 
     .p-tool-btn {
       background: #334155;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #cbd5e1;
-      padding: 6px 12px;
-      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #f8fafc;
+      padding: 8px 14px;
+      border-radius: 8px;
       font-size: 12px;
-      font-weight: 500;
+      font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
       transition: 0.2s;
     }
 
-    .p-tool-btn:hover { background: #475569; color: #fff; }
-    .p-tool-btn.active { background: #0284c7; color: #fff; }
+    .p-tool-btn:hover { background: #475569; }
+    .p-tool-btn.active { background: #0284c7; border-color: #38bdf8; }
 
     .p-done-btn {
       background: #f97316;
       color: #fff;
       border: none;
-      padding: 8px 18px;
+      padding: 10px 20px;
       font-size: 13px;
       font-weight: 700;
       border-radius: 8px;
@@ -397,7 +400,7 @@
 
     .pdffiller-editor-viewport {
       background: #475569;
-      padding: 20px 10px;
+      padding: 25px 15px;
       border-radius: 0 0 12px 12px;
       border: 1px solid #334155;
       border-top: none;
@@ -407,22 +410,10 @@
       justify-content: center;
     }
 
-    .pdf-interactive-sheet-container {
-      position: relative;
-      background: #ffffff;
+    .canvas-container-shadow {
       box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+      background: #ffffff;
       display: inline-block;
-    }
-
-    #pdfBaseCanvas {
-      display: block;
-    }
-
-    .fabric-overlay-container {
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: 10;
     }
 
     #cropModal {
@@ -652,11 +643,11 @@
       </div>
     </div>
 
-    <!-- TAB 4: REAL VECTOR PDF EDITOR (PURE PDF-LIB ENGINE) -->
+    <!-- TAB 4: REAL VECTOR PDF EDITOR (FIXED INTEGRATION) -->
     <div id="tab-live-pdf" class="tab-content">
-      <div class="badge">Pure Vector PDF Engine • Direct Visual Edit • Original PDF Export</div>
+      <div class="badge">Pure Vector PDF Engine • Crystal Clear Retina View • Original PDF Export</div>
       <h1>Real Vector PDF Document Editor</h1>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">PDF फाइल अपलोड करें। यह सीधे ओरिजिनल PDF फाइल में टेक्स्ट और बदलाव सेव करता है (JPG नहीं बनता)।</p>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">PDF सिलेक्ट करें। टूल्स पर क्लिक करके टेक्स्ट, वाइटआउट या साइन जोड़ें और असली PDF डाउनलोड करें।</p>
 
       <div class="upload-section" style="margin-bottom: 15px;">
         <label class="upload-box" for="realPdfInput" style="max-width: 380px;">
@@ -688,15 +679,10 @@
           </div>
         </div>
 
-        <!-- Interactive Direct Layer Viewport -->
+        <!-- High-DPI Single Fabric Unified Canvas -->
         <div class="pdffiller-editor-viewport">
-          <div id="pdfSheetWrapper" class="pdf-interactive-sheet-container">
-            <!-- 1. Background Direct PDF Render Layer -->
-            <canvas id="pdfBaseCanvas"></canvas>
-            <!-- 2. Overlay Interactive Fabric.js Edit Layer -->
-            <div class="fabric-overlay-container">
-              <canvas id="pdfOverlayCanvas"></canvas>
-            </div>
+          <div class="canvas-container-shadow">
+            <canvas id="pdfUnifiedCanvas"></canvas>
           </div>
         </div>
 
@@ -739,6 +725,10 @@
     
     event.target.classList.add('active');
     document.getElementById(tabId).classList.add('active');
+
+    if (tabId === 'tab-live-pdf' && pdfFabricCanvas) {
+      pdfFabricCanvas.requestRenderAll();
+    }
   }
 
   const loginScreen = document.getElementById('loginScreen');
@@ -1198,14 +1188,14 @@
   });
 
   // ==========================================================
-  // TAB 4: REAL VECTOR PDF ENGINE (PURE PDF-LIB / NO JPG CONVERSION)
+  // TAB 4: REAL VECTOR PDF ENGINE (100% WORKING UNIFIED CANVAS)
   // ==========================================================
   let originalPdfBytes = null;
   let pdfjsDocInstance = null;
   let rCurrentPage = 1;
   let rTotalPages = 1;
-  let pdfOverlayFabric = null;
-  let activePdfScale = 1.4;
+  let pdfFabricCanvas = null;
+  let activePdfScale = 2.0; // High-DPI Retina Scale for Crystal Clear Text
   let pageViewportWidth = 595, pageViewportHeight = 842;
   let isPdfDraw = false;
 
@@ -1216,7 +1206,6 @@
     document.getElementById('realPdfFileName').innerText = `✅ ${file.name}`;
     originalPdfBytes = await file.arrayBuffer();
 
-    // Load in PDF.js for crisp instant surface view
     pdfjsDocInstance = await pdfjsLib.getDocument({ data: originalPdfBytes.slice(0) }).promise;
     rTotalPages = pdfjsDocInstance.numPages;
     rCurrentPage = 1;
@@ -1225,10 +1214,10 @@
     document.getElementById('rCurPageNum').innerText = rCurrentPage;
     document.getElementById('realEditorArea').style.display = 'block';
 
-    renderRealPdfSurface(rCurrentPage);
+    renderUnifiedPdfEditor(rCurrentPage);
   });
 
-  async function renderRealPdfSurface(pageNum) {
+  async function renderUnifiedPdfEditor(pageNum) {
     if (!pdfjsDocInstance) return;
 
     const page = await pdfjsDocInstance.getPage(pageNum);
@@ -1236,25 +1225,39 @@
     pageViewportWidth = viewport.width;
     pageViewportHeight = viewport.height;
 
-    // 1. Direct Base Canvas Render
-    const baseCanvas = document.getElementById('pdfBaseCanvas');
-    const baseCtx = baseCanvas.getContext('2d');
-    baseCanvas.width = viewport.width;
-    baseCanvas.height = viewport.height;
+    // Direct High-Resolution PDF Rendering to Offscreen Canvas
+    const offscreenCanvas = document.createElement('canvas');
+    const offscreenCtx = offscreenCanvas.getContext('2d');
+    offscreenCanvas.width = viewport.width;
+    offscreenCanvas.height = viewport.height;
 
-    await page.render({ canvasContext: baseCtx, viewport: viewport }).promise;
+    await page.render({ canvasContext: offscreenCtx, viewport: viewport }).promise;
+    const highResBgUrl = offscreenCanvas.toDataURL('image/png');
 
-    // 2. Setup Fabric.js Transparent Overlay directly above Base Canvas
-    if (!pdfOverlayFabric) {
-      pdfOverlayFabric = new fabric.Canvas('pdfOverlayCanvas', {
+    // Initialize Fabric Canvas directly with full interactive events
+    if (!pdfFabricCanvas) {
+      pdfFabricCanvas = new fabric.Canvas('pdfUnifiedCanvas', {
         preserveObjectStacking: true,
         selection: true
       });
     }
 
-    pdfOverlayFabric.setWidth(viewport.width);
-    pdfOverlayFabric.setHeight(viewport.height);
-    pdfOverlayFabric.clear();
+    pdfFabricCanvas.setWidth(viewport.width);
+    pdfFabricCanvas.setHeight(viewport.height);
+    pdfFabricCanvas.clear();
+
+    // Set Background with 100% Sharpness
+    fabric.Image.fromURL(highResBgUrl, function(img) {
+      img.set({
+        left: 0,
+        top: 0,
+        selectable: false,
+        evented: false
+      });
+      pdfFabricCanvas.setBackgroundImage(img, function() {
+        pdfFabricCanvas.requestRenderAll();
+      });
+    });
   }
 
   // Page Controls
@@ -1262,101 +1265,104 @@
     if (rCurrentPage <= 1) return;
     rCurrentPage--;
     document.getElementById('rCurPageNum').innerText = rCurrentPage;
-    renderRealPdfSurface(rCurrentPage);
+    renderUnifiedPdfEditor(rCurrentPage);
   });
 
   document.getElementById('rNextPage').addEventListener('click', () => {
     if (rCurrentPage >= rTotalPages) return;
     rCurrentPage++;
     document.getElementById('rCurPageNum').innerText = rCurrentPage;
-    renderRealPdfSurface(rCurrentPage);
+    renderUnifiedPdfEditor(rCurrentPage);
   });
 
-  // Tools
+  // 1. Add Text Tool
   document.getElementById('toolAddText').addEventListener('click', () => {
-    if (!pdfOverlayFabric) return;
+    if (!pdfFabricCanvas) return;
     const txt = new fabric.IText('New Text', {
       left: 100,
       top: 100,
-      fontSize: 16,
+      fontSize: 22,
       fill: '#000000',
       backgroundColor: '#ffffff',
       stroke: '#0284c7',
-      strokeWidth: 1,
-      strokeDashArray: [3, 3],
-      padding: 3,
+      strokeWidth: 1.5,
+      strokeDashArray: [4, 4],
+      padding: 4,
       fontFamily: 'Helvetica, Arial, sans-serif'
     });
-    pdfOverlayFabric.add(txt);
-    pdfOverlayFabric.setActiveObject(txt);
-    pdfOverlayFabric.requestRenderAll();
+    pdfFabricCanvas.add(txt);
+    pdfFabricCanvas.setActiveObject(txt);
+    pdfFabricCanvas.requestRenderAll();
   });
 
+  // 2. Whiteout / Erase Tool
   document.getElementById('toolWhiteout').addEventListener('click', () => {
-    if (!pdfOverlayFabric) return;
+    if (!pdfFabricCanvas) return;
     const rect = new fabric.Rect({
       left: 120,
       top: 120,
-      width: 140,
-      height: 30,
+      width: 160,
+      height: 35,
       fill: '#ffffff',
       stroke: '#cbd5e1',
-      strokeWidth: 1,
+      strokeWidth: 1.5,
       cornerColor: '#0284c7'
     });
-    pdfOverlayFabric.add(rect);
-    pdfOverlayFabric.setActiveObject(rect);
-    pdfOverlayFabric.requestRenderAll();
+    pdfFabricCanvas.add(rect);
+    pdfFabricCanvas.setActiveObject(rect);
+    pdfFabricCanvas.requestRenderAll();
   });
 
+  // 3. Blackout Tool
   document.getElementById('toolBlackout').addEventListener('click', () => {
-    if (!pdfOverlayFabric) return;
+    if (!pdfFabricCanvas) return;
     const rect = new fabric.Rect({
       left: 120,
       top: 120,
-      width: 140,
-      height: 30,
+      width: 160,
+      height: 35,
       fill: '#000000',
       cornerColor: '#0284c7'
     });
-    pdfOverlayFabric.add(rect);
-    pdfOverlayFabric.setActiveObject(rect);
-    pdfOverlayFabric.requestRenderAll();
+    pdfFabricCanvas.add(rect);
+    pdfFabricCanvas.setActiveObject(rect);
+    pdfFabricCanvas.requestRenderAll();
   });
 
+  // 4. Freehand Sign Tool
   const toolSign = document.getElementById('toolSign');
   toolSign.addEventListener('click', () => {
-    if (!pdfOverlayFabric) return;
+    if (!pdfFabricCanvas) return;
     isPdfDraw = !isPdfDraw;
-    pdfOverlayFabric.isDrawingMode = isPdfDraw;
+    pdfFabricCanvas.isDrawingMode = isPdfDraw;
     if (isPdfDraw) {
       toolSign.classList.add('active');
-      pdfOverlayFabric.freeDrawingBrush.color = '#000000';
-      pdfOverlayFabric.freeDrawingBrush.width = 2;
+      pdfFabricCanvas.freeDrawingBrush.color = '#000000';
+      pdfFabricCanvas.freeDrawingBrush.width = 3;
     } else {
       toolSign.classList.remove('active');
     }
   });
 
+  // 5. Delete Tool
   document.getElementById('toolDelete').addEventListener('click', () => {
-    if (!pdfOverlayFabric) return;
-    const obj = pdfOverlayFabric.getActiveObject();
+    if (!pdfFabricCanvas) return;
+    const obj = pdfFabricCanvas.getActiveObject();
     if (obj) {
-      pdfOverlayFabric.remove(obj);
-      pdfOverlayFabric.requestRenderAll();
+      pdfFabricCanvas.remove(obj);
+      pdfFabricCanvas.requestRenderAll();
     }
   });
 
   // ==========================================================
-  // REAL VECTOR PDF EXPORT (PDF-LIB BINARY MODIFICATION)
+  // REAL VECTOR PDF EXPORT ENGINE (PURE ORIGINAL PDF-LIB)
   // ==========================================================
   document.getElementById('saveRealPdfBtn').addEventListener('click', async () => {
     if (!originalPdfBytes) return;
 
-    pdfOverlayFabric.discardActiveObject();
-    pdfOverlayFabric.requestRenderAll();
+    pdfFabricCanvas.discardActiveObject();
+    pdfFabricCanvas.requestRenderAll();
 
-    // 1. Load original binary PDF in pdf-lib (Pure Vector - Not a JPG)
     const { PDFDocument, rgb, StandardFonts } = PDFLib;
     const pdfDoc = await PDFDocument.load(originalPdfBytes);
     const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
@@ -1364,12 +1370,10 @@
     const targetPage = pages[rCurrentPage - 1];
     const { width: pWidth, height: pHeight } = targetPage.getSize();
 
-    // Calculate scale ratio between UI Canvas and Original PDF points
     const scaleX = pWidth / pageViewportWidth;
     const scaleY = pHeight / pageViewportHeight;
 
-    // 2. Iterate through all modified objects on the overlay
-    const overlayObjects = pdfOverlayFabric.getObjects();
+    const overlayObjects = pdfFabricCanvas.getObjects();
 
     for (const obj of overlayObjects) {
       const objLeft = obj.left * scaleX;
@@ -1377,11 +1381,9 @@
       const objWidth = (obj.width * (obj.scaleX || 1)) * scaleX;
       const objHeight = (obj.height * (obj.scaleY || 1)) * scaleY;
       
-      // PDF-Lib uses bottom-left as (0,0) coordinate system
       const pdfY = pHeight - objTop - objHeight;
 
       if (obj.type === 'rect') {
-        // Draw real Vector Whiteout or Blackout Rectangle
         const isBlack = obj.fill === '#000000';
         targetPage.drawRectangle({
           x: objLeft,
@@ -1414,7 +1416,6 @@
         });
       }
       else if (obj.type === 'path') {
-        // Signature embed (Convert vector path to high-res stamp)
         const pathImgData = obj.toDataURL({ format: 'png', multiplier: 2.0 });
         const embeddedPng = await pdfDoc.embedPng(pathImgData);
         targetPage.drawImage(embeddedPng, {
@@ -1426,7 +1427,6 @@
       }
     }
 
-    // 3. Save as Original Vector PDF File
     const modifiedPdfBytes = await pdfDoc.save();
     const blob = new Blob([modifiedPdfBytes], { type: 'application/pdf' });
     const link = document.createElement('a');
