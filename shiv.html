@@ -395,7 +395,6 @@
     <span id="goToChangePwd" class="auth-link">🔑 Change Password?</span>
   </div>
   <div>
-    <span id="forceResetBtn" class="reset-link">🔄 Reset Password to Default (Pass@123)</span>
   </div>
 </div>
 
