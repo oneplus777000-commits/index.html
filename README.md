@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ID CARD PRINT PORTAL</title>
+  <title>ID CARD PRINT & PDF EDITOR PORTAL</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- PDF.js Engine -->
+  <!-- PDF.js Legacy Bundle (100% Reliable Render) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
   
-  <!-- jsPDF Engine -->
+  <!-- jsPDF Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <!-- Cropper.js -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
-  <!-- Fabric.js -->
+  <!-- Fabric.js for Interactive Live Editing -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
 
   <style>
@@ -39,7 +39,7 @@
     body { 
       background: var(--bg-gradient); 
       min-height: 100vh;
-      padding: 20px 10px; 
+      padding: 15px 10px; 
       display: flex; 
       flex-direction: column; 
       align-items: center; 
@@ -48,14 +48,14 @@
     }
 
     .portal-main-heading {
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 800;
       letter-spacing: 1.5px;
       text-transform: uppercase;
       background: linear-gradient(135deg, #38bdf8 0%, #a855f7 50%, #f43f5e 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       text-align: center;
     }
 
@@ -142,12 +142,12 @@
       display: flex;
       justify-content: center;
       gap: 10px;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       flex-wrap: wrap;
     }
 
     .tab-btn {
-      padding: 10px 18px;
+      padding: 9px 16px;
       background: rgba(15, 23, 42, 0.8);
       border: 1px solid var(--border-color);
       color: var(--text-muted);
@@ -168,14 +168,14 @@
     #mainApp {
       display: none;
       width: 100%;
-      max-width: 1150px;
+      max-width: 1200px;
     }
 
     .container { 
       background: var(--card-bg); 
       backdrop-filter: blur(16px);
       border: 1px solid var(--border-color);
-      padding: 30px 20px; 
+      padding: 25px 20px; 
       border-radius: 20px; 
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4); 
       width: 100%; 
@@ -200,9 +200,9 @@
       background: linear-gradient(to right, #38bdf8, #a855f7, #ec4899);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      font-size: 24px; 
+      font-size: 22px; 
       font-weight: 700;
-      margin-bottom: 8px; 
+      margin-bottom: 6px; 
     }
 
     .tab-content { display: none; }
@@ -212,18 +212,18 @@
       display: flex; 
       gap: 15px; 
       justify-content: center; 
-      margin: 20px 0; 
+      margin: 15px 0; 
       flex-wrap: wrap; 
     }
 
     .upload-box { 
       border: 2px dashed rgba(56, 189, 248, 0.4); 
-      padding: 18px 15px; 
+      padding: 16px 14px; 
       border-radius: 14px; 
       cursor: pointer; 
       background: rgba(15, 23, 42, 0.6); 
       flex: 1; 
-      min-width: 240px; 
+      min-width: 220px; 
       transition: 0.3s;
     }
 
@@ -266,14 +266,14 @@
 
     .btn-group { 
       display: flex; 
-      gap: 12px; 
+      gap: 10px; 
       justify-content: center; 
-      margin-top: 20px; 
+      margin-top: 15px; 
       flex-wrap: wrap; 
     }
 
     .action-btn { 
-      padding: 12px 24px; 
+      padding: 10px 22px; 
       font-size: 13px; 
       font-weight: 600; 
       border: none; 
@@ -302,9 +302,9 @@
       background: rgba(15, 23, 42, 0.7);
       border: 1px solid var(--border-color);
       border-radius: 14px;
-      padding: 18px 20px;
+      padding: 14px 18px;
       max-width: 600px;
-      margin: 20px auto;
+      margin: 15px auto;
       text-align: center;
     }
 
@@ -312,62 +312,117 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      margin-top: 10px;
+      gap: 8px;
+      margin-top: 8px;
       flex-wrap: wrap;
     }
 
     .qty-input {
-      width: 80px;
-      padding: 8px 12px;
+      width: 70px;
+      padding: 6px 10px;
       border-radius: 8px;
       background: rgba(15, 23, 42, 0.9);
       border: 1px solid var(--accent-blue);
       color: #fff;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
       text-align: center;
       outline: none;
     }
 
     .quick-qty-btn {
-      padding: 6px 14px;
+      padding: 5px 12px;
       background: #334155;
       border: 1px solid rgba(255, 255, 255, 0.1);
       color: #fff;
       border-radius: 6px;
-      font-size: 12px;
+      font-size: 11px;
       cursor: pointer;
       font-weight: 600;
     }
 
-    .quick-qty-btn:hover { background: #475569; }
-
-    /* PDF Live Editor Viewport */
-    .editor-wrapper {
-      margin: 15px auto;
-      border: 2px solid #38bdf8;
-      border-radius: 8px;
-      background: #ffffff;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-      display: inline-block;
-      overflow: auto;
-      max-width: 100%;
+    /* ==================================================== */
+    /* PDFFILLER STYLE TOP TOOLBAR & CANVAS STYLING */
+    /* ==================================================== */
+    .pdffiller-header-bar {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px 12px 0 0;
+      padding: 8px 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
-    .tool-btn {
-      padding: 8px 14px;
-      font-size: 12px;
-      font-weight: 600;
-      border: none;
-      border-radius: 8px;
+    .pdffiller-tools {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .p-tool-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: #cbd5e1;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 500;
       cursor: pointer;
-      color: #fff;
-      background: #334155;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
       transition: 0.2s;
     }
-    .tool-btn:hover { background: #475569; }
-    .tool-btn.active { background: #0284c7; }
+
+    .p-tool-btn:hover {
+      background: #334155;
+      color: #fff;
+    }
+
+    .p-tool-btn.active {
+      background: #0284c7;
+      color: #fff;
+    }
+
+    .p-done-btn {
+      background: #f97316;
+      color: #fff;
+      border: none;
+      padding: 8px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
+      transition: 0.2s;
+    }
+
+    .p-done-btn:hover {
+      background: #ea580c;
+      transform: translateY(-1px);
+    }
+
+    .pdffiller-editor-viewport {
+      background: #64748b;
+      padding: 20px 10px;
+      border-radius: 0 0 12px 12px;
+      border: 1px solid #334155;
+      border-top: none;
+      overflow: auto;
+      max-height: 75vh;
+      display: flex;
+      justify-content: center;
+    }
+
+    .canvas-paper-shadow {
+      box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+      background: #ffffff;
+    }
 
     #cropModal {
       display: none;
@@ -443,7 +498,7 @@
     <button class="tab-btn active" onclick="switchTab('tab-cards')">💳 ID Card (5 Slots)</button>
     <button class="tab-btn" onclick="switchTab('tab-passport')">👤 Passport Photos</button>
     <button class="tab-btn" onclick="switchTab('tab-4x6')">🖼️ 4×6 Photo Print</button>
-    <button class="tab-btn" onclick="switchTab('tab-live-pdf')">🛠️ Live PDF Text Editor</button>
+    <button class="tab-btn" onclick="switchTab('tab-live-pdf')">🛠️ Live PDF Editor (pdfFiller)</button>
   </div>
 
   <div class="container">
@@ -596,50 +651,66 @@
       </div>
     </div>
 
-    <!-- TAB 4: LIVE PDF TEXT EDITOR -->
+    <!-- TAB 4: PDFFILLER STYLE LIVE PDF EDITOR -->
     <div id="tab-live-pdf" class="tab-content">
-      <div class="badge">Direct Live PDF Editor • Real-time View & Edit</div>
+      <div class="badge">pdfFiller Style Live Editor • In-Place Text Editing</div>
       <h1>Live PDF Document & Text Editor</h1>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">PDF लोड करें। इसके ऊपर <strong>नया टेक्स्ट, वाइटआउट या साइन</strong> जोड़कर सीधे एडिट करें।</p>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">PDF सिलेक्ट करें। सभी टेक्स्ट <strong>डॉटेड बॉक्सेस में एडिटेबल</strong> हो जाएंगे।</p>
 
-      <div class="upload-section">
-        <label class="upload-box" for="pdfDirectInput" style="max-width: 420px;">
+      <div class="upload-section" style="margin-bottom: 15px;">
+        <label class="upload-box" for="pdfDirectInput" style="max-width: 380px;">
           <strong style="display:block; font-size:14px; margin-bottom:4px; color:var(--accent-blue);">📄 Select PDF File to Edit</strong>
           <div id="pdfDirectName" style="font-size: 12px; color: var(--text-muted);">क्लिक करके .pdf फाइल लोड करें</div>
         </label>
         <input type="file" id="pdfDirectInput" accept="application/pdf">
       </div>
 
-      <!-- Controls Panel -->
-      <div id="pdfToolPanel" style="display:none; margin-bottom: 15px;">
-        <div class="btn-group" style="margin-top:0;">
-          <button id="pdfAddTextBtn" class="tool-btn">✍️ Add Text</button>
-          
-          <label class="tool-btn" for="pdfStampUpload" style="cursor:pointer; margin-bottom:0;">
-            🖼️ Add Stamp / Image
-          </label>
-          <input type="file" id="pdfStampUpload" accept="image/*">
+      <!-- pdfFiller Top Menu Bar -->
+      <div id="pdfEditorContainer" style="display:none; text-align: left;">
+        
+        <div class="pdffiller-header-bar">
+          <div class="pdffiller-tools">
+            <button id="pToolText" class="p-tool-btn" title="Add Text">
+              <span>✍️</span><span>Text</span>
+            </button>
+            <button id="pToolSign" class="p-tool-btn" title="Sign">
+              <span>✒️</span><span>Sign</span>
+            </button>
+            <button id="pToolErase" class="p-tool-btn" title="Erase / Whiteout">
+              <span>🧼</span><span>Erase</span>
+            </button>
+            <button id="pToolBlackout" class="p-tool-btn" title="Blackout">
+              <span>⬛</span><span>Blackout</span>
+            </button>
+            <label class="p-tool-btn" for="pStampUpload" style="margin-bottom:0; cursor:pointer;" title="Add Image">
+              <span>🖼️</span><span>Image</span>
+            </label>
+            <input type="file" id="pStampUpload" accept="image/*">
+            <button id="pToolHighlight" class="p-tool-btn" title="Highlight">
+              <span>🖍️</span><span>Highlight</span>
+            </button>
+            <button id="pToolDelete" class="p-tool-btn" style="color:#f87171;" title="Delete Selected">
+              <span>🗑️</span><span>Delete</span>
+            </button>
+          </div>
 
-          <button id="pdfWhiteoutBtn" class="tool-btn">⬜ Whiteout Box</button>
-          <button id="pdfDrawBtn" class="tool-btn">✏️ Freehand Sign</button>
-          <button id="pdfDeleteBtn" class="tool-btn" style="background: rgba(239, 68, 68, 0.3);">🗑️ Delete</button>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div style="font-size:12px; color:#94a3b8; display:flex; align-items:center; gap:6px;">
+              <button id="pPrevPageBtn" class="quick-qty-btn">◀</button>
+              <span>Page <b id="pCurPage" style="color:#fff;">1</b> / <span id="pTotalPages">1</span></span>
+              <button id="pNextPageBtn" class="quick-qty-btn">▶</button>
+            </div>
+            <button id="pDoneDownloadBtn" class="p-done-btn">💾 DONE / DOWNLOAD PDF</button>
+          </div>
         </div>
 
-        <div id="pdfPageNav" style="display:flex; justify-content:center; align-items:center; gap:10px; margin-top:10px; font-size:13px; color:var(--accent-blue);">
-          <button id="pdfPrevPage" class="tool-btn">◀ Prev</button>
-          <span>Page: <strong id="pdfCurPageNum">1</strong> / <span id="pdfTotalPageNum">1</span></span>
-          <button id="pdfNextPage" class="tool-btn">Next ▶</button>
+        <!-- Viewport -->
+        <div class="pdffiller-editor-viewport">
+          <div class="canvas-paper-shadow">
+            <canvas id="pdfFabricCanvas"></canvas>
+          </div>
         </div>
-      </div>
 
-      <!-- Live PDF Canvas Viewport -->
-      <div id="pdfViewportArea" style="display:none;">
-        <div class="editor-wrapper">
-          <canvas id="pdfFabricCanvas"></canvas>
-        </div>
-        <div class="btn-group">
-          <button id="downloadLivePdfBtn" class="action-btn btn-download">📥 Download Edited PDF</button>
-        </div>
       </div>
     </div>
 
@@ -1142,14 +1213,14 @@
   });
 
   // ==========================================================
-  // TAB 4: LIVE PDF DIRECT RENDERER & INTERACTIVE EDITOR
+  // TAB 4: PDFFILLER LIVE DOCUMENT & TEXT IN-PLACE ENGINE
   // ==========================================================
   let pdfDocObj = null;
   let pdfPageNum = 1;
   let pdfPageCount = 1;
   let pdfFabric = null;
   let pdfViewportW = 595, pdfViewportH = 842;
-  let pdfDrawingActive = false;
+  let isDrawMode = false;
 
   document.getElementById('pdfDirectInput').addEventListener('change', function(e) {
     const file = e.target.files[0];
@@ -1165,13 +1236,11 @@
         pdfPageCount = pdf.numPages;
         pdfPageNum = 1;
 
-        document.getElementById('pdfTotalPageNum').innerText = pdfPageCount;
-        document.getElementById('pdfCurPageNum').innerText = pdfPageNum;
+        document.getElementById('pTotalPages').innerText = pdfPageCount;
+        document.getElementById('pCurPage').innerText = pdfPageNum;
+        document.getElementById('pdfEditorContainer').style.display = 'block';
 
-        document.getElementById('pdfToolPanel').style.display = 'block';
-        document.getElementById('pdfViewportArea').style.display = 'block';
-
-        renderLivePdfPage(pdfPageNum);
+        renderPdfFillerEngine(pdfPageNum);
       }).catch(err => {
         alert('PDF लोड करने में त्रुटि: ' + err.message);
       });
@@ -1179,12 +1248,11 @@
     reader.readAsArrayBuffer(file);
   });
 
-  function renderLivePdfPage(pNum) {
+  function renderPdfFillerEngine(pNum) {
     if (!pdfDocObj) return;
 
     pdfDocObj.getPage(pNum).then(function(page) {
-      // 1.5x scale for sharp readable quality
-      const viewport = page.getViewport({ scale: 1.5 });
+      const viewport = page.getViewport({ scale: 1.6 });
       pdfViewportW = viewport.width;
       pdfViewportH = viewport.height;
 
@@ -1207,7 +1275,7 @@
         pdfFabric.setHeight(viewport.height);
         pdfFabric.clear();
 
-        // Directly load background image so it's guaranteed 100% visible
+        // 1. Set PDF background
         fabric.Image.fromURL(bgImgURL, function(img) {
           img.set({
             left: 0,
@@ -1217,51 +1285,135 @@
           });
           pdfFabric.add(img);
           img.sendToBack();
-          pdfFabric.requestRenderAll();
+
+          // 2. Extract Text Items & Create pdfFiller Dotted Editable Boxes
+          page.getTextContent().then(function(textContent) {
+            if (textContent && textContent.items) {
+              textContent.items.forEach(function(textItem) {
+                const str = textItem.str;
+                if (!str || str.trim() === '') return;
+
+                const tx = pdfjsLib.Util.transform(viewport.transform, textItem.transform);
+                const fontSize = Math.round(Math.sqrt((tx[0] * tx[0]) + (tx[1] * tx[1]))) || 13;
+                const posX = Math.round(tx[4]);
+                const posY = Math.round(tx[5] - fontSize);
+
+                // pdfFiller Style Editable Dotted Box
+                const editableText = new fabric.IText(str, {
+                  left: posX,
+                  top: posY,
+                  fontSize: fontSize,
+                  fontFamily: 'Poppins, Arial, sans-serif',
+                  fill: '#0f172a',
+                  backgroundColor: '#ffffff',
+                  stroke: '#64748b',
+                  strokeWidth: 1,
+                  strokeDashArray: [4, 4], // pdfFiller signature dotted border
+                  padding: 2,
+                  cornerColor: '#0284c7',
+                  cornerSize: 6,
+                  transparentCorners: false
+                });
+
+                pdfFabric.add(editableText);
+              });
+            }
+            pdfFabric.requestRenderAll();
+          });
         });
       });
     });
   }
 
-  document.getElementById('pdfPrevPage').addEventListener('click', () => {
+  // Page Controls
+  document.getElementById('pPrevPageBtn').addEventListener('click', () => {
     if (pdfPageNum <= 1) return;
     pdfPageNum--;
-    document.getElementById('pdfCurPageNum').innerText = pdfPageNum;
-    renderLivePdfPage(pdfPageNum);
+    document.getElementById('pCurPage').innerText = pdfPageNum;
+    renderPdfFillerEngine(pdfPageNum);
   });
 
-  document.getElementById('pdfNextPage').addEventListener('click', () => {
+  document.getElementById('pNextPageBtn').addEventListener('click', () => {
     if (pdfPageNum >= pdfPageCount) return;
     pdfPageNum++;
-    document.getElementById('pdfCurPageNum').innerText = pdfPageNum;
-    renderLivePdfPage(pdfPageNum);
+    document.getElementById('pCurPage').innerText = pdfPageNum;
+    renderPdfFillerEngine(pdfPageNum);
   });
 
-  // Tools
-  document.getElementById('pdfAddTextBtn').addEventListener('click', () => {
+  // pdfFiller Toolbar Actions
+  document.getElementById('pToolText').addEventListener('click', () => {
     if (!pdfFabric) return;
-    const txt = new fabric.IText('नया टेक्स्ट यहाँ लिखें', {
-      left: 100,
-      top: 100,
-      fontSize: 18,
-      fill: '#000000',
+    const txt = new fabric.IText('Type here...', {
+      left: 80,
+      top: 80,
+      fontSize: 16,
+      fill: '#0f172a',
       backgroundColor: '#ffffff',
-      fontFamily: 'Poppins',
-      cornerColor: '#38bdf8',
-      transparentCorners: false
+      stroke: '#0284c7',
+      strokeWidth: 1,
+      strokeDashArray: [4, 4],
+      padding: 3,
+      fontFamily: 'Poppins'
     });
     pdfFabric.add(txt);
     pdfFabric.setActiveObject(txt);
     pdfFabric.requestRenderAll();
   });
 
-  document.getElementById('pdfStampUpload').addEventListener('change', function(e) {
+  document.getElementById('pToolErase').addEventListener('click', () => {
+    if (!pdfFabric) return;
+    const whiteout = new fabric.Rect({
+      left: 100,
+      top: 100,
+      width: 130,
+      height: 25,
+      fill: '#ffffff',
+      stroke: '#cbd5e1',
+      strokeWidth: 1,
+      cornerColor: '#0284c7'
+    });
+    pdfFabric.add(whiteout);
+    pdfFabric.setActiveObject(whiteout);
+    pdfFabric.requestRenderAll();
+  });
+
+  document.getElementById('pToolBlackout').addEventListener('click', () => {
+    if (!pdfFabric) return;
+    const blackout = new fabric.Rect({
+      left: 100,
+      top: 100,
+      width: 130,
+      height: 25,
+      fill: '#000000',
+      cornerColor: '#0284c7'
+    });
+    pdfFabric.add(blackout);
+    pdfFabric.setActiveObject(blackout);
+    pdfFabric.requestRenderAll();
+  });
+
+  document.getElementById('pToolHighlight').addEventListener('click', () => {
+    if (!pdfFabric) return;
+    const hl = new fabric.Rect({
+      left: 100,
+      top: 100,
+      width: 140,
+      height: 22,
+      fill: 'rgba(253, 224, 71, 0.45)',
+      cornerColor: '#0284c7'
+    });
+    pdfFabric.add(hl);
+    pdfFabric.setActiveObject(hl);
+    pdfFabric.requestRenderAll();
+  });
+
+  document.getElementById('pStampUpload').addEventListener('change', function(e) {
     if (!pdfFabric || !e.target.files[0]) return;
     const r = new FileReader();
     r.onload = function(f) {
       fabric.Image.fromURL(f.target.result, function(img) {
-        img.scaleToWidth(150);
-        img.set({ left: 100, top: 100, cornerColor: '#38bdf8' });
+        img.scaleToWidth(140);
+        img.set({ left: 100, top: 100, cornerColor: '#0284c7' });
         pdfFabric.add(img);
         pdfFabric.setActiveObject(img);
         pdfFabric.requestRenderAll();
@@ -1271,41 +1423,22 @@
     this.value = '';
   });
 
-  document.getElementById('pdfWhiteoutBtn').addEventListener('click', () => {
+  const pToolSign = document.getElementById('pToolSign');
+  pToolSign.addEventListener('click', () => {
     if (!pdfFabric) return;
-    const rect = new fabric.Rect({
-      left: 100,
-      top: 100,
-      width: 140,
-      height: 35,
-      fill: '#ffffff',
-      stroke: '#cbd5e1',
-      strokeWidth: 1,
-      cornerColor: '#38bdf8',
-      transparentCorners: false
-    });
-    pdfFabric.add(rect);
-    pdfFabric.setActiveObject(rect);
-    pdfFabric.requestRenderAll();
-  });
+    isDrawMode = !isDrawMode;
+    pdfFabric.isDrawingMode = isDrawMode;
 
-  const pdfDrawBtn = document.getElementById('pdfDrawBtn');
-  pdfDrawBtn.addEventListener('click', () => {
-    if (!pdfFabric) return;
-    pdfDrawingActive = !pdfDrawingActive;
-    pdfFabric.isDrawingMode = pdfDrawingActive;
-    if (pdfDrawingActive) {
-      pdfDrawBtn.classList.add('active');
-      pdfDrawBtn.innerText = '🛑 Stop Draw';
+    if (isDrawMode) {
+      pToolSign.classList.add('active');
       pdfFabric.freeDrawingBrush.color = '#000000';
-      pdfFabric.freeDrawingBrush.width = 3;
+      pdfFabric.freeDrawingBrush.width = 2.5;
     } else {
-      pdfDrawBtn.classList.remove('active');
-      pdfDrawBtn.innerText = '✏️ Freehand Sign';
+      pToolSign.classList.remove('active');
     }
   });
 
-  document.getElementById('pdfDeleteBtn').addEventListener('click', () => {
+  document.getElementById('pToolDelete').addEventListener('click', () => {
     if (!pdfFabric) return;
     const obj = pdfFabric.getActiveObject();
     if (obj) {
@@ -1314,17 +1447,37 @@
     }
   });
 
-  document.getElementById('downloadLivePdfBtn').addEventListener('click', () => {
+  // Done / High Resolution PDF Download
+  document.getElementById('pDoneDownloadBtn').addEventListener('click', () => {
     if (!pdfFabric) return;
+
     pdfFabric.discardActiveObject();
+    
+    // Remove dashed helper borders before PDF render
+    pdfFabric.getObjects().forEach(obj => {
+      if (obj.strokeDashArray) {
+        obj.set({ stroke: 'transparent', strokeWidth: 0 });
+      }
+    });
+
     pdfFabric.requestRenderAll();
 
-    const dataURL = pdfFabric.toDataURL({ format: 'jpeg', quality: 1.0, multiplier: 2.0 });
-    const { jsPDF } = window.jspdf;
-    const orient = pdfViewportW > pdfViewportH ? 'landscape' : 'portrait';
-    const pdf = new jsPDF({ orientation: orient, unit: 'pt', format: [pdfViewportW, pdfViewportH] });
-    pdf.addImage(dataURL, 'JPEG', 0, 0, pdfViewportW, pdfViewportH);
-    pdf.save(`Edited_Document_Page_${pdfPageNum}.pdf`);
+    setTimeout(() => {
+      const dataURL = pdfFabric.toDataURL({ format: 'jpeg', quality: 1.0, multiplier: 2.0 });
+      const { jsPDF } = window.jspdf;
+      const orient = pdfViewportW > pdfViewportH ? 'landscape' : 'portrait';
+      const pdf = new jsPDF({ orientation: orient, unit: 'pt', format: [pdfViewportW, pdfViewportH] });
+      pdf.addImage(dataURL, 'JPEG', 0, 0, pdfViewportW, pdfViewportH);
+      pdf.save(`Edited_Document_Page_${pdfPageNum}.pdf`);
+
+      // Restore dashed borders for editing
+      pdfFabric.getObjects().forEach(obj => {
+        if (obj.type === 'i-text') {
+          obj.set({ stroke: '#64748b', strokeWidth: 1, strokeDashArray: [4, 4] });
+        }
+      });
+      pdfFabric.requestRenderAll();
+    }, 150);
   });
 
   function initAllCanvases() {
