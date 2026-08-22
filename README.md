@@ -292,8 +292,7 @@
       cursor: not-allowed; 
     }
 
-    /* Passport Control Panel */
-    .passport-control-panel {
+    .control-panel {
       background: rgba(15, 23, 42, 0.7);
       border: 1px solid var(--border-color);
       border-radius: 14px;
@@ -326,7 +325,7 @@
     }
 
     .quick-qty-btn {
-      padding: 6px 12px;
+      padding: 6px 14px;
       background: #334155;
       border: 1px solid rgba(255, 255, 255, 0.1);
       color: #fff;
@@ -338,7 +337,6 @@
 
     .quick-qty-btn:hover { background: #475569; }
 
-    /* Modal for Crop */
     #cropModal {
       display: none;
       position: fixed;
@@ -412,7 +410,7 @@
   <div class="tab-nav">
     <button class="tab-btn active" onclick="switchTab('tab-cards')">💳 ID Card (5 Slots)</button>
     <button class="tab-btn" onclick="switchTab('tab-passport')">👤 Passport Photos (Custom Qty)</button>
-    <button class="tab-btn" onclick="switchTab('tab-4x6')">🖼️ 4×6 Photo Print (1200×1800)</button>
+    <button class="tab-btn" onclick="switchTab('tab-4x6')">🖼️ 4×6 Photo Print (Max 4 Qty)</button>
   </div>
 
   <div class="container">
@@ -468,12 +466,12 @@
       </div>
     </div>
 
-    <!-- TAB 2: PASSPORT SIZE PHOTO SYSTEM (MANUAL QUANTITY) -->
+    <!-- TAB 2: PASSPORT SIZE PHOTO SYSTEM -->
     <div id="tab-passport" class="tab-content">
       <div class="badge">Standard 35mm × 45mm • Manual Quantity Selection</div>
       <h1>Passport Photo Generator</h1>
       <div style="font-size: 13px; color: var(--accent-purple); font-weight: 600; margin-bottom: 4px;">by ONEPLUS</div>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">फ़ोटो अपलोड करें, अपनी ज़रूरत के अनुसार संख्या (Quantity) चुनें और शीट तैयार करें।</p>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">फ़ोटो अपलोड करें, संख्या (Quantity) चुनें और शीट तैयार करें।</p>
 
       <div class="upload-section">
         <label class="upload-box" for="passportInput" style="max-width: 380px;">
@@ -490,17 +488,16 @@
         </div>
       </div>
 
-      <!-- Manual Quantity Selector Control -->
-      <div class="passport-control-panel">
+      <div class="control-panel">
         <span style="font-size: 14px; font-weight:600; color: var(--accent-blue);">🔢 फ़ोटो की संख्या (Quantity) चुनें:</span>
         <div class="qty-select-group">
           <input type="number" id="passportQtyInput" class="qty-input" value="8" min="1" max="30">
-          <button class="quick-qty-btn" onclick="setPassportQty(4)">4 Photos</button>
-          <button class="quick-qty-btn" onclick="setPassportQty(6)">6 Photos</button>
-          <button class="quick-qty-btn" onclick="setPassportQty(8)">8 Photos</button>
-          <button class="quick-qty-btn" onclick="setPassportQty(12)">12 Photos</button>
-          <button class="quick-qty-btn" onclick="setPassportQty(16)">16 Photos</button>
-          <button class="quick-qty-btn" onclick="setPassportQty(30)">30 Photos</button>
+          <button class="quick-qty-btn" onclick="setPassportQty(4)">4</button>
+          <button class="quick-qty-btn" onclick="setPassportQty(6)">6</button>
+          <button class="quick-qty-btn" onclick="setPassportQty(8)">8</button>
+          <button class="quick-qty-btn" onclick="setPassportQty(12)">12</button>
+          <button class="quick-qty-btn" onclick="setPassportQty(16)">16</button>
+          <button class="quick-qty-btn" onclick="setPassportQty(30)">30</button>
         </div>
       </div>
 
@@ -520,12 +517,12 @@
       </div>
     </div>
 
-    <!-- TAB 3: 4x6 PHOTO PRINT (1200x1800 px) -->
+    <!-- TAB 3: 4x6 PHOTO PRINT (MANUAL QUANTITY MAX 4) -->
     <div id="tab-4x6" class="tab-content">
-      <div class="badge">Clear 300 DPI • 1200 × 1800 px</div>
+      <div class="badge">Clear 300 DPI • 1200 × 1800 px • Max 4 Photos</div>
       <h1>4×6 Photo Print Generator</h1>
       <div style="font-size: 13px; color: var(--accent-purple); font-weight: 600; margin-bottom: 4px;">by ONEPLUS</div>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">4×6 इंच (10.16 × 15.24 cm) फ़ोटो को 300 DPI में क्रॉप व प्रिंट करें।</p>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">4×6 इंच फ़ोटो अपलोड करें, 1 से 4 तक संख्या चुनें और A4 या 4×6 शीट PDF निकालें।</p>
 
       <div class="upload-section">
         <label class="upload-box" for="photo4x6Input" style="max-width: 380px;">
@@ -537,14 +534,36 @@
 
       <div class="preview-container">
         <div class="preview-box">
-          <h4>4×6 Photo Canvas</h4>
-          <canvas id="canvas4x6" width="1200" height="1800" style="width: 160px;"></canvas>
+          <h4>Cropped 4×6 Photo Canvas</h4>
+          <canvas id="canvas4x6" width="1200" height="1800" style="width: 150px;"></canvas>
+        </div>
+      </div>
+
+      <!-- Manual Quantity Selection (Max 4) -->
+      <div class="control-panel">
+        <span style="font-size: 14px; font-weight:600; color: var(--accent-blue);">🔢 A4 शीट पर 4×6 फ़ोटो की संख्या चुनें (Max 4):</span>
+        <div class="qty-select-group">
+          <input type="number" id="photo4x6QtyInput" class="qty-input" value="2" min="1" max="4">
+          <button class="quick-qty-btn" onclick="set4x6Qty(1)">1 Photo</button>
+          <button class="quick-qty-btn" onclick="set4x6Qty(2)">2 Photos</button>
+          <button class="quick-qty-btn" onclick="set4x6Qty(3)">3 Photos</button>
+          <button class="quick-qty-btn" onclick="set4x6Qty(4)">4 Photos</button>
         </div>
       </div>
 
       <div class="btn-group">
-        <button id="downloadDirect4x6Pdf" class="action-btn btn-download" disabled>📥 Direct 4×6 Size PDF Download</button>
-        <button id="downloadA4TwoPhotosPdf" class="action-btn btn-add" disabled>📄 A4 Sheet PDF (2 Photos in 1 A4)</button>
+        <button id="downloadDirect4x6Pdf" class="action-btn btn-download" disabled>📥 Direct 1 Photo (4×6 Paper PDF)</button>
+        <button id="generateA4Custom4x6Btn" class="action-btn btn-add" disabled>📄 Generate Selected Qty on A4 Sheet</button>
+      </div>
+
+      <div style="margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+        <h3 id="photo4x6SheetTitle" style="font-size: 15px; color: var(--accent-blue); margin-bottom: 6px;">A4 4×6 Photo Sheet Preview</h3>
+        <div style="display:inline-block; max-width: 250px; background:#fff; border-radius:6px; overflow:hidden; border: 1px solid #475569;">
+          <canvas id="a4_4x6_SheetCanvas" width="2480" height="3508" style="width: 100%; display:block;"></canvas>
+        </div>
+        <div class="btn-group">
+          <button id="downloadA4_4x6_PdfBtn" class="action-btn btn-download" disabled>📥 Download A4 4×6 Sheet PDF</button>
+        </div>
       </div>
     </div>
 
@@ -702,7 +721,7 @@
       if (cropper) cropper.destroy();
 
       let targetRatio = 1013 / 638;
-      if (type === 'passport') targetRatio = 35 / 45; // 35mm x 45mm
+      if (type === 'passport') targetRatio = 35 / 45;
       if (type === 'photo4x6') targetRatio = 1200 / 1800; // 4x6 Portrait
 
       cropper = new Cropper(imageToCrop, {
@@ -744,7 +763,7 @@
       ctx4x6.drawImage(croppedCanvas, 0, 0);
       photo4x6Loaded = true;
       document.getElementById('downloadDirect4x6Pdf').disabled = false;
-      document.getElementById('downloadA4TwoPhotosPdf').disabled = false;
+      document.getElementById('generateA4Custom4x6Btn').disabled = false;
     }
 
     closeCropper();
@@ -867,7 +886,7 @@
   });
 
   // ==========================================
-  // TAB 2: PASSPORT SIZE PHOTOS (MANUAL QUANTITY ENGINE)
+  // TAB 2: PASSPORT SIZE PHOTOS (35x45 mm)
   // ==========================================
   const passportCanvas = document.getElementById('passportCanvas');
   const passportCtx = passportCanvas.getContext('2d');
@@ -888,7 +907,6 @@
     }
   });
 
-  // Render Manual Quantity Photos onto 4x6 Sheet (Landscape 6x4 inch = 1800x1200 px)
   document.getElementById('make4x6CustomPassportBtn').addEventListener('click', () => {
     if (!passportLoaded) return;
     passportSheetFormat = '4x6';
@@ -900,7 +918,7 @@
     passportSheetCtx.fillStyle = '#ffffff';
     passportSheetCtx.fillRect(0, 0, 1800, 1200);
 
-    const pw = 413, ph = 531; // 35x45 mm
+    const pw = 413, ph = 531;
     const startX = 50, startY = 50, gapX = 20, gapY = 35;
     const maxCols = 4;
 
@@ -922,7 +940,6 @@
     document.getElementById('downloadPassportPdfBtn').disabled = false;
   });
 
-  // Render Manual Quantity Photos onto A4 Sheet (Portrait A4 = 2480x3508 px)
   document.getElementById('makeA4CustomPassportBtn').addEventListener('click', () => {
     if (!passportLoaded) return;
     passportSheetFormat = 'a4';
@@ -970,11 +987,18 @@
   });
 
   // ==========================================
-  // TAB 3: 4x6 PHOTO PRINT (1200x1800 px)
+  // TAB 3: 4x6 PHOTO PRINT (MANUAL QUANTITY MAX 4)
   // ==========================================
   const canvas4x6 = document.getElementById('canvas4x6');
   const ctx4x6 = canvas4x6.getContext('2d');
+  const a4_4x6_SheetCanvas = document.getElementById('a4_4x6_SheetCanvas');
+  const a4_4x6_SheetCtx = a4_4x6_SheetCanvas.getContext('2d');
+  const photo4x6QtyInput = document.getElementById('photo4x6QtyInput');
   let photo4x6Loaded = false;
+
+  function set4x6Qty(qty) {
+    photo4x6QtyInput.value = qty;
+  }
 
   document.getElementById('photo4x6Input').addEventListener('change', (e) => {
     if (e.target.files[0]) {
@@ -983,6 +1007,7 @@
     }
   });
 
+  // Direct 1 Photo on Single 4x6 Paper PDF
   document.getElementById('downloadDirect4x6Pdf').addEventListener('click', () => {
     if (!photo4x6Loaded) return;
     const { jsPDF } = window.jspdf;
@@ -991,25 +1016,47 @@
     pdf.save('Photo_4x6_Print.pdf');
   });
 
-  document.getElementById('downloadA4TwoPhotosPdf').addEventListener('click', () => {
+  // Generate 1 to 4 Photos on 1 A4 Sheet Layout
+  document.getElementById('generateA4Custom4x6Btn').addEventListener('click', () => {
     if (!photo4x6Loaded) return;
-    const tempCanvas = document.createElement('canvas');
-    tempCanvas.width = 2480; tempCanvas.height = 3508;
-    const tCtx = tempCanvas.getContext('2d');
-    tCtx.fillStyle = '#ffffff';
-    tCtx.fillRect(0, 0, 2480, 3508);
+    const qty = Math.max(1, Math.min(4, parseInt(photo4x6QtyInput.value) || 2));
 
-    tCtx.drawImage(canvas4x6, 40, 80, 1150, 1725);
-    tCtx.drawImage(canvas4x6, 1290, 80, 1150, 1725);
-    tCtx.strokeStyle = '#000000';
-    tCtx.lineWidth = 4;
-    tCtx.strokeRect(40, 80, 1150, 1725);
-    tCtx.strokeRect(1290, 80, 1150, 1725);
+    a4_4x6_SheetCanvas.width = 2480;
+    a4_4x6_SheetCanvas.height = 3508;
 
+    a4_4x6_SheetCtx.fillStyle = '#ffffff';
+    a4_4x6_SheetCtx.fillRect(0, 0, 2480, 3508);
+
+    // 4x6 exact proportions on A4 Sheet at 300 DPI: Width 1140px, Height 1680px
+    const pw = 1140, ph = 1680;
+    const gapX = 60, gapY = 60;
+    const startX = 70, startY = 40;
+
+    // Grid Coordinates for up to 4 Photos
+    const positions = [
+      { x: startX, y: startY },                       // Top-Left (1)
+      { x: startX + pw + gapX, y: startY },            // Top-Right (2)
+      { x: startX, y: startY + ph + gapY },            // Bottom-Left (3)
+      { x: startX + pw + gapX, y: startY + ph + gapY } // Bottom-Right (4)
+    ];
+
+    for (let i = 0; i < qty; i++) {
+      const pos = positions[i];
+      a4_4x6_SheetCtx.drawImage(canvas4x6, pos.x, pos.y, pw, ph);
+      a4_4x6_SheetCtx.strokeStyle = '#000000';
+      a4_4x6_SheetCtx.lineWidth = 4;
+      a4_4x6_SheetCtx.strokeRect(pos.x, pos.y, pw, ph);
+    }
+
+    document.getElementById('photo4x6SheetTitle').innerText = `A4 4×6 Photo Sheet (${qty} Photos on 1 A4)`;
+    document.getElementById('downloadA4_4x6_PdfBtn').disabled = false;
+  });
+
+  document.getElementById('downloadA4_4x6_PdfBtn').addEventListener('click', () => {
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    pdf.addImage(tempCanvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 210, 297);
-    pdf.save('Two_4x6_Photos_A4_Sheet.pdf');
+    pdf.addImage(a4_4x6_SheetCanvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 210, 297);
+    pdf.save(`4x6_Photos_A4_Sheet_${photo4x6QtyInput.value}_Qty.pdf`);
   });
 
   function initAllCanvases() {
@@ -1029,6 +1076,9 @@
     ctx4x6.font = 'bold 36px Poppins';
     ctx4x6.textAlign = 'center';
     ctx4x6.fillText('4×6 Photo Preview', 1200 / 2, 1800 / 2);
+
+    a4_4x6_SheetCtx.fillStyle = '#ffffff';
+    a4_4x6_SheetCtx.fillRect(0, 0, 2480, 3508);
   }
 </script>
 
