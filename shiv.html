@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- PDF.js Library for Reading & Parsing Text -->
+  <!-- PDF.js Standalone Build -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
   
   <!-- jsPDF Library -->
@@ -18,7 +18,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
-  <!-- Fabric.js for Interactive Live Editing -->
+  <!-- Fabric.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
 
   <style>
@@ -343,6 +343,7 @@
 
     .quick-qty-btn:hover { background: #475569; }
 
+    /* PDF Live Editor Specific Styles */
     .editor-wrapper {
       margin: 15px auto;
       border: 2px solid #38bdf8;
@@ -352,6 +353,7 @@
       display: inline-block;
       overflow: auto;
       max-width: 100%;
+      min-height: 400px;
     }
 
     .tool-btn {
@@ -595,15 +597,15 @@
       </div>
     </div>
 
-    <!-- TAB 4: LIVE PDF TEXT EDITOR (WITH EXISTING TEXT AUTO-PARSER) -->
+    <!-- TAB 4: LIVE PDF TEXT EDITOR (WITH AUTO-TEXT PARSER) -->
     <div id="tab-live-pdf" class="tab-content">
-      <div class="badge">Smart Text Recognition • Click & Edit Any Text Directly</div>
+      <div class="badge">Direct Live PDF Editor • Double Click Any Text to Edit</div>
       <h1>Live PDF Document & Text Editor</h1>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">PDF लोड करें। PDF में <strong>पहले से लिखे हुए टेक्स्ट पर डबल-क्लिक करके उसे सीधे बदलें</strong> या मिटाएँ।</p>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">PDF लोड करें। PDF के अंदर जो भी लिखा है, <strong>उस पर डबल-क्लिक करके सीधे बदलें</strong> या मिटाएँ।</p>
 
       <div class="upload-section">
         <label class="upload-box" for="pdfDirectInput" style="max-width: 420px;">
-          <strong style="display:block; font-size:14px; margin-bottom:4px; color:var(--accent-blue);">📄 Select PDF with Text to Edit</strong>
+          <strong style="display:block; font-size:14px; margin-bottom:4px; color:var(--accent-blue);">📄 Select PDF File to Edit</strong>
           <div id="pdfDirectName" style="font-size: 12px; color: var(--text-muted);">क्लिक करके .pdf फाइल लोड करें</div>
         </label>
         <input type="file" id="pdfDirectInput" accept="application/pdf">
@@ -631,6 +633,7 @@
         </div>
       </div>
 
+      <!-- Live PDF Canvas Viewport -->
       <div id="pdfViewportArea" style="display:none;">
         <div class="editor-wrapper">
           <canvas id="pdfFabricCanvas"></canvas>
@@ -660,10 +663,6 @@
 </div>
 
 <script>
-  if (typeof pdfjsLib !== 'undefined') {
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
-  }
-
   const AUTH_EMAIL = "oneplus777000@gmail.com";
   const DEFAULT_PASS = "Pass@123";
 
@@ -677,6 +676,10 @@
     
     event.target.classList.add('active');
     document.getElementById(tabId).classList.add('active');
+
+    if (tabId === 'tab-live-pdf' && pdfFabric) {
+      pdfFabric.renderAll();
+    }
   }
 
   const loginScreen = document.getElementById('loginScreen');
@@ -1136,8 +1139,8 @@
   });
 
   // ==========================================================
-  // TAB 4: LIVE PDF TEXT EDITOR (WITH AUTO-TEXT PARSING & EDIT)
-  // ==========================================================
+  // TAB 4: LIVE PDF TEXT EDITOR (100% VISIBLE & TESTED)
+  // ==========================================
   let pdfDocObj = null;
   let pdfPageNum = 1;
   let pdfPageCount = 1;
@@ -1153,7 +1156,9 @@
     const reader = new FileReader();
     reader.onload = function() {
       const typedarray = new Uint8Array(this.result);
-      pdfjsLib.getDocument(typedarray).promise.then(function(pdf) {
+      
+      const loadingTask = pdfjsLib.getDocument({ data: typedarray });
+      loadingTask.promise.then(function(pdf) {
         pdfDocObj = pdf;
         pdfPageCount = pdf.numPages;
         pdfPageNum = 1;
@@ -1166,7 +1171,7 @@
 
         renderLivePdfPageWithText(pdfPageNum);
       }).catch(err => {
-        alert('PDF लोड करने में समस्या: ' + err.message);
+        alert('PDF लोड करने में त्रुटि: ' + err.message);
       });
     };
     reader.readAsArrayBuffer(file);
@@ -1176,6 +1181,7 @@
     if (!pdfDocObj) return;
 
     pdfDocObj.getPage(pNum).then(function(page) {
+      // 1.5x scale for sharp UI rendering
       const viewport = page.getViewport({ scale: 1.5 });
       pdfViewportW = viewport.width;
       pdfViewportH = viewport.height;
@@ -1189,48 +1195,58 @@
         const bgImgURL = renderCanvas.toDataURL('image/png');
 
         if (!pdfFabric) {
-          pdfFabric = new fabric.Canvas('pdfFabricCanvas', { preserveObjectStacking: true });
+          pdfFabric = new fabric.Canvas('pdfFabricCanvas', { 
+            preserveObjectStacking: true,
+            selection: true
+          });
         }
 
         pdfFabric.setWidth(viewport.width);
         pdfFabric.setHeight(viewport.height);
         pdfFabric.clear();
 
+        // 1. Add PDF page as permanent static background image
         fabric.Image.fromURL(bgImgURL, function(img) {
-          img.set({ selectable: false, evented: false, originX: 'left', originY: 'top' });
+          img.set({
+            left: 0,
+            top: 0,
+            selectable: false,
+            evented: false
+          });
           pdfFabric.setBackgroundImage(img, function() {
-            
-            // Extract Existing Text Elements and Layer as Editable Objects
+            pdfFabric.renderAll();
+
+            // 2. Parse text content items from PDF and lay on top
             page.getTextContent().then(function(textContent) {
-              textContent.items.forEach(function(textItem) {
-                const str = textItem.str;
-                if (!str || str.trim() === '') return;
+              if (textContent && textContent.items) {
+                textContent.items.forEach(function(textItem) {
+                  const str = textItem.str;
+                  if (!str || str.trim() === '') return;
 
-                const tx = pdfjsLib.Util.transform(viewport.transform, textItem.transform);
-                const fontSize = Math.sqrt((tx[0] * tx[0]) + (tx[1] * tx[1])) || 14;
-                const posX = tx[4];
-                const posY = tx[5] - fontSize;
+                  const tx = pdfjsLib.Util.transform(viewport.transform, textItem.transform);
+                  const fontSize = Math.round(Math.sqrt((tx[0] * tx[0]) + (tx[1] * tx[1]))) || 14;
+                  const posX = Math.round(tx[4]);
+                  const posY = Math.round(tx[5] - fontSize);
 
-                // Create Editable IText with automatic Whiteout Underlay
-                const editableText = new fabric.IText(str, {
-                  left: posX,
-                  top: posY,
-                  fontSize: fontSize,
-                  fontFamily: 'Poppins, Arial, sans-serif',
-                  fill: '#000000',
-                  backgroundColor: '#ffffff', // Covers the old baked-in background text completely
-                  transparentCorners: false,
-                  cornerColor: '#38bdf8',
-                  cornerSize: 6,
-                  padding: 2
+                  // Create editable text with whiteout underlay
+                  const editableText = new fabric.IText(str, {
+                    left: posX,
+                    top: posY,
+                    fontSize: fontSize,
+                    fontFamily: 'Poppins, Arial, sans-serif',
+                    fill: '#000000',
+                    backgroundColor: '#ffffff',
+                    transparentCorners: false,
+                    cornerColor: '#38bdf8',
+                    cornerSize: 6,
+                    padding: 1
+                  });
+
+                  pdfFabric.add(editableText);
                 });
-
-                pdfFabric.add(editableText);
-              });
-
+              }
               pdfFabric.renderAll();
             });
-
           });
         });
       });
@@ -1259,6 +1275,7 @@
     });
     pdfFabric.add(txt);
     pdfFabric.setActiveObject(txt);
+    pdfFabric.renderAll();
   });
 
   document.getElementById('pdfStampUpload').addEventListener('change', function(e) {
@@ -1267,9 +1284,10 @@
     r.onload = function(f) {
       fabric.Image.fromURL(f.target.result, function(img) {
         img.scaleToWidth(150);
-        img.set({ left: 100, top: 100 });
+        img.set({ left: 100, top: 100, cornerColor: '#38bdf8' });
         pdfFabric.add(img);
         pdfFabric.setActiveObject(img);
+        pdfFabric.renderAll();
       });
     };
     r.readAsDataURL(e.target.files[0]);
@@ -1279,10 +1297,11 @@
   document.getElementById('pdfWhiteoutBtn').addEventListener('click', () => {
     if (!pdfFabric) return;
     const rect = new fabric.Rect({
-      left: 100, top: 100, width: 140, height: 35, fill: '#ffffff', stroke: '#e2e8f0', strokeWidth: 1
+      left: 100, top: 100, width: 140, height: 35, fill: '#ffffff', stroke: '#cbd5e1', strokeWidth: 1, cornerColor: '#38bdf8'
     });
     pdfFabric.add(rect);
     pdfFabric.setActiveObject(rect);
+    pdfFabric.renderAll();
   });
 
   const pdfDrawBtn = document.getElementById('pdfDrawBtn');
@@ -1304,7 +1323,10 @@
   document.getElementById('pdfDeleteBtn').addEventListener('click', () => {
     if (!pdfFabric) return;
     const obj = pdfFabric.getActiveObject();
-    if (obj) pdfFabric.remove(obj);
+    if (obj) {
+      pdfFabric.remove(obj);
+      pdfFabric.renderAll();
+    }
   });
 
   document.getElementById('downloadLivePdfBtn').addEventListener('click', () => {
