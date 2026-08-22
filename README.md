@@ -8,8 +8,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   
+  <!-- jsPDF Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
+  <!-- Cropper.js -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
@@ -119,6 +121,15 @@
       margin-top: 15px;
       font-size: 13px;
       color: var(--accent-blue);
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .reset-link {
+      display: inline-block;
+      margin-top: 10px;
+      font-size: 11px;
+      color: #94a3b8;
       cursor: pointer;
       text-decoration: underline;
     }
@@ -369,12 +380,13 @@
   ID CARD PRINT PORTAL
 </div>
 
+<!-- 1. Login Screen -->
 <div id="loginScreen" class="auth-box">
   <div class="badge">Protected Access</div>
   <h2 style="font-size: 22px; margin-bottom: 6px;">Sign In</h2>
   <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">Card Generator System</p>
 
-  <input type="email" id="loginEmail" class="login-input" placeholder="ईमेल आईडी दर्ज करें">
+  <input type="email" id="loginEmail" class="login-input" placeholder="ईमेल दर्ज करें (उदा. oneplus777000@gmail.com)" value="oneplus777000@gmail.com">
   <input type="password" id="loginPass" class="login-input" placeholder="पासवर्ड दर्ज करें">
   <button id="authBtn" class="login-btn">लॉगिन करें</button>
   <div id="errorMsg" class="error-msg">⚠️ गलत ईमेल आईडी या पासवर्ड!</div>
@@ -382,8 +394,12 @@
   <div>
     <span id="goToChangePwd" class="auth-link">🔑 Change Password?</span>
   </div>
+  <div>
+    <span id="forceResetBtn" class="reset-link">🔄 Reset Password to Default (Pass@123)</span>
+  </div>
 </div>
 
+<!-- 2. Change Password Screen -->
 <div id="changePwdScreen" class="auth-box" style="display:none;">
   <div class="badge">Security Settings</div>
   <h2 style="font-size: 20px; margin-bottom: 6px; color: var(--accent-blue);">🔑 Change Password</h2>
@@ -401,6 +417,7 @@
   </div>
 </div>
 
+<!-- 3. Main Portal Application -->
 <div id="mainApp">
   <div class="tab-nav">
     <button class="tab-btn active" onclick="switchTab('tab-cards')">💳 ID Card (5 Slots)</button>
@@ -411,6 +428,7 @@
   <div class="container">
     <button id="logoutBtn" class="logout-btn">🔒 Logout</button>
 
+    <!-- TAB 1: 5 CARDS SYSTEM -->
     <div id="tab-cards" class="tab-content active">
       <div class="badge">2.5mm Gap • Broad Black Border • 5 Cards</div>
       <h1>Card Generator System</h1>
@@ -459,6 +477,7 @@
       </div>
     </div>
 
+    <!-- TAB 2: PASSPORT SIZE PHOTO SYSTEM -->
     <div id="tab-passport" class="tab-content">
       <div class="badge">Standard 35mm × 45mm • Manual Quantity Selection</div>
       <h1>Passport Photo Generator</h1>
@@ -508,6 +527,7 @@
       </div>
     </div>
 
+    <!-- TAB 3: 4x6 PHOTO PRINT -->
     <div id="tab-4x6" class="tab-content">
       <div class="badge">Clear 300 DPI • 1200 × 1800 px • Max 4 Photos</div>
       <h1>4×6 Photo Print Generator</h1>
@@ -561,6 +581,7 @@
   </div>
 </div>
 
+<!-- Global Crop Modal -->
 <div id="cropModal">
   <div id="cropModalTitle" style="color:#fff; margin-bottom: 10px; font-weight: 600;">कार्ड/फ़ोटो का सही हिस्सा सेलेक्ट (Crop) करें:</div>
   <div class="crop-wrapper">
@@ -597,7 +618,486 @@
   const authBtn = document.getElementById('authBtn');
   const errorMsg = document.getElementById('errorMsg');
   const logoutBtn = document.getElementById('logoutBtn');
+  const forceResetBtn = document.getElementById('forceResetBtn');
 
   const goToChangePwd = document.getElementById('goToChangePwd');
   const backToLogin = document.getElementById('backToLogin');
-  const oldPassInput = document
+  const oldPassInput = document.getElementById('oldPassInput');
+  const newPassInput = document.getElementById('newPassInput');
+  const confirmPassInput = document.getElementById('confirmPassInput');
+  const saveNewPwdBtn = document.getElementById('saveNewPwdBtn');
+  const pwdStatusMsg = document.getElementById('pwdStatusMsg');
+
+  sessionStorage.removeItem('isLoggedIn');
+
+  // Quick One-Click Password Reset
+  forceResetBtn.addEventListener('click', () => {
+    localStorage.removeItem('system_auth_pwd');
+    alert('✅ पासवर्ड रीसेट हो चुका है!\nडिफ़ॉल्ट पासवर्ड: Pass@123\nअब आप लॉगिन कर सकते हैं।');
+    loginPass.value = DEFAULT_PASS;
+    errorMsg.style.display = 'none';
+  });
+
+  goToChangePwd.addEventListener('click', () => {
+    loginScreen.style.display = 'none';
+    changePwdScreen.style.display = 'block';
+    oldPassInput.value = '';
+    newPassInput.value = '';
+    confirmPassInput.value = '';
+    pwdStatusMsg.style.display = 'none';
+  });
+
+  backToLogin.addEventListener('click', () => {
+    changePwdScreen.style.display = 'none';
+    loginScreen.style.display = 'block';
+    errorMsg.style.display = 'none';
+  });
+
+  saveNewPwdBtn.addEventListener('click', () => {
+    const oldP = oldPassInput.value.trim();
+    const newP = newPassInput.value.trim();
+    const confP = confirmPassInput.value.trim();
+    const currentActivePass = getStoredPassword();
+
+    if (oldP !== currentActivePass) {
+      pwdStatusMsg.innerText = "❌ पुराना पासवर्ड गलत है!";
+      pwdStatusMsg.style.color = "#ef4444";
+      pwdStatusMsg.style.display = "block";
+      return;
+    }
+
+    if (newP.length < 4) {
+      pwdStatusMsg.innerText = "❌ नया पासवर्ड कम से कम 4 अक्षरों का होना चाहिए!";
+      pwdStatusMsg.style.color = "#ef4444";
+      pwdStatusMsg.style.display = "block";
+      return;
+    }
+
+    if (newP !== confP) {
+      pwdStatusMsg.innerText = "❌ नया पासवर्ड और कन्फर्म पासवर्ड मैच नहीं हो रहे!";
+      pwdStatusMsg.style.color = "#ef4444";
+      pwdStatusMsg.style.display = "block";
+      return;
+    }
+
+    localStorage.setItem('system_auth_pwd', newP);
+    pwdStatusMsg.innerText = "✅ पासवर्ड बदल गया! अब नए पासवर्ड से लॉगिन करें।";
+    pwdStatusMsg.style.color = "#34d399";
+    pwdStatusMsg.style.display = "block";
+
+    setTimeout(() => {
+      changePwdScreen.style.display = 'none';
+      loginScreen.style.display = 'block';
+      loginPass.value = '';
+    }, 1500);
+  });
+
+  // Smart Auto-Trim & Case Insensitive Login Engine
+  function handleLogin() {
+    const inputEmail = loginEmail.value.trim().toLowerCase();
+    const inputPass = loginPass.value.trim();
+    const currentPass = getStoredPassword().trim();
+
+    if (inputEmail === AUTH_EMAIL.toLowerCase() && inputPass === currentPass) {
+      sessionStorage.setItem('isLoggedIn', 'true');
+      loginScreen.style.display = 'none';
+      changePwdScreen.style.display = 'none';
+      mainApp.style.display = 'block';
+      errorMsg.style.display = 'none';
+      initAllCanvases();
+    } else {
+      errorMsg.style.display = 'block';
+      errorMsg.innerHTML = `⚠️ गलत आईडी या पासवर्ड!<br><small style="color:#94a3b8;">(पासवर्ड रीसेट करने के लिए नीचे Reset लिंक पर क्लिक करें)</small>`;
+    }
+  }
+
+  authBtn.addEventListener('click', handleLogin);
+  loginPass.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
+
+  logoutBtn.addEventListener('click', () => {
+    sessionStorage.removeItem('isLoggedIn');
+    mainApp.style.display = 'none';
+    changePwdScreen.style.display = 'none';
+    loginScreen.style.display = 'block';
+    loginPass.value = '';
+  });
+
+  // ==========================================
+  // CROPPING ENGINE
+  // ==========================================
+  let cropper = null;
+  let activeCropType = 'card_front';
+
+  const cropModal = document.getElementById('cropModal');
+  const imageToCrop = document.getElementById('imageToCrop');
+  const cropSaveBtn = document.getElementById('cropSaveBtn');
+  const cropCancelBtn = document.getElementById('cropCancelBtn');
+
+  function openCropEngine(file, type) {
+    activeCropType = type;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      imageToCrop.src = e.target.result;
+      cropModal.style.display = 'flex';
+      if (cropper) cropper.destroy();
+
+      let targetRatio = 1013 / 638;
+      if (type === 'passport') targetRatio = 35 / 45;
+      if (type === 'photo4x6') targetRatio = 1200 / 1800;
+
+      cropper = new Cropper(imageToCrop, {
+        aspectRatio: targetRatio,
+        viewMode: 1,
+        autoCropArea: 0.98
+      });
+    };
+    reader.readAsDataURL(file);
+  }
+
+  cropSaveBtn.addEventListener('click', () => {
+    if (!cropper) return;
+
+    if (activeCropType === 'card_front' || activeCropType === 'card_back') {
+      const croppedCanvas = cropper.getCroppedCanvas({ width: 1013, height: 638, imageSmoothingQuality: 'high' });
+      if (activeCropType === 'card_front') {
+        ctx1.clearRect(0, 0, CARD_W, CARD_H);
+        ctx1.drawImage(croppedCanvas, 0, 0);
+        img1Loaded = true;
+      } else {
+        ctx2.clearRect(0, 0, CARD_W, CARD_H);
+        ctx2.drawImage(croppedCanvas, 0, 0);
+        img2Loaded = true;
+      }
+      if (img1Loaded && img2Loaded) addCardBtn.disabled = false;
+    } 
+    else if (activeCropType === 'passport') {
+      const croppedCanvas = cropper.getCroppedCanvas({ width: 413, height: 531, imageSmoothingQuality: 'high' });
+      passportCtx.clearRect(0, 0, 413, 531);
+      passportCtx.drawImage(croppedCanvas, 0, 0);
+      passportLoaded = true;
+      document.getElementById('make4x6CustomPassportBtn').disabled = false;
+      document.getElementById('makeA4CustomPassportBtn').disabled = false;
+    }
+    else if (activeCropType === 'photo4x6') {
+      const croppedCanvas = cropper.getCroppedCanvas({ width: 1200, height: 1800, imageSmoothingQuality: 'high' });
+      ctx4x6.clearRect(0, 0, 1200, 1800);
+      ctx4x6.drawImage(croppedCanvas, 0, 0);
+      photo4x6Loaded = true;
+      document.getElementById('downloadDirect4x6Pdf').disabled = false;
+      document.getElementById('generateA4Custom4x6Btn').disabled = false;
+    }
+
+    closeCropper();
+  });
+
+  cropCancelBtn.addEventListener('click', closeCropper);
+
+  function closeCropper() {
+    cropModal.style.display = 'none';
+    if (cropper) {
+      cropper.destroy();
+      cropper = null;
+    }
+  }
+
+  // ==========================================
+  // TAB 1: 5 CARDS SYSTEM LOGIC
+  // ==========================================
+  const CARD_W = 1013, CARD_H = 638, A4_W = 2480, A4_H = 3508, GAP_2_5MM_PX = 30, MAX_CARDS = 5;
+  let addedCardsCount = 0, img1Loaded = false, img2Loaded = false;
+
+  const canvas1 = document.getElementById('canvas1');
+  const ctx1 = canvas1.getContext('2d');
+  const canvas2 = document.getElementById('canvas2');
+  const ctx2 = canvas2.getContext('2d');
+  const a4Canvas = document.getElementById('a4Canvas');
+  const a4Ctx = a4Canvas.getContext('2d');
+
+  const addCardBtn = document.getElementById('addCardBtn');
+  const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+  const resetPageBtn = document.getElementById('resetPageBtn');
+  const slotCounter = document.getElementById('slotCounter');
+
+  document.getElementById('card1Input').addEventListener('change', (e) => {
+    if (e.target.files[0]) {
+      document.getElementById('file1Name').innerText = e.target.files[0].name;
+      openCropEngine(e.target.files[0], 'card_front');
+    }
+  });
+
+  document.getElementById('card2Input').addEventListener('change', (e) => {
+    if (e.target.files[0]) {
+      document.getElementById('file2Name').innerText = e.target.files[0].name;
+      openCropEngine(e.target.files[0], 'card_back');
+    }
+  });
+
+  addCardBtn.addEventListener('click', () => {
+    if (addedCardsCount >= MAX_CARDS) return;
+    const totalPairWidth = (CARD_W * 2) + GAP_2_5MM_PX;
+    const startX = (A4_W - totalPairWidth) / 2;
+    const startY = 45;
+    const currentY = startY + (addedCardsCount * (CARD_H + 45));
+
+    a4Ctx.drawImage(canvas1, startX, currentY, CARD_W, CARD_H);
+    const backCardX = startX + CARD_W + GAP_2_5MM_PX;
+    a4Ctx.drawImage(canvas2, backCardX, currentY, CARD_W, CARD_H);
+
+    a4Ctx.strokeStyle = '#000000';
+    a4Ctx.lineWidth = 6;
+    a4Ctx.strokeRect(startX, currentY, CARD_W, CARD_H);
+    a4Ctx.strokeRect(backCardX, currentY, CARD_W, CARD_H);
+
+    addedCardsCount++;
+    if (addedCardsCount < MAX_CARDS) {
+      slotCounter.innerText = `Cards on Page: ${addedCardsCount} / ${MAX_CARDS} (Next Slot: #${addedCardsCount + 1})`;
+    } else {
+      slotCounter.innerText = `✅ Page Full: 5 / 5 Cards Added!`;
+    }
+
+    downloadPdfBtn.disabled = false;
+    clearCurrentCardInputs();
+  });
+
+  function clearCurrentCardInputs() {
+    [ctx1, ctx2].forEach((ctx, i) => {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, CARD_W, CARD_H);
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = 'bold 24px Poppins';
+      ctx.textAlign = 'center';
+      ctx.fillText(`${i === 0 ? 'Front' : 'Back'} Card Preview`, CARD_W / 2, CARD_H / 2);
+    });
+    document.getElementById('file1Name').innerText = 'फ़ोटो चुनें व क्रॉप करें';
+    document.getElementById('file2Name').innerText = 'फ़ोटो चुनें व क्रॉप करें';
+    document.getElementById('card1Input').value = '';
+    document.getElementById('card2Input').value = '';
+    img1Loaded = false; img2Loaded = false; addCardBtn.disabled = true;
+  }
+
+  function resetCardA4Sheet() {
+    addedCardsCount = 0;
+    a4Ctx.fillStyle = '#ffffff';
+    a4Ctx.fillRect(0, 0, A4_W, A4_H);
+    const totalPairWidth = (CARD_W * 2) + GAP_2_5MM_PX;
+    const startX = (A4_W - totalPairWidth) / 2;
+    for (let i = 0; i < MAX_CARDS; i++) {
+      const currentY = 45 + (i * (CARD_H + 45));
+      a4Ctx.strokeStyle = '#e2e8f0';
+      a4Ctx.lineWidth = 2;
+      a4Ctx.strokeRect(startX, currentY, CARD_W, CARD_H);
+      a4Ctx.strokeRect(startX + CARD_W + GAP_2_5MM_PX, currentY, CARD_W, CARD_H);
+    }
+    slotCounter.innerText = `Cards on Page: 0 / 5 (Next Slot: #1)`;
+    downloadPdfBtn.disabled = true;
+  }
+
+  resetPageBtn.addEventListener('click', () => {
+    if (confirm('क्या आप A4 शीट खाली करना चाहते हैं?')) {
+      resetCardA4Sheet();
+      clearCurrentCardInputs();
+    }
+  });
+
+  downloadPdfBtn.addEventListener('click', () => {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    pdf.addImage(a4Canvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 210, 297);
+    pdf.save(`A4_Cards_Sheet_${addedCardsCount}_Cards.pdf`);
+  });
+
+  // ==========================================
+  // TAB 2: PASSPORT SIZE PHOTOS (35x45 mm)
+  // ==========================================
+  const passportCanvas = document.getElementById('passportCanvas');
+  const passportCtx = passportCanvas.getContext('2d');
+  const passportSheetCanvas = document.getElementById('passportSheetCanvas');
+  const passportSheetCtx = passportSheetCanvas.getContext('2d');
+  const passportQtyInput = document.getElementById('passportQtyInput');
+  let passportLoaded = false;
+  let passportSheetFormat = '4x6';
+
+  function setPassportQty(qty) {
+    passportQtyInput.value = qty;
+  }
+
+  document.getElementById('passportInput').addEventListener('change', (e) => {
+    if (e.target.files[0]) {
+      document.getElementById('passportFileName').innerText = e.target.files[0].name;
+      openCropEngine(e.target.files[0], 'passport');
+    }
+  });
+
+  document.getElementById('make4x6CustomPassportBtn').addEventListener('click', () => {
+    if (!passportLoaded) return;
+    passportSheetFormat = '4x6';
+    const targetQty = Math.max(1, Math.min(8, parseInt(passportQtyInput.value) || 8));
+
+    passportSheetCanvas.width = 1800;
+    passportSheetCanvas.height = 1200;
+
+    passportSheetCtx.fillStyle = '#ffffff';
+    passportSheetCtx.fillRect(0, 0, 1800, 1200);
+
+    const pw = 413, ph = 531;
+    const startX = 50, startY = 50, gapX = 20, gapY = 35;
+    const maxCols = 4;
+
+    let placed = 0;
+    for (let r = 0; r < 2; r++) {
+      for (let c = 0; c < maxCols; c++) {
+        if (placed >= targetQty) break;
+        const x = startX + c * (pw + gapX);
+        const y = startY + r * (ph + gapY);
+        passportSheetCtx.drawImage(passportCanvas, x, y, pw, ph);
+        passportSheetCtx.strokeStyle = '#000000';
+        passportSheetCtx.lineWidth = 2;
+        passportSheetCtx.strokeRect(x, y, pw, ph);
+        placed++;
+      }
+    }
+
+    document.getElementById('passportSheetTitle').innerText = `Passport 4×6 Sheet (${targetQty} Photos Generated)`;
+    document.getElementById('downloadPassportPdfBtn').disabled = false;
+  });
+
+  document.getElementById('makeA4CustomPassportBtn').addEventListener('click', () => {
+    if (!passportLoaded) return;
+    passportSheetFormat = 'a4';
+    const targetQty = Math.max(1, Math.min(30, parseInt(passportQtyInput.value) || 30));
+
+    passportSheetCanvas.width = 2480;
+    passportSheetCanvas.height = 3508;
+
+    passportSheetCtx.fillStyle = '#ffffff';
+    passportSheetCtx.fillRect(0, 0, 2480, 3508);
+
+    const pw = 413, ph = 531;
+    const startX = 75, startY = 80, gapX = 30, gapY = 40;
+    const maxCols = 5;
+
+    let placed = 0;
+    for (let r = 0; r < 6; r++) {
+      for (let c = 0; c < maxCols; c++) {
+        if (placed >= targetQty) break;
+        const x = startX + c * (pw + gapX);
+        const y = startY + r * (ph + gapY);
+        passportSheetCtx.drawImage(passportCanvas, x, y, pw, ph);
+        passportSheetCtx.strokeStyle = '#000000';
+        passportSheetCtx.lineWidth = 2;
+        passportSheetCtx.strokeRect(x, y, pw, ph);
+        placed++;
+      }
+    }
+
+    document.getElementById('passportSheetTitle').innerText = `Passport A4 Sheet (${targetQty} Photos Generated)`;
+    document.getElementById('downloadPassportPdfBtn').disabled = false;
+  });
+
+  document.getElementById('downloadPassportPdfBtn').addEventListener('click', () => {
+    const { jsPDF } = window.jspdf;
+    if (passportSheetFormat === '4x6') {
+      const pdf = new jsPDF({ orientation: 'landscape', unit: 'in', format: [4, 6] });
+      pdf.addImage(passportSheetCanvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 6, 4);
+      pdf.save(`Passport_Photos_4x6_${passportQtyInput.value}_Qty.pdf`);
+    } else {
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      pdf.addImage(passportSheetCanvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 210, 297);
+      pdf.save(`Passport_Photos_A4_${passportQtyInput.value}_Qty.pdf`);
+    }
+  });
+
+  // ==========================================
+  // TAB 3: 4x6 PHOTO PRINT
+  // ==========================================
+  const canvas4x6 = document.getElementById('canvas4x6');
+  const ctx4x6 = canvas4x6.getContext('2d');
+  const a4_4x6_SheetCanvas = document.getElementById('a4_4x6_SheetCanvas');
+  const a4_4x6_SheetCtx = a4_4x6_SheetCanvas.getContext('2d');
+  const photo4x6QtyInput = document.getElementById('photo4x6QtyInput');
+  let photo4x6Loaded = false;
+
+  function set4x6Qty(qty) {
+    photo4x6QtyInput.value = qty;
+  }
+
+  document.getElementById('photo4x6Input').addEventListener('change', (e) => {
+    if (e.target.files[0]) {
+      document.getElementById('photo4x6FileName').innerText = e.target.files[0].name;
+      openCropEngine(e.target.files[0], 'photo4x6');
+    }
+  });
+
+  document.getElementById('downloadDirect4x6Pdf').addEventListener('click', () => {
+    if (!photo4x6Loaded) return;
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'in', format: [4, 6] });
+    pdf.addImage(canvas4x6.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 4, 6);
+    pdf.save('Photo_4x6_Print.pdf');
+  });
+
+  document.getElementById('generateA4Custom4x6Btn').addEventListener('click', () => {
+    if (!photo4x6Loaded) return;
+    const qty = Math.max(1, Math.min(4, parseInt(photo4x6QtyInput.value) || 2));
+
+    a4_4x6_SheetCanvas.width = 2480;
+    a4_4x6_SheetCanvas.height = 3508;
+
+    a4_4x6_SheetCtx.fillStyle = '#ffffff';
+    a4_4x6_SheetCtx.fillRect(0, 0, 2480, 3508);
+
+    const pw = 1140, ph = 1680;
+    const gapX = 60, gapY = 60;
+    const startX = 70, startY = 40;
+
+    const positions = [
+      { x: startX, y: startY },
+      { x: startX + pw + gapX, y: startY },
+      { x: startX, y: startY + ph + gapY },
+      { x: startX + pw + gapX, y: startY + ph + gapY }
+    ];
+
+    for (let i = 0; i < qty; i++) {
+      const pos = positions[i];
+      a4_4x6_SheetCtx.drawImage(canvas4x6, pos.x, pos.y, pw, ph);
+      a4_4x6_SheetCtx.strokeStyle = '#000000';
+      a4_4x6_SheetCtx.lineWidth = 4;
+      a4_4x6_SheetCtx.strokeRect(pos.x, pos.y, pw, ph);
+    }
+
+    document.getElementById('photo4x6SheetTitle').innerText = `A4 4×6 Photo Sheet (${qty} Photos on 1 A4)`;
+    document.getElementById('downloadA4_4x6_PdfBtn').disabled = false;
+  });
+
+  document.getElementById('downloadA4_4x6_PdfBtn').addEventListener('click', () => {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    pdf.addImage(a4_4x6_SheetCanvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 210, 297);
+    pdf.save(`4x6_Photos_A4_Sheet_${photo4x6QtyInput.value}_Qty.pdf`);
+  });
+
+  function initAllCanvases() {
+    clearCurrentCardInputs();
+    resetCardA4Sheet();
+
+    passportCtx.fillStyle = '#ffffff';
+    passportCtx.fillRect(0, 0, 413, 531);
+    passportCtx.fillStyle = '#94a3b8';
+    passportCtx.font = 'bold 20px Poppins';
+    passportCtx.textAlign = 'center';
+    passportCtx.fillText('Passport Preview', 413 / 2, 531 / 2);
+
+    ctx4x6.fillStyle = '#ffffff';
+    ctx4x6.fillRect(0, 0, 1200, 1800);
+    ctx4x6.fillStyle = '#94a3b8';
+    ctx4x6.font = 'bold 36px Poppins';
+    ctx4x6.textAlign = 'center';
+    ctx4x6.fillText('4×6 Photo Preview', 1200 / 2, 1800 / 2);
+
+    a4_4x6_SheetCtx.fillStyle = '#ffffff';
+    a4_4x6_SheetCtx.fillRect(0, 0, 2480, 3508);
+  }
+</script>
+
+</body>
+</html>
