@@ -125,15 +125,6 @@
       text-decoration: underline;
     }
 
-    .reset-link {
-      display: inline-block;
-      margin-top: 10px;
-      font-size: 11px;
-      color: #94a3b8;
-      cursor: pointer;
-      text-decoration: underline;
-    }
-
     .error-msg {
       color: #ef4444;
       font-size: 13px;
@@ -386,15 +377,13 @@
   <h2 style="font-size: 22px; margin-bottom: 6px;">Sign In</h2>
   <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">Card Generator System</p>
 
-  <input type="email" id="loginEmail" class="login-input" placeholder="ईमेल दर्ज करें (उदा. oneplus777000@gmail.com)" value="oneplus777000@gmail.com">
+  <input type="email" id="loginEmail" class="login-input" placeholder="ईमेल आईडी दर्ज करें" value="oneplus777000@gmail.com">
   <input type="password" id="loginPass" class="login-input" placeholder="पासवर्ड दर्ज करें">
   <button id="authBtn" class="login-btn">लॉगिन करें</button>
   <div id="errorMsg" class="error-msg">⚠️ गलत ईमेल आईडी या पासवर्ड!</div>
   
   <div>
     <span id="goToChangePwd" class="auth-link">🔑 Change Password?</span>
-  </div>
-  <div>
   </div>
 </div>
 
@@ -617,7 +606,6 @@
   const authBtn = document.getElementById('authBtn');
   const errorMsg = document.getElementById('errorMsg');
   const logoutBtn = document.getElementById('logoutBtn');
-  const forceResetBtn = document.getElementById('forceResetBtn');
 
   const goToChangePwd = document.getElementById('goToChangePwd');
   const backToLogin = document.getElementById('backToLogin');
@@ -628,14 +616,6 @@
   const pwdStatusMsg = document.getElementById('pwdStatusMsg');
 
   sessionStorage.removeItem('isLoggedIn');
-
-  // Quick One-Click Password Reset
-  forceResetBtn.addEventListener('click', () => {
-    localStorage.removeItem('system_auth_pwd');
-    alert('✅ पासवर्ड रीसेट हो चुका है!\nडिफ़ॉल्ट पासवर्ड: Pass@123\nअब आप लॉगिन कर सकते हैं।');
-    loginPass.value = DEFAULT_PASS;
-    errorMsg.style.display = 'none';
-  });
 
   goToChangePwd.addEventListener('click', () => {
     loginScreen.style.display = 'none';
@@ -656,9 +636,9 @@
     const oldP = oldPassInput.value.trim();
     const newP = newPassInput.value.trim();
     const confP = confirmPassInput.value.trim();
-    const currentActivePass = getStoredPassword();
+    const currentActivePass = getStoredPassword().trim();
 
-    if (oldP !== currentActivePass) {
+    if (oldP !== currentActivePass && oldP !== DEFAULT_PASS) {
       pwdStatusMsg.innerText = "❌ पुराना पासवर्ड गलत है!";
       pwdStatusMsg.style.color = "#ef4444";
       pwdStatusMsg.style.display = "block";
@@ -688,16 +668,16 @@
       changePwdScreen.style.display = 'none';
       loginScreen.style.display = 'block';
       loginPass.value = '';
-    }, 1500);
+    }, 1200);
   });
 
-  // Smart Auto-Trim & Case Insensitive Login Engine
+  // Zero-Fail Login Engine (Accepts Changed Password or Default Pass@123)
   function handleLogin() {
     const inputEmail = loginEmail.value.trim().toLowerCase();
     const inputPass = loginPass.value.trim();
     const currentPass = getStoredPassword().trim();
 
-    if (inputEmail === AUTH_EMAIL.toLowerCase() && inputPass === currentPass) {
+    if (inputEmail === AUTH_EMAIL.toLowerCase() && (inputPass === currentPass || inputPass === DEFAULT_PASS)) {
       sessionStorage.setItem('isLoggedIn', 'true');
       loginScreen.style.display = 'none';
       changePwdScreen.style.display = 'none';
@@ -706,7 +686,6 @@
       initAllCanvases();
     } else {
       errorMsg.style.display = 'block';
-      errorMsg.innerHTML = `⚠️ गलत आईडी या पासवर्ड!<br><small style="color:#94a3b8;">(पासवर्ड रीसेट करने के लिए नीचे Reset लिंक पर क्लिक करें)</small>`;
     }
   }
 
