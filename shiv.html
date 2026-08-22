@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- PDF.js Standalone for High-DPI Rendering -->
+  <!-- PDF.js Standalone (Worker-Free Inline Mode) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
   
   <!-- PDF-LIB (Pure Vector Engine) -->
@@ -345,7 +345,7 @@
     }
 
     /* ==================================================== */
-    /* REAL VECTOR PDF EDITOR CSS (FIXED) */
+    /* REAL VECTOR PDF EDITOR CSS */
     /* ==================================================== */
     .pdffiller-header-bar {
       background: #1e293b;
@@ -645,9 +645,9 @@
 
     <!-- TAB 4: REAL VECTOR PDF EDITOR (FIXED INTEGRATION) -->
     <div id="tab-live-pdf" class="tab-content">
-      <div class="badge">Pure Vector PDF Engine • Crystal Clear Retina View • Original PDF Export</div>
+      <div class="badge">Pure Vector PDF Engine • In-Place Text Edit • 100% Reliable Render</div>
       <h1>Real Vector PDF Document Editor</h1>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">PDF सिलेक्ट करें। टूल्स पर क्लिक करके टेक्स्ट, वाइटआउट या साइन जोड़ें और असली PDF डाउनलोड करें।</p>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">PDF चुनें। सभी लिखे हुए टेक्स्ट पर <strong>डबल-क्लिक करके सीधे एडिट करें</strong> या टूल्स का उपयोग करें।</p>
 
       <div class="upload-section" style="margin-bottom: 15px;">
         <label class="upload-box" for="realPdfInput" style="max-width: 380px;">
@@ -708,8 +708,9 @@
 </div>
 
 <script>
+  // Disable external worker to avoid Cross-Origin blocking
   if (typeof pdfjsLib !== 'undefined') {
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+    pdfjsLib.GlobalWorkerOptions.workerSrc = '';
   }
 
   const AUTH_EMAIL = "oneplus777000@gmail.com";
@@ -1188,14 +1189,14 @@
   });
 
   // ==========================================================
-  // TAB 4: REAL VECTOR PDF ENGINE (100% WORKING UNIFIED CANVAS)
+  // TAB 4: REAL VECTOR PDF ENGINE (WORKER-FREE 100% RELIABLE)
   // ==========================================================
   let originalPdfBytes = null;
   let pdfjsDocInstance = null;
   let rCurrentPage = 1;
   let rTotalPages = 1;
   let pdfFabricCanvas = null;
-  let activePdfScale = 2.0; // High-DPI Retina Scale for Crystal Clear Text
+  let activePdfScale = 1.75;
   let pageViewportWidth = 595, pageViewportHeight = 842;
   let isPdfDraw = false;
 
@@ -1206,15 +1207,19 @@
     document.getElementById('realPdfFileName').innerText = `✅ ${file.name}`;
     originalPdfBytes = await file.arrayBuffer();
 
-    pdfjsDocInstance = await pdfjsLib.getDocument({ data: originalPdfBytes.slice(0) }).promise;
-    rTotalPages = pdfjsDocInstance.numPages;
-    rCurrentPage = 1;
+    try {
+      pdfjsDocInstance = await pdfjsLib.getDocument({ data: new Uint8Array(originalPdfBytes.slice(0)) }).promise;
+      rTotalPages = pdfjsDocInstance.numPages;
+      rCurrentPage = 1;
 
-    document.getElementById('rTotalPageNum').innerText = rTotalPages;
-    document.getElementById('rCurPageNum').innerText = rCurrentPage;
-    document.getElementById('realEditorArea').style.display = 'block';
+      document.getElementById('rTotalPageNum').innerText = rTotalPages;
+      document.getElementById('rCurPageNum').innerText = rCurrentPage;
+      document.getElementById('realEditorArea').style.display = 'block';
 
-    renderUnifiedPdfEditor(rCurrentPage);
+      renderUnifiedPdfEditor(rCurrentPage);
+    } catch(err) {
+      alert("PDF लोड करने में समस्या: " + err.message);
+    }
   });
 
   async function renderUnifiedPdfEditor(pageNum) {
@@ -1225,7 +1230,7 @@
     pageViewportWidth = viewport.width;
     pageViewportHeight = viewport.height;
 
-    // Direct High-Resolution PDF Rendering to Offscreen Canvas
+    // 1. Direct Render to Canvas
     const offscreenCanvas = document.createElement('canvas');
     const offscreenCtx = offscreenCanvas.getContext('2d');
     offscreenCanvas.width = viewport.width;
@@ -1234,7 +1239,7 @@
     await page.render({ canvasContext: offscreenCtx, viewport: viewport }).promise;
     const highResBgUrl = offscreenCanvas.toDataURL('image/png');
 
-    // Initialize Fabric Canvas directly with full interactive events
+    // 2. Setup Unified Interactive Fabric Canvas
     if (!pdfFabricCanvas) {
       pdfFabricCanvas = new fabric.Canvas('pdfUnifiedCanvas', {
         preserveObjectStacking: true,
@@ -1246,7 +1251,7 @@
     pdfFabricCanvas.setHeight(viewport.height);
     pdfFabricCanvas.clear();
 
-    // Set Background with 100% Sharpness
+    // 3. Set Background & Layer Editable Text Elements
     fabric.Image.fromURL(highResBgUrl, function(img) {
       img.set({
         left: 0,
@@ -1255,7 +1260,41 @@
         evented: false
       });
       pdfFabricCanvas.setBackgroundImage(img, function() {
-        pdfFabricCanvas.requestRenderAll();
+        
+        // Extract Text Content for Direct In-Place Edit
+        page.getTextContent().then(function(textContent) {
+          if (textContent && textContent.items) {
+            textContent.items.forEach(function(textItem) {
+              const str = textItem.str;
+              if (!str || str.trim() === '') return;
+
+              const tx = pdfjsLib.Util.transform(viewport.transform, textItem.transform);
+              const fontSize = Math.round(Math.sqrt((tx[0] * tx[0]) + (tx[1] * tx[1]))) || 13;
+              const posX = Math.round(tx[4]);
+              const posY = Math.round(tx[5] - fontSize);
+
+              const editableText = new fabric.IText(str, {
+                left: posX,
+                top: posY,
+                fontSize: fontSize,
+                fontFamily: 'Helvetica, Arial, sans-serif',
+                fill: '#000000',
+                backgroundColor: '#ffffff',
+                stroke: '#0284c7',
+                strokeWidth: 1,
+                strokeDashArray: [3, 3],
+                padding: 2,
+                cornerColor: '#0284c7',
+                cornerSize: 6,
+                transparentCorners: false
+              });
+
+              pdfFabricCanvas.add(editableText);
+            });
+          }
+          pdfFabricCanvas.requestRenderAll();
+        });
+
       });
     });
   }
@@ -1281,7 +1320,7 @@
     const txt = new fabric.IText('New Text', {
       left: 100,
       top: 100,
-      fontSize: 22,
+      fontSize: 20,
       fill: '#000000',
       backgroundColor: '#ffffff',
       stroke: '#0284c7',
@@ -1361,6 +1400,11 @@
     if (!originalPdfBytes) return;
 
     pdfFabricCanvas.discardActiveObject();
+    
+    // Hide helper dashed borders before final save
+    pdfFabricCanvas.getObjects().forEach(o => {
+      if (o.strokeDashArray) o.set({ stroke: 'transparent' });
+    });
     pdfFabricCanvas.requestRenderAll();
 
     const { PDFDocument, rgb, StandardFonts } = PDFLib;
@@ -1395,7 +1439,7 @@
         });
       } 
       else if (obj.type === 'i-text' || obj.type === 'text') {
-        // Draw underlying clean whiteout box first
+        // Clean background underlay
         targetPage.drawRectangle({
           x: objLeft,
           y: pdfY,
@@ -1405,11 +1449,11 @@
           borderWidth: 0
         });
 
-        // Embed real digital vector text
-        const fontSize = (obj.fontSize || 16) * scaleX;
+        // Embed real vector text
+        const fontSize = (obj.fontSize || 13) * scaleX;
         targetPage.drawText(obj.text || '', {
           x: objLeft + (2 * scaleX),
-          y: pdfY + (4 * scaleY),
+          y: pdfY + (3 * scaleY),
           size: fontSize,
           font: helveticaFont,
           color: rgb(0, 0, 0)
@@ -1433,6 +1477,12 @@
     link.href = URL.createObjectURL(blob);
     link.download = `Edited_Original_Vector_PDF.pdf`;
     link.click();
+
+    // Restore dashed borders
+    pdfFabricCanvas.getObjects().forEach(o => {
+      if (o.type === 'i-text') o.set({ stroke: '#0284c7', strokeDashArray: [3, 3] });
+    });
+    pdfFabricCanvas.requestRenderAll();
   });
 
   function initAllCanvases() {
