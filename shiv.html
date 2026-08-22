@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
@@ -13,6 +14,9 @@
   <!-- Cropper.js -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+  <!-- Fabric.js for Live Interactive Drag & Drop Editor -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
 
   <style>
     :root {
@@ -140,7 +144,7 @@
     }
 
     .tab-btn {
-      padding: 10px 20px;
+      padding: 10px 18px;
       background: rgba(15, 23, 42, 0.8);
       border: 1px solid var(--border-color);
       color: var(--text-muted);
@@ -161,7 +165,7 @@
     #mainApp {
       display: none;
       width: 100%;
-      max-width: 1050px;
+      max-width: 1100px;
     }
 
     .container { 
@@ -259,15 +263,15 @@
 
     .btn-group { 
       display: flex; 
-      gap: 15px; 
+      gap: 12px; 
       justify-content: center; 
       margin-top: 20px; 
       flex-wrap: wrap; 
     }
 
     .action-btn { 
-      padding: 12px 28px; 
-      font-size: 14px; 
+      padding: 12px 24px; 
+      font-size: 13px; 
       font-weight: 600; 
       border: none; 
       border-radius: 10px; 
@@ -284,6 +288,7 @@
     .btn-add { background: var(--btn-add); }
     .btn-download { background: var(--btn-download); }
     .btn-reset { background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; }
+    .btn-secondary { background: #334155; }
 
     .action-btn:disabled { 
       background: #334155; 
@@ -334,7 +339,16 @@
       font-weight: 600;
     }
 
-    .quick-qty-btn:hover { background: #475569; }
+    /* Live Editor Canvas Container */
+    .editor-wrapper {
+      margin: 20px auto;
+      border: 2px solid #38bdf8;
+      border-radius: 8px;
+      background: #ffffff;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      display: inline-block;
+      overflow: hidden;
+    }
 
     #cropModal {
       display: none;
@@ -374,7 +388,7 @@
 <div id="loginScreen" class="auth-box">
   <div class="badge">Protected Access</div>
   <h2 style="font-size: 22px; margin-bottom: 6px;">Sign In</h2>
-  <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">Card Generator System</p>
+  <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">Card & Photo Generator Portal</p>
 
   <input type="email" id="loginEmail" class="login-input" placeholder="ईमेल आईडी दर्ज करें" value="oneplus777000@gmail.com">
   <input type="password" id="loginPass" class="login-input" placeholder="पासवर्ड दर्ज करें">
@@ -408,8 +422,9 @@
 <div id="mainApp">
   <div class="tab-nav">
     <button class="tab-btn active" onclick="switchTab('tab-cards')">💳 ID Card (5 Slots)</button>
-    <button class="tab-btn" onclick="switchTab('tab-passport')">👤 Passport Photos (Custom Qty)</button>
-    <button class="tab-btn" onclick="switchTab('tab-4x6')">🖼️ 4×6 Photo Print (Max 4 Qty)</button>
+    <button class="tab-btn" onclick="switchTab('tab-passport')">👤 Passport Photos</button>
+    <button class="tab-btn" onclick="switchTab('tab-4x6')">🖼️ 4×6 Photo Print</button>
+    <button class="tab-btn" onclick="switchTab('tab-live-editor')">🛠️ Live Canvas PDF Editor</button>
   </div>
 
   <div class="container">
@@ -562,6 +577,35 @@
       </div>
     </div>
 
+    <!-- TAB 4: LIVE CANVAS PDF EDITOR (NEW FEATURE) -->
+    <div id="tab-live-editor" class="tab-content">
+      <div class="badge">Drag • Move • Scale • Rotate • Live Text</div>
+      <h1>Live Canvas PDF Editor</h1>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">शीट पर इमेज/कार्ड जोड़ें, उन्हें माउस से कहीं भी घुमाएँ, स्केल करें और डायरेक्ट प्रिंट PDF डाउनलोड करें।</p>
+
+      <!-- Editor Tool Controls -->
+      <div class="btn-group" style="margin-bottom: 15px;">
+        <label class="action-btn btn-add" for="editorImageUpload" style="cursor: pointer;">
+          📁 Add Image / Card
+        </label>
+        <input type="file" id="editorImageUpload" accept="image/*">
+
+        <button id="addTextBtn" class="action-btn btn-secondary">✍️ Add Custom Text</button>
+        <button id="bringForwardBtn" class="action-btn btn-secondary">⬆️ Bring Forward</button>
+        <button id="deleteSelectedBtn" class="action-btn btn-reset">🗑️ Delete Selected</button>
+        <button id="clearEditorBtn" class="action-btn btn-reset">🔄 Clear Canvas</button>
+      </div>
+
+      <!-- Live Interactive Canvas (Scaled for Display: 595x842 px - A4 Aspect Ratio) -->
+      <div class="editor-wrapper">
+        <canvas id="liveFabricCanvas" width="595" height="842"></canvas>
+      </div>
+
+      <div class="btn-group">
+        <button id="downloadEditorA4PdfBtn" class="action-btn btn-download">📥 Download Live Edited A4 PDF</button>
+      </div>
+    </div>
+
     <footer style="margin-top: 25px; font-size: 12px; color: var(--text-muted);">
       Designed & Developed by <strong>JAYESH BHAVSAR @ 2026 ALL RIGHTS RESERVED</strong>
     </footer>
@@ -594,6 +638,10 @@
     
     event.target.classList.add('active');
     document.getElementById(tabId).classList.add('active');
+
+    if (tabId === 'tab-live-editor' && fabricCanvas) {
+      fabricCanvas.renderAll();
+    }
   }
 
   const loginScreen = document.getElementById('loginScreen');
@@ -670,7 +718,6 @@
     }, 1200);
   });
 
-  // Zero-Fail Login Engine (Accepts Changed Password or Default Pass@123)
   function handleLogin() {
     const inputEmail = loginEmail.value.trim().toLowerCase();
     const inputPass = loginPass.value.trim();
@@ -683,6 +730,7 @@
       mainApp.style.display = 'block';
       errorMsg.style.display = 'none';
       initAllCanvases();
+      initLiveFabricEditor();
     } else {
       errorMsg.style.display = 'block';
     }
@@ -1052,6 +1100,99 @@
     pdf.addImage(a4_4x6_SheetCanvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 210, 297);
     pdf.save(`4x6_Photos_A4_Sheet_${photo4x6QtyInput.value}_Qty.pdf`);
   });
+
+  // ==========================================
+  // TAB 4: LIVE FABRIC.JS PDF EDITOR
+  // ==========================================
+  let fabricCanvas = null;
+
+  function initLiveFabricEditor() {
+    if (fabricCanvas) return;
+    fabricCanvas = new fabric.Canvas('liveFabricCanvas', {
+      backgroundColor: '#ffffff',
+      preserveObjectStacking: true
+    });
+
+    // Image Upload to Live Canvas
+    document.getElementById('editorImageUpload').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(f) {
+        fabric.Image.fromURL(f.target.result, function(img) {
+          // Auto scale to fit comfortably
+          img.scaleToWidth(220);
+          img.set({
+            left: 50,
+            top: 50,
+            cornerColor: '#38bdf8',
+            cornerSize: 10,
+            transparentCorners: false,
+            stroke: '#000000',
+            strokeWidth: 2
+          });
+          fabricCanvas.add(img);
+          fabricCanvas.setActiveObject(img);
+        });
+      };
+      reader.readAsDataURL(file);
+      this.value = '';
+    });
+
+    // Add Custom Text
+    document.getElementById('addTextBtn').addEventListener('click', () => {
+      const text = new fabric.IText('ONEPLUS SERVICES', {
+        left: 100,
+        top: 100,
+        fontFamily: 'Poppins',
+        fontSize: 22,
+        fill: '#000000',
+        cornerColor: '#38bdf8',
+        cornerSize: 8
+      });
+      fabricCanvas.add(text);
+      fabricCanvas.setActiveObject(text);
+    });
+
+    // Bring Forward
+    document.getElementById('bringForwardBtn').addEventListener('click', () => {
+      const activeObj = fabricCanvas.getActiveObject();
+      if (activeObj) fabricCanvas.bringForward(activeObj);
+    });
+
+    // Delete Selected
+    document.getElementById('deleteSelectedBtn').addEventListener('click', () => {
+      const activeObj = fabricCanvas.getActiveObject();
+      if (activeObj) fabricCanvas.remove(activeObj);
+    });
+
+    // Clear Canvas
+    document.getElementById('clearEditorBtn').addEventListener('click', () => {
+      if (confirm('क्या आप लाइव एडिटर कैनवास को रीसेट करना चाहते हैं?')) {
+        fabricCanvas.clear();
+        fabricCanvas.setBackgroundColor('#ffffff', fabricCanvas.renderAll.bind(fabricCanvas));
+      }
+    });
+
+    // High Resolution Live PDF Export
+    document.getElementById('downloadEditorA4PdfBtn').addEventListener('click', () => {
+      fabricCanvas.discardActiveObject();
+      fabricCanvas.renderAll();
+
+      // High multiplier (4.16x) to upscale 595x842 to 2480x3508 (300 DPI A4)
+      const dataURL = fabricCanvas.toDataURL({
+        format: 'jpeg',
+        quality: 1.0,
+        multiplier: 4.168
+      });
+
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      pdf.addImage(dataURL, 'JPEG', 0, 0, 210, 297);
+      pdf.save('Live_Editor_A4_Sheet.pdf');
+    });
+  }
 
   function initAllCanvases() {
     clearCurrentCardInputs();
