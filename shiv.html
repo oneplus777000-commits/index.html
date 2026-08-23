@@ -343,7 +343,7 @@
       color: #fff;
       font-size: 13px;
       outline: none;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
     }
 
     .quick-qty-btn {
@@ -360,18 +360,18 @@
     .slider-range {
       -webkit-appearance: none;
       width: 100%;
-      height: 8px;
+      height: 6px;
       border-radius: 5px;
       background: #334155;
       outline: none;
-      margin: 15px 0 10px 0;
+      margin: 6px 0 8px 0;
     }
 
     .slider-range::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 20px;
-      height: 20px;
+      width: 16px;
+      height: 16px;
       border-radius: 50%;
       background: var(--accent-blue);
       cursor: pointer;
@@ -623,11 +623,11 @@
       </div>
     </div>
 
-    <!-- TAB 3: NAME & DATE PASSPORT PHOTO MAKER (UPDATED: 3-LINE VERTICAL & AUTO-WRAP) -->
+    <!-- TAB 3: NAME & DATE PASSPORT PHOTO MAKER (WITH 3 FONT SIZE SLIDERS) -->
     <div id="tab-name-passport" class="tab-content">
-      <div class="badge">Govt / Exam Standard • Auto-Wrap Name • Vertical DOB & DOP</div>
+      <div class="badge">Govt / Exam Standard • 3 Separate Font Sliders • Auto DOB Label</div>
       <h1>Name & Date Passport Photo Maker</h1>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">नाम सबसे ऊपर (बड़ा नाम होने पर नीचे सरकेगा), बीच में DOB और सबसे नीचे DOP प्रिंट होगी।</p>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">नाम, DOB और DOP के लिए अलग-अलग स्लाइडर से फॉन्ट साइज़ कंट्रोल करें।</p>
 
       <div class="upload-section" style="margin-bottom:10px;">
         <label class="upload-box" for="namePassportInput" style="max-width: 380px;">
@@ -638,22 +638,42 @@
       </div>
 
       <div class="control-panel" style="text-align:left;">
-        <div style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center;">
-          <div style="flex:1; min-width:200px;">
-            <label style="font-size:11px; color:var(--text-muted); display:block; margin-bottom:3px;">👤 Candidate Name (नाम):</label>
-            <input type="text" id="candNameInput" class="text-field-input" placeholder="e.g. HARSHAL SATISH MARATHE" oninput="renderNamePassportPreview()">
+        <!-- Inputs & Sliders Grid -->
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          
+          <!-- Name Row -->
+          <div style="background:rgba(15,23,42,0.6); padding:8px 12px; border-radius:8px; border:1px solid var(--border-color);">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <label style="font-size:11px; color:var(--text-muted);">👤 Candidate Name:</label>
+              <span id="nameFontLabel" style="font-size:11px; color:var(--accent-blue); font-weight:600;">Size: 24px</span>
+            </div>
+            <input type="text" id="candNameInput" class="text-field-input" style="max-width:100%;" placeholder="e.g. HARSHAL SATISH MARATHE" oninput="renderNamePassportPreview()">
+            <input type="range" id="nameFontSlider" class="slider-range" min="14" max="36" value="24" oninput="updateNameFontSize(this.value)">
           </div>
-          <div style="flex:1; min-width:140px;">
-            <label style="font-size:11px; color:var(--text-muted); display:block; margin-bottom:3px;">🎂 Date of Birth (DOB):</label>
-            <input type="text" id="candDobInput" class="text-field-input" placeholder="DOB: DD/MM/YYYY" oninput="renderNamePassportPreview()">
+
+          <!-- DOB Row -->
+          <div style="background:rgba(15,23,42,0.6); padding:8px 12px; border-radius:8px; border:1px solid var(--border-color);">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <label style="font-size:11px; color:var(--text-muted);">🎂 Date of Birth (DOB):</label>
+              <span id="dobFontLabel" style="font-size:11px; color:var(--accent-blue); font-weight:600;">Size: 20px</span>
+            </div>
+            <input type="text" id="candDobInput" class="text-field-input" style="max-width:100%;" placeholder="e.g. 15/08/1998" oninput="renderNamePassportPreview()">
+            <input type="range" id="dobFontSlider" class="slider-range" min="12" max="30" value="20" oninput="updateDobFontSize(this.value)">
           </div>
-          <div style="flex:1; min-width:140px;">
-            <label style="font-size:11px; color:var(--text-muted); display:block; margin-bottom:3px;">📅 Photo Date (DOP / Current):</label>
-            <input type="text" id="candDopInput" class="text-field-input" placeholder="DOP: DD/MM/YYYY" oninput="renderNamePassportPreview()">
+
+          <!-- DOP Row -->
+          <div style="background:rgba(15,23,42,0.6); padding:8px 12px; border-radius:8px; border:1px solid var(--border-color);">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <label style="font-size:11px; color:var(--text-muted);">📅 Photo Date (DOP):</label>
+              <span id="dopFontLabel" style="font-size:11px; color:var(--accent-blue); font-weight:600;">Size: 20px</span>
+            </div>
+            <input type="text" id="candDopInput" class="text-field-input" style="max-width:100%;" placeholder="DOP: DD/MM/YYYY" oninput="renderNamePassportPreview()">
+            <input type="range" id="dopFontSlider" class="slider-range" min="12" max="30" value="20" oninput="updateDopFontSize(this.value)">
           </div>
+
         </div>
 
-        <div style="margin-top:8px; text-align:center;">
+        <div style="margin-top:12px; text-align:center;">
           <span style="font-size: 12px; font-weight:600; color: var(--accent-blue);">🔢 फ़ोटो संख्या:</span>
           <input type="number" id="namePassportQtyInput" class="qty-input" value="8" min="1" max="30">
           <button class="quick-qty-btn" onclick="setNamePassportQty(4)">4</button>
@@ -1342,7 +1362,7 @@
   });
 
   // ==========================================================
-  // TAB 3: NAME & DATE PASSPORT (WORD-WRAP & 3-TIER HIERARCHY)
+  // TAB 3: NAME & DATE PASSPORT (3 INDEPENDENT FONT SLIDERS)
   // ==========================================================
   const namePassportCanvas = document.getElementById('namePassportCanvas');
   const namePassportCtx = namePassportCanvas.getContext('2d');
@@ -1352,8 +1372,30 @@
   let namePassportLoaded = false;
   let namePassportSheetFormat = '4x6';
 
+  let currentNameFontSize = 24;
+  let currentDobFontSize = 20;
+  let currentDopFontSize = 20;
+
   function setNamePassportQty(qty) {
     namePassportQtyInput.value = qty;
+  }
+
+  function updateNameFontSize(val) {
+    currentNameFontSize = parseInt(val) || 24;
+    document.getElementById('nameFontLabel').innerText = `Size: ${currentNameFontSize}px`;
+    renderNamePassportPreview();
+  }
+
+  function updateDobFontSize(val) {
+    currentDobFontSize = parseInt(val) || 20;
+    document.getElementById('dobFontLabel').innerText = `Size: ${currentDobFontSize}px`;
+    renderNamePassportPreview();
+  }
+
+  function updateDopFontSize(val) {
+    currentDopFontSize = parseInt(val) || 20;
+    document.getElementById('dopFontLabel').innerText = `Size: ${currentDopFontSize}px`;
+    renderNamePassportPreview();
   }
 
   document.getElementById('namePassportInput').addEventListener('change', (e) => {
@@ -1392,19 +1434,35 @@
     }
 
     const cName = document.getElementById('candNameInput').value.trim();
-    const cDob = document.getElementById('candDobInput').value.trim();
-    const cDop = document.getElementById('candDopInput').value.trim();
+    let rawDob = document.getElementById('candDobInput').value.trim();
+    let rawDop = document.getElementById('candDopInput').value.trim();
 
-    if (cName || cDob || cDop) {
-      namePassportCtx.font = '900 24px Poppins, Arial, sans-serif';
+    // Auto-prefix 'DOB:' if user just enters date
+    let formattedDob = '';
+    if (rawDob) {
+      formattedDob = rawDob.toUpperCase().startsWith('DOB:') ? rawDob : `DOB: ${rawDob}`;
+    }
+
+    // Auto-prefix 'DOP:' if user enters date
+    let formattedDop = '';
+    if (rawDop) {
+      formattedDop = rawDop.toUpperCase().startsWith('DOP:') ? rawDop : `DOP: ${rawDop}`;
+    }
+
+    if (cName || formattedDob || formattedDop) {
+      namePassportCtx.font = `900 ${currentNameFontSize}px Poppins, Arial, sans-serif`;
       const nameLines = cName ? wrapNameText(namePassportCtx, cName.toUpperCase(), 390) : [];
       
       let dateLineCount = 0;
-      if (cDob) dateLineCount++;
-      if (cDop) dateLineCount++;
+      if (formattedDob) dateLineCount++;
+      if (formattedDop) dateLineCount++;
 
-      const totalTextLines = nameLines.length + dateLineCount;
-      const stripHeight = Math.max(125, totalTextLines * 34 + 16);
+      // Dynamically calculate strip height based on individual font sizes & line count
+      const nameBlockHeight = nameLines.length * (currentNameFontSize + 8);
+      const dobBlockHeight = formattedDob ? (currentDobFontSize + 8) : 0;
+      const dopBlockHeight = formattedDop ? (currentDopFontSize + 8) : 0;
+      
+      const stripHeight = Math.max(120, nameBlockHeight + dobBlockHeight + dopBlockHeight + 16);
       const stripY = 531 - stripHeight;
 
       // Draw Pure White Base Strip
@@ -1422,25 +1480,28 @@
       namePassportCtx.fillStyle = '#000000';
       namePassportCtx.textAlign = 'center';
 
-      let yPos = stripY + 28;
+      let yPos = stripY + currentNameFontSize + 6;
 
-      // 1. TOP: Name Lines (Super Bold 24px)
-      namePassportCtx.font = '900 24px Poppins, Arial, sans-serif';
+      // 1. TOP: Name Lines (Controlled by Name Slider)
+      namePassportCtx.font = `900 ${currentNameFontSize}px Poppins, Arial, sans-serif`;
       nameLines.forEach(line => {
         namePassportCtx.fillText(line, 413 / 2, yPos);
-        yPos += 30;
+        yPos += currentNameFontSize + 6;
       });
 
-      // 2. MIDDLE: Date of Birth (DOB) (Bold 20px)
-      namePassportCtx.font = '700 20px Poppins, Arial, sans-serif';
-      if (cDob) {
-        namePassportCtx.fillText(cDob, 413 / 2, yPos);
-        yPos += 28;
+      // 2. MIDDLE: Date of Birth (DOB) (Controlled by DOB Slider)
+      if (formattedDob) {
+        yPos += 2;
+        namePassportCtx.font = `700 ${currentDobFontSize}px Poppins, Arial, sans-serif`;
+        namePassportCtx.fillText(formattedDob, 413 / 2, yPos);
+        yPos += currentDobFontSize + 6;
       }
 
-      // 3. BOTTOM: Date of Present / Photo (DOP) (Bold 20px)
-      if (cDop) {
-        namePassportCtx.fillText(cDop, 413 / 2, yPos);
+      // 3. BOTTOM: Date of Photo / Present (DOP) (Controlled by DOP Slider)
+      if (formattedDop) {
+        yPos += 2;
+        namePassportCtx.font = `700 ${currentDopFontSize}px Poppins, Arial, sans-serif`;
+        namePassportCtx.fillText(formattedDop, 413 / 2, yPos);
       }
     }
   }
