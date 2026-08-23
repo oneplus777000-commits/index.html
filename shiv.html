@@ -405,6 +405,7 @@
       border: 1px solid var(--border-color);
     }
 
+    /* Universal Gallery Styles with Individual Delete Button */
     .file-gallery-list {
       display: flex;
       flex-wrap: wrap;
@@ -421,10 +422,10 @@
 
     .gallery-thumb-item {
       position: relative;
-      width: 90px;
-      height: 115px;
+      width: 95px;
+      height: 120px;
       border-radius: 8px;
-      overflow: hidden;
+      overflow: visible;
       border: 1px solid rgba(56, 189, 248, 0.4);
       background: #0f172a;
       display: flex;
@@ -455,6 +456,32 @@
       white-space: nowrap;
       width: 100%;
       margin-top: 4px;
+    }
+
+    .item-delete-btn {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: #ef4444;
+      color: #ffffff;
+      border: 2px solid #1e293b;
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+      z-index: 10;
+      transition: 0.2s;
+    }
+
+    .item-delete-btn:hover {
+      background: #dc2626;
+      transform: scale(1.15);
     }
 
     .history-table-container {
@@ -870,11 +897,11 @@
       </div>
     </div>
 
-    <!-- TAB 6: UNIVERSAL (PDF, JPG, PNG TO PDF) CONVERTER -->
+    <!-- TAB 6: UNIVERSAL (PDF, JPG, PNG TO PDF) CONVERTER WITH INDIVIDUAL DELETE -->
     <div id="tab-jpg-to-pdf" class="tab-content">
-      <div class="badge">Universal File Merger • PDF, JPG, PNG Support • Combined PDF Export</div>
+      <div class="badge">Universal File Merger • PDF, JPG, PNG Support • Individual Item Delete</div>
       <h1>PDF, JPG, PNG to PDF Converter</h1>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">एक साथ कई <strong>PDF, JPG या PNG</strong> फ़ाइलें सिलेक्ट करें और उन सभी को मिलाकर एक सिंगल PDF बनाएँ।</p>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">एक साथ कई <strong>PDF, JPG या PNG</strong> फ़ाइलें सिलेक्ट करें। किसी भी फ़ाइल को हटाने के लिए उसके ऊपर बने <strong>(✖)</strong> पर क्लिक करें।</p>
 
       <div class="upload-section" style="margin-bottom: 15px;">
         <label class="upload-box" for="universalMultiInput" style="max-width: 450px;">
@@ -892,7 +919,7 @@
 
         <div class="btn-group">
           <button id="convertUniversalToPdfBtn" class="action-btn btn-download">📥 Convert & Download Combined PDF</button>
-          <button id="clearUniversalListBtn" class="action-btn btn-reset">🔄 Clear Selection</button>
+          <button id="clearUniversalListBtn" class="action-btn btn-reset">🔄 Clear All</button>
         </div>
       </div>
     </div>
@@ -1038,7 +1065,7 @@
   // ==========================================================
   const DB_NAME = 'PrintPortal30DayDB';
   const DB_STORE = 'print_records';
-  const RETENTION_MS = 30 * 24 * 60 * 60 * 1000; // 30 Days in Milliseconds
+  const RETENTION_MS = 30 * 24 * 60 * 60 * 1000;
 
   function openHistoryDB() {
     return new Promise((resolve, reject) => {
@@ -2083,7 +2110,7 @@
   });
 
   // ==========================================================
-  // TAB 6: UNIVERSAL (PDF, JPG, PNG TO PDF) MERGE ENGINE
+  // TAB 6: UNIVERSAL (PDF, JPG, PNG TO PDF) MERGE ENGINE WITH INDIVIDUAL DELETE
   // ==========================================================
   let universalFiles = [];
 
@@ -2093,7 +2120,13 @@
 
     universalFiles = universalFiles.concat(files);
     renderUniversalGallery();
+    this.value = '';
   });
+
+  function removeUniversalFile(index) {
+    universalFiles.splice(index, 1);
+    renderUniversalGallery();
+  }
 
   function renderUniversalGallery() {
     const gallery = document.getElementById('universalGalleryList');
@@ -2110,9 +2143,20 @@
       return;
     }
 
-    universalFiles.forEach((file) => {
+    universalFiles.forEach((file, idx) => {
       const item = document.createElement('div');
       item.className = 'gallery-thumb-item';
+
+      // Cross (✖) Delete Button for Individual Items
+      const delBtn = document.createElement('button');
+      delBtn.className = 'item-delete-btn';
+      delBtn.innerHTML = '✖';
+      delBtn.title = 'Remove this file';
+      delBtn.onclick = function(e) {
+        e.stopPropagation();
+        removeUniversalFile(idx);
+      };
+      item.appendChild(delBtn);
 
       if (file.type === 'application/pdf') {
         const icon = document.createElement('div');
