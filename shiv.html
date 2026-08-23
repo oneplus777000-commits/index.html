@@ -11,7 +11,7 @@
   <!-- PDF.js Standalone -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
   
-  <!-- PDF-LIB for Pure Vector Merging -->
+  <!-- PDF-LIB for Pure Vector Merging & Page Manipulation -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 
   <!-- jsPDF Library -->
@@ -150,7 +150,7 @@
     }
 
     .tab-btn {
-      padding: 9px 14px;
+      padding: 9px 13px;
       background: rgba(15, 23, 42, 0.8);
       border: 1px solid var(--border-color);
       color: var(--text-muted);
@@ -171,7 +171,7 @@
     #mainApp {
       display: none;
       width: 100%;
-      max-width: 1200px;
+      max-width: 1220px;
     }
 
     .container { 
@@ -405,16 +405,16 @@
       border: 1px solid var(--border-color);
     }
 
-    /* Universal Gallery Styles with Individual Delete Button */
+    /* Arranger & Gallery Card Styles */
     .file-gallery-list {
       display: flex;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: 14px;
       justify-content: center;
       margin: 15px 0;
-      max-height: 280px;
+      max-height: 380px;
       overflow-y: auto;
-      padding: 12px;
+      padding: 14px;
       background: rgba(15, 23, 42, 0.6);
       border-radius: 12px;
       border: 1px solid var(--border-color);
@@ -422,41 +422,56 @@
 
     .gallery-thumb-item {
       position: relative;
-      width: 95px;
-      height: 120px;
-      border-radius: 8px;
-      overflow: visible;
-      border: 1px solid rgba(56, 189, 248, 0.4);
+      width: 115px;
       background: #0f172a;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 8px;
+      padding: 6px 4px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      padding: 4px;
-      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
     }
 
-    .gallery-thumb-item img {
+    .gallery-thumb-item canvas, .gallery-thumb-item img {
       width: 100%;
-      height: 75px;
-      object-fit: cover;
+      height: 120px;
+      object-fit: contain;
+      background: #ffffff;
       border-radius: 4px;
     }
 
-    .gallery-thumb-item .pdf-icon-box {
-      font-size: 28px;
-      margin-bottom: 2px;
-    }
-
     .gallery-thumb-item .file-label {
-      font-size: 9px;
+      font-size: 10px;
       color: #94a3b8;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
       width: 100%;
-      margin-top: 4px;
+      margin: 5px 0 3px 0;
+      font-weight: 500;
     }
+
+    .card-actions-row {
+      display: flex;
+      gap: 4px;
+      justify-content: center;
+      width: 100%;
+      margin-top: 2px;
+    }
+
+    .mini-action-btn {
+      background: #334155;
+      color: #f8fafc;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 4px;
+      padding: 3px 6px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .mini-action-btn:hover { background: #0284c7; }
+    .mini-action-btn.btn-del:hover { background: #ef4444; }
 
     .item-delete-btn {
       position: absolute;
@@ -478,11 +493,7 @@
       z-index: 10;
       transition: 0.2s;
     }
-
-    .item-delete-btn:hover {
-      background: #dc2626;
-      transform: scale(1.15);
-    }
+    .item-delete-btn:hover { background: #dc2626; transform: scale(1.15); }
 
     .history-table-container {
       margin-top: 15px;
@@ -510,9 +521,7 @@
       font-weight: 600;
     }
 
-    .history-table tr:hover {
-      background: rgba(56, 189, 248, 0.05);
-    }
+    .history-table tr:hover { background: rgba(56, 189, 248, 0.05); }
 
     .history-download-btn {
       background: #0284c7;
@@ -600,8 +609,9 @@
     <button class="tab-btn" onclick="switchTab('tab-passport')">👤 Passport Photos</button>
     <button class="tab-btn" onclick="switchTab('tab-name-passport')">📝 Name & Date Passport</button>
     <button class="tab-btn" onclick="switchTab('tab-4x6')">🖼️ 4×6 Photo Print</button>
-    <button class="tab-btn" onclick="switchTab('tab-resizer')">📐 Image Resizer</button>
+    <button class="tab-btn" onclick="switchTab('tab-arranger')">📑 PDF Arranger</button>
     <button class="tab-btn" onclick="switchTab('tab-jpg-to-pdf')">📄 PDF, JPG, PNG to PDF</button>
+    <button class="tab-btn" onclick="switchTab('tab-resizer')">📐 Image Resizer</button>
     <button class="tab-btn" onclick="switchTab('tab-pdf-to-jpg')">🖼️ PDF to JPG (Manual DPI)</button>
     <button class="tab-btn" onclick="switchTab('tab-pdf-compressor')">🗜️ PDF Compressor</button>
     <button class="tab-btn" onclick="switchTab('tab-history')" style="border-color: rgba(56, 189, 248, 0.5);">📂 30-Day History</button>
@@ -839,7 +849,63 @@
       </div>
     </div>
 
-    <!-- TAB 5: CUSTOM IMAGE RESIZER -->
+    <!-- TAB 5: PDF ARRANGER (NEW FEATURE) -->
+    <div id="tab-arranger" class="tab-content">
+      <div class="badge">Re-order Pages • Delete • Rotate 90° • Add Multiple PDFs</div>
+      <h1>PDF Page Arranger & Organizer</h1>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">PDF अपलोड करें, पेजों को आगे-पीछे सेट करें, अनचाहे पेज हटाएं, घुमाएं या और PDF पेजेस जोड़ें।</p>
+
+      <div class="upload-section" style="margin-bottom: 15px;">
+        <label class="upload-box" for="arrangerPdfInput" style="max-width: 420px;">
+          <strong style="display:block; font-size:14px; margin-bottom:4px; color:var(--accent-blue);">📑 Select / Add PDF to Arrange</strong>
+          <div id="arrangerStatus" style="font-size: 12px; color: var(--text-muted);">क्लिक करके .pdf फाइल अपलोड करें</div>
+        </label>
+        <input type="file" id="arrangerPdfInput" accept="application/pdf" multiple>
+      </div>
+
+      <div id="arrangerContainerArea" style="display:none;">
+        <div style="display:flex; justify-content:space-between; align-items:center; max-width:900px; margin:0 auto 10px auto;">
+          <span style="font-size: 13px; font-weight:600; color: var(--accent-blue);">Total Pages: <strong id="arrangerTotalPagesCount" style="color:#fbbf24;">0</strong></span>
+          <label for="arrangerPdfInput" class="action-btn btn-add" style="padding:6px 14px; font-size:11px; cursor:pointer;">➕ Add More PDF Files</label>
+        </div>
+
+        <div id="arrangerGridList" class="file-gallery-list"></div>
+
+        <div class="btn-group">
+          <button id="saveArrangedPdfBtn" class="action-btn btn-download">💾 Save & Download Arranged PDF</button>
+          <button id="clearArrangerBtn" class="action-btn btn-reset">🔄 Clear All Pages</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 6: UNIVERSAL (PDF, JPG, PNG TO PDF) MERGE & RE-ORDER -->
+    <div id="tab-jpg-to-pdf" class="tab-content">
+      <div class="badge">Universal File Merger • Re-order (◀ / ▶) • Individual Delete (✖)</div>
+      <h1>PDF, JPG, PNG to PDF Converter</h1>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">एक साथ कई <strong>PDF, JPG या PNG</strong> फ़ाइलें सिलेक्ट करें, उन्हें आगे-पीछे <strong>(◀ / ▶)</strong> से क्रमबद्ध करें और PDF बनाएँ।</p>
+
+      <div class="upload-section" style="margin-bottom: 15px;">
+        <label class="upload-box" for="universalMultiInput" style="max-width: 450px;">
+          <strong style="display:block; font-size:14px; margin-bottom:4px; color:var(--accent-blue);">📁 Select Files (PDF, JPG, PNG Allowed)</strong>
+          <div id="universalMultiStatus" style="font-size: 12px; color: var(--text-muted);">क्लिक करके PDF या इमेज फ़ाइलें चुनें</div>
+        </label>
+        <input type="file" id="universalMultiInput" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple>
+      </div>
+
+      <div id="universalGalleryContainer" style="display:none;">
+        <div style="font-size: 12px; color: var(--accent-blue); font-weight: 600; margin-bottom: 6px;">
+          Selected Files (<span id="universalSelectedCount">0</span>):
+        </div>
+        <div id="universalGalleryList" class="file-gallery-list"></div>
+
+        <div class="btn-group">
+          <button id="convertUniversalToPdfBtn" class="action-btn btn-download">📥 Convert & Download Combined PDF</button>
+          <button id="clearUniversalListBtn" class="action-btn btn-reset">🔄 Clear All</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 7: CUSTOM IMAGE RESIZER -->
     <div id="tab-resizer" class="tab-content">
       <div class="badge">Resize in Pixels (px) • Millimeters (mm) • Centimeters (cm)</div>
       <h1>Custom Image Resizer</h1>
@@ -897,34 +963,7 @@
       </div>
     </div>
 
-    <!-- TAB 6: UNIVERSAL (PDF, JPG, PNG TO PDF) CONVERTER WITH INDIVIDUAL DELETE -->
-    <div id="tab-jpg-to-pdf" class="tab-content">
-      <div class="badge">Universal File Merger • PDF, JPG, PNG Support • Individual Item Delete</div>
-      <h1>PDF, JPG, PNG to PDF Converter</h1>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">एक साथ कई <strong>PDF, JPG या PNG</strong> फ़ाइलें सिलेक्ट करें। किसी भी फ़ाइल को हटाने के लिए उसके ऊपर बने <strong>(✖)</strong> पर क्लिक करें।</p>
-
-      <div class="upload-section" style="margin-bottom: 15px;">
-        <label class="upload-box" for="universalMultiInput" style="max-width: 450px;">
-          <strong style="display:block; font-size:14px; margin-bottom:4px; color:var(--accent-blue);">📁 Select Files (PDF, JPG, PNG Allowed)</strong>
-          <div id="universalMultiStatus" style="font-size: 12px; color: var(--text-muted);">क्लिक करके PDF या इमेज फ़ाइलें चुनें</div>
-        </label>
-        <input type="file" id="universalMultiInput" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple>
-      </div>
-
-      <div id="universalGalleryContainer" style="display:none;">
-        <div style="font-size: 12px; color: var(--accent-blue); font-weight: 600; margin-bottom: 6px;">
-          Selected Files (<span id="universalSelectedCount">0</span>):
-        </div>
-        <div id="universalGalleryList" class="file-gallery-list"></div>
-
-        <div class="btn-group">
-          <button id="convertUniversalToPdfBtn" class="action-btn btn-download">📥 Convert & Download Combined PDF</button>
-          <button id="clearUniversalListBtn" class="action-btn btn-reset">🔄 Clear All</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB 7: PDF TO HIGH-DPI JPG CONVERTER -->
+    <!-- TAB 8: PDF TO HIGH-DPI JPG CONVERTER -->
     <div id="tab-pdf-to-jpg" class="tab-content">
       <div class="badge">Ultra High-Res • Manual & Quick DPI (72 to 1200 DPI) • Batch ZIP Export</div>
       <h1>PDF to High-DPI JPG Converter</h1>
@@ -962,7 +1001,7 @@
       </div>
     </div>
 
-    <!-- TAB 8: PDF COMPRESSOR -->
+    <!-- TAB 9: PDF COMPRESSOR -->
     <div id="tab-pdf-compressor" class="tab-content">
       <div class="badge">Interactive Quality & Size Slider • Target KB/MB Preview • High-Speed Export</div>
       <h1>PDF Size Compressor</h1>
@@ -1005,7 +1044,7 @@
       </div>
     </div>
 
-    <!-- TAB 9: 30-DAY PRINT HISTORY -->
+    <!-- TAB 10: 30-DAY PRINT HISTORY -->
     <div id="tab-history" class="tab-content">
       <div class="badge">Automatic 30-Day Auto-Delete Storage • All Features Supported</div>
       <h1>30-Day Print & Download History</h1>
@@ -1977,7 +2016,325 @@
   });
 
   // ==========================================================
-  // TAB 5: CUSTOM IMAGE RESIZER
+  // TAB 5: PDF ARRANGER ENGINE (RE-ORDER, ROTATE, CUT, ADD)
+  // ==========================================================
+  let arrangedPdfPagesList = [];
+
+  document.getElementById('arrangerPdfInput').addEventListener('change', async function(e) {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+
+    for (const file of files) {
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
+
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const viewport = page.getViewport({ scale: 0.35 });
+
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+
+        await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+
+        arrangedPdfPagesList.push({
+          sourceBytes: arrayBuffer,
+          pageIndex: i - 1,
+          thumbDataUrl: canvas.toDataURL('image/jpeg', 0.8),
+          rotation: 0,
+          originalDocName: file.name
+        });
+      }
+    }
+
+    renderArrangerGrid();
+    this.value = '';
+  });
+
+  function renderArrangerGrid() {
+    const grid = document.getElementById('arrangerGridList');
+    const container = document.getElementById('arrangerContainerArea');
+    const countDisplay = document.getElementById('arrangerTotalPagesCount');
+
+    grid.innerHTML = '';
+    countDisplay.innerText = arrangedPdfPagesList.length;
+
+    if (arrangedPdfPagesList.length > 0) {
+      container.style.display = 'block';
+    } else {
+      container.style.display = 'none';
+      return;
+    }
+
+    arrangedPdfPagesList.forEach((item, idx) => {
+      const card = document.createElement('div');
+      card.className = 'gallery-thumb-item';
+
+      const img = document.createElement('img');
+      img.src = item.thumbDataUrl;
+      img.style.transform = `rotate(${item.rotation}deg)`;
+      card.appendChild(img);
+
+      const label = document.createElement('div');
+      label.className = 'file-label';
+      label.innerText = `Page ${idx + 1}`;
+      card.appendChild(label);
+
+      // Card Action Buttons (◀, ▶, 🔄, 🗑️)
+      const actionsRow = document.createElement('div');
+      actionsRow.className = 'card-actions-row';
+
+      const leftBtn = document.createElement('button');
+      leftBtn.className = 'mini-action-btn';
+      leftBtn.innerHTML = '◀';
+      leftBtn.title = 'Move Left';
+      leftBtn.onclick = () => moveArrangerPage(idx, -1);
+
+      const rightBtn = document.createElement('button');
+      rightBtn.className = 'mini-action-btn';
+      rightBtn.innerHTML = '▶';
+      rightBtn.title = 'Move Right';
+      rightBtn.onclick = () => moveArrangerPage(idx, 1);
+
+      const rotateBtn = document.createElement('button');
+      rotateBtn.className = 'mini-action-btn';
+      rotateBtn.innerHTML = '🔄';
+      rotateBtn.title = 'Rotate 90°';
+      rotateBtn.onclick = () => rotateArrangerPage(idx);
+
+      const delBtn = document.createElement('button');
+      delBtn.className = 'mini-action-btn btn-del';
+      delBtn.innerHTML = '🗑️';
+      delBtn.title = 'Delete Page';
+      delBtn.onclick = () => deleteArrangerPage(idx);
+
+      actionsRow.appendChild(leftBtn);
+      actionsRow.appendChild(rightBtn);
+      actionsRow.appendChild(rotateBtn);
+      actionsRow.appendChild(delBtn);
+
+      card.appendChild(actionsRow);
+      grid.appendChild(card);
+    });
+  }
+
+  function moveArrangerPage(index, direction) {
+    const targetIdx = index + direction;
+    if (targetIdx < 0 || targetIdx >= arrangedPdfPagesList.length) return;
+    const temp = arrangedPdfPagesList[index];
+    arrangedPdfPagesList[index] = arrangedPdfPagesList[targetIdx];
+    arrangedPdfPagesList[targetIdx] = temp;
+    renderArrangerGrid();
+  }
+
+  function rotateArrangerPage(index) {
+    arrangedPdfPagesList[index].rotation = (arrangedPdfPagesList[index].rotation + 90) % 360;
+    renderArrangerGrid();
+  }
+
+  function deleteArrangerPage(index) {
+    arrangedPdfPagesList.splice(index, 1);
+    renderArrangerGrid();
+  }
+
+  document.getElementById('clearArrangerBtn').addEventListener('click', () => {
+    if (confirm('क्या आप सभी अरेंज किए गए पेज मिटाना चाहते हैं?')) {
+      arrangedPdfPagesList = [];
+      renderArrangerGrid();
+    }
+  });
+
+  document.getElementById('saveArrangedPdfBtn').addEventListener('click', async () => {
+    if (!arrangedPdfPagesList.length) return;
+
+    const { PDFDocument, degrees } = PDFLib;
+    const outPdf = await PDFDocument.create();
+
+    // Grouping source buffers to prevent multiple re-parsing
+    const loadedDocsMap = new Map();
+
+    for (const pageObj of arrangedPdfPagesList) {
+      let srcDoc = loadedDocsMap.get(pageObj.sourceBytes);
+      if (!srcDoc) {
+        srcDoc = await PDFDocument.load(pageObj.sourceBytes);
+        loadedDocsMap.set(pageObj.sourceBytes, srcDoc);
+      }
+
+      const [copiedPage] = await outPdf.copyPages(srcDoc, [pageObj.pageIndex]);
+      
+      if (pageObj.rotation !== 0) {
+        const currentRot = copiedPage.getRotation().angle;
+        copiedPage.setRotation(degrees(currentRot + pageObj.rotation));
+      }
+
+      outPdf.addPage(copiedPage);
+    }
+
+    const pdfBytes = await outPdf.save();
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const fileName = `Arranged_Document_${arrangedPdfPagesList.length}_Pages.pdf`;
+
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = fileName;
+    link.click();
+    saveToHistory('PDF Arranger', fileName, blob, 'application/pdf');
+  });
+
+  // ==========================================================
+  // TAB 6: UNIVERSAL MERGE ENGINE (WITH RE-ORDER & INDIVIDUAL DELETE)
+  // ==========================================================
+  let universalFiles = [];
+
+  document.getElementById('universalMultiInput').addEventListener('change', function(e) {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+
+    universalFiles = universalFiles.concat(files);
+    renderUniversalGallery();
+    this.value = '';
+  });
+
+  function removeUniversalFile(index) {
+    universalFiles.splice(index, 1);
+    renderUniversalGallery();
+  }
+
+  function moveUniversalFile(index, direction) {
+    const targetIdx = index + direction;
+    if (targetIdx < 0 || targetIdx >= universalFiles.length) return;
+    const temp = universalFiles[index];
+    universalFiles[index] = universalFiles[targetIdx];
+    universalFiles[targetIdx] = temp;
+    renderUniversalGallery();
+  }
+
+  function renderUniversalGallery() {
+    const gallery = document.getElementById('universalGalleryList');
+    const container = document.getElementById('universalGalleryContainer');
+    const countDisplay = document.getElementById('universalSelectedCount');
+
+    gallery.innerHTML = '';
+    countDisplay.innerText = universalFiles.length;
+
+    if (universalFiles.length > 0) {
+      container.style.display = 'block';
+    } else {
+      container.style.display = 'none';
+      return;
+    }
+
+    universalFiles.forEach((file, idx) => {
+      const item = document.createElement('div');
+      item.className = 'gallery-thumb-item';
+
+      // Cross (✖) Delete Button
+      const delBtn = document.createElement('button');
+      delBtn.className = 'item-delete-btn';
+      delBtn.innerHTML = '✖';
+      delBtn.title = 'Remove this file';
+      delBtn.onclick = function(e) {
+        e.stopPropagation();
+        removeUniversalFile(idx);
+      };
+      item.appendChild(delBtn);
+
+      if (file.type === 'application/pdf') {
+        const icon = document.createElement('div');
+        icon.className = 'pdf-icon-box';
+        icon.innerText = '📄';
+        item.appendChild(icon);
+      } else {
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        item.appendChild(img);
+      }
+
+      const label = document.createElement('div');
+      label.className = 'file-label';
+      label.innerText = file.name;
+      label.title = file.name;
+      item.appendChild(label);
+
+      // Re-order Controls (◀ / ▶)
+      const actionsRow = document.createElement('div');
+      actionsRow.className = 'card-actions-row';
+
+      const leftBtn = document.createElement('button');
+      leftBtn.className = 'mini-action-btn';
+      leftBtn.innerHTML = '◀';
+      leftBtn.title = 'Move Left';
+      leftBtn.onclick = () => moveUniversalFile(idx, -1);
+
+      const rightBtn = document.createElement('button');
+      rightBtn.className = 'mini-action-btn';
+      rightBtn.innerHTML = '▶';
+      rightBtn.title = 'Move Right';
+      rightBtn.onclick = () => moveUniversalFile(idx, 1);
+
+      actionsRow.appendChild(leftBtn);
+      actionsRow.appendChild(rightBtn);
+      item.appendChild(actionsRow);
+
+      gallery.appendChild(item);
+    });
+  }
+
+  document.getElementById('clearUniversalListBtn').addEventListener('click', () => {
+    universalFiles = [];
+    renderUniversalGallery();
+    document.getElementById('universalMultiInput').value = '';
+  });
+
+  document.getElementById('convertUniversalToPdfBtn').addEventListener('click', async () => {
+    if (!universalFiles.length) return;
+
+    const { PDFDocument } = PDFLib;
+    const mergedPdf = await PDFDocument.create();
+
+    for (let i = 0; i < universalFiles.length; i++) {
+      const file = universalFiles[i];
+      const fileBytes = await file.arrayBuffer();
+
+      if (file.type === 'application/pdf') {
+        const externalPdf = await PDFDocument.load(fileBytes);
+        const copiedPages = await mergedPdf.copyPages(externalPdf, externalPdf.getPageIndices());
+        copiedPages.forEach((page) => mergedPdf.addPage(page));
+      } else {
+        let embeddedImage;
+        if (file.type === 'image/png') {
+          embeddedImage = await mergedPdf.embedPng(fileBytes);
+        } else {
+          embeddedImage = await mergedPdf.embedJpg(fileBytes);
+        }
+
+        const page = mergedPdf.addPage([595.28, 841.89]);
+        const imgDims = embeddedImage.scaleToFit(555.28, 801.89);
+
+        page.drawImage(embeddedImage, {
+          x: (595.28 - imgDims.width) / 2,
+          y: (841.89 - imgDims.height) / 2,
+          width: imgDims.width,
+          height: imgDims.height
+        });
+      }
+    }
+
+    const mergedPdfBytes = await mergedPdf.save();
+    const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
+    const fileName = `Merged_Combined_Document.pdf`;
+    
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = fileName;
+    link.click();
+    saveToHistory('Universal PDF Merge', fileName, blob, 'application/pdf');
+  });
+
+  // ==========================================================
+  // TAB 7: CUSTOM IMAGE RESIZER
   // ==========================================
   let originalResizerImg = null;
   let resizerOriginalWidth = 0;
@@ -2110,128 +2467,7 @@
   });
 
   // ==========================================================
-  // TAB 6: UNIVERSAL (PDF, JPG, PNG TO PDF) MERGE ENGINE WITH INDIVIDUAL DELETE
-  // ==========================================================
-  let universalFiles = [];
-
-  document.getElementById('universalMultiInput').addEventListener('change', function(e) {
-    const files = Array.from(e.target.files);
-    if (!files.length) return;
-
-    universalFiles = universalFiles.concat(files);
-    renderUniversalGallery();
-    this.value = '';
-  });
-
-  function removeUniversalFile(index) {
-    universalFiles.splice(index, 1);
-    renderUniversalGallery();
-  }
-
-  function renderUniversalGallery() {
-    const gallery = document.getElementById('universalGalleryList');
-    const container = document.getElementById('universalGalleryContainer');
-    const countDisplay = document.getElementById('universalSelectedCount');
-
-    gallery.innerHTML = '';
-    countDisplay.innerText = universalFiles.length;
-
-    if (universalFiles.length > 0) {
-      container.style.display = 'block';
-    } else {
-      container.style.display = 'none';
-      return;
-    }
-
-    universalFiles.forEach((file, idx) => {
-      const item = document.createElement('div');
-      item.className = 'gallery-thumb-item';
-
-      // Cross (✖) Delete Button for Individual Items
-      const delBtn = document.createElement('button');
-      delBtn.className = 'item-delete-btn';
-      delBtn.innerHTML = '✖';
-      delBtn.title = 'Remove this file';
-      delBtn.onclick = function(e) {
-        e.stopPropagation();
-        removeUniversalFile(idx);
-      };
-      item.appendChild(delBtn);
-
-      if (file.type === 'application/pdf') {
-        const icon = document.createElement('div');
-        icon.className = 'pdf-icon-box';
-        icon.innerText = '📄';
-        item.appendChild(icon);
-      } else {
-        const img = document.createElement('img');
-        img.src = URL.createObjectURL(file);
-        item.appendChild(img);
-      }
-
-      const label = document.createElement('div');
-      label.className = 'file-label';
-      label.innerText = file.name;
-      label.title = file.name;
-      item.appendChild(label);
-
-      gallery.appendChild(item);
-    });
-  }
-
-  document.getElementById('clearUniversalListBtn').addEventListener('click', () => {
-    universalFiles = [];
-    renderUniversalGallery();
-    document.getElementById('universalMultiInput').value = '';
-  });
-
-  document.getElementById('convertUniversalToPdfBtn').addEventListener('click', async () => {
-    if (!universalFiles.length) return;
-
-    const { PDFDocument } = PDFLib;
-    const mergedPdf = await PDFDocument.create();
-
-    for (let i = 0; i < universalFiles.length; i++) {
-      const file = universalFiles[i];
-      const fileBytes = await file.arrayBuffer();
-
-      if (file.type === 'application/pdf') {
-        const externalPdf = await PDFDocument.load(fileBytes);
-        const copiedPages = await mergedPdf.copyPages(externalPdf, externalPdf.getPageIndices());
-        copiedPages.forEach((page) => mergedPdf.addPage(page));
-      } else {
-        let embeddedImage;
-        if (file.type === 'image/png') {
-          embeddedImage = await mergedPdf.embedPng(fileBytes);
-        } else {
-          embeddedImage = await mergedPdf.embedJpg(fileBytes);
-        }
-
-        const page = mergedPdf.addPage([595.28, 841.89]);
-        const imgDims = embeddedImage.scaleToFit(555.28, 801.89);
-
-        page.drawImage(embeddedImage, {
-          x: (595.28 - imgDims.width) / 2,
-          y: (841.89 - imgDims.height) / 2,
-          width: imgDims.width,
-          height: imgDims.height
-        });
-      }
-    }
-
-    const mergedPdfBytes = await mergedPdf.save();
-    const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
-    const fileName = `Merged_Combined_Document.pdf`;
-    
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = fileName;
-    link.click();
-    saveToHistory('Universal PDF Merge', fileName, blob, 'application/pdf');
-  });
-
-  // ==========================================================
-  // TAB 7: PDF TO HIGH-DPI JPG (MANUAL & BUTTON DPI)
+  // TAB 8: PDF TO HIGH-DPI JPG (MANUAL & BUTTON DPI)
   // ==========================================
   let pdfToJpgDoc = null;
   let activeDpiValue = 300;
@@ -2320,7 +2556,7 @@
   });
 
   // ==========================================================
-  // TAB 8: INTERACTIVE PDF COMPRESSOR
+  // TAB 9: INTERACTIVE PDF COMPRESSOR
   // ==========================================
   let compressOriginalFile = null;
   let compressPdfDoc = null;
