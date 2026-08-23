@@ -295,6 +295,23 @@
     .btn-download { background: var(--btn-download); }
     .btn-reset { background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; }
 
+    .btn-manual-crop {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid var(--accent-blue);
+      color: var(--accent-blue);
+      padding: 4px 10px;
+      font-size: 11px;
+      border-radius: 6px;
+      margin-top: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+    .btn-manual-crop:hover {
+      background: var(--accent-blue);
+      color: #0f172a;
+    }
+
     .action-btn:disabled { 
       background: #334155; 
       color: #64748b; 
@@ -440,7 +457,6 @@
       margin-top: 4px;
     }
 
-    /* History Table Styles */
     .history-table-container {
       margin-top: 15px;
       overflow-x: auto;
@@ -550,7 +566,7 @@
   </div>
 </div>
 
-<!-- 3. Main Portal Application (All Tools + 48-Hr Print History) -->
+<!-- 3. Main Portal Application -->
 <div id="mainApp">
   <div class="tab-nav">
     <button class="tab-btn active" onclick="switchTab('tab-cards')">💳 ID Card (5 Slots)</button>
@@ -567,36 +583,38 @@
   <div class="container">
     <button id="logoutBtn" class="logout-btn">🔒 Logout</button>
 
-    <!-- TAB 1: 5 CARDS SYSTEM -->
+    <!-- TAB 1: 5 CARDS SYSTEM (AUTO DIMENSION FIT + MANUAL CROP) -->
     <div id="tab-cards" class="tab-content active">
-      <div class="badge">2.5mm Gap • Broad Black Border • 5 Cards</div>
+      <div class="badge">Auto-Dimension Crop • 2.5mm Gap • Broad Black Border • 5 Cards</div>
       <h1>Card Generator System</h1>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">एक-एक करके कार्ड्स जोड़ें। दोनों कार्ड के बीच 2.5 mm गैप और Broad Black Border आएगी।</p>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">इमेज सिलेक्ट करते ही वह <strong>ऑटोमैटिकली सही ID साइज में फिट</strong> हो जाएगी। जरूरत पड़ने पर मैनुअल क्रॉप भी कर सकते हैं।</p>
       
       <div id="slotCounter" class="slot-counter-badge">Cards on Page: 0 / 5 (Next Slot: #1)</div>
 
       <div class="upload-section">
         <label class="upload-box" for="card1Input">
           <strong style="display:block; font-size:14px; margin-bottom:4px;">📁 Front Side</strong>
-          <div id="file1Name" style="font-size: 12px; color: var(--text-muted);">फ़ोटो चुनें व क्रॉप करें</div>
+          <div id="file1Name" style="font-size: 12px; color: var(--text-muted);">इमेज चुनें (Auto-Crop)</div>
         </label>
         <input type="file" id="card1Input" accept="image/*">
 
         <label class="upload-box" for="card2Input">
           <strong style="display:block; font-size:14px; margin-bottom:4px;">📁 Back Side</strong>
-          <div id="file2Name" style="font-size: 12px; color: var(--text-muted);">फ़ोटो चुनें व क्रॉप करें</div>
+          <div id="file2Name" style="font-size: 12px; color: var(--text-muted);">इमेज चुनें (Auto-Crop)</div>
         </label>
         <input type="file" id="card2Input" accept="image/*">
       </div>
 
       <div class="preview-container">
         <div class="preview-box">
-          <h4>Front Card</h4>
+          <h4>Front Card Preview</h4>
           <canvas id="canvas1" width="1013" height="638" style="width: 180px;"></canvas>
+          <button id="manualCropFrontBtn" class="btn-manual-crop" style="display:none;" onclick="openManualCropForCard('front')">✂️ Manual Crop Front</button>
         </div>
         <div class="preview-box">
-          <h4>Back Card</h4>
+          <h4>Back Card Preview</h4>
           <canvas id="canvas2" width="1013" height="638" style="width: 180px;"></canvas>
+          <button id="manualCropBackBtn" class="btn-manual-crop" style="display:none;" onclick="openManualCropForCard('back')">✂️ Manual Crop Back</button>
         </div>
       </div>
 
@@ -1020,7 +1038,7 @@
   // ==========================================================
   const DB_NAME = 'PrintPortal48HrDB';
   const DB_STORE = 'print_records';
-  const RETENTION_MS = 48 * 60 * 60 * 1000; // 48 Hours
+  const RETENTION_MS = 48 * 60 * 60 * 1000;
 
   function openHistoryDB() {
     return new Promise((resolve, reject) => {
@@ -1098,7 +1116,6 @@
           return;
         }
 
-        // Show latest on top
         records.reverse().forEach(rec => {
           const tr = document.createElement('tr');
           tr.innerHTML = `
@@ -1268,22 +1285,24 @@
   });
 
   // ==========================================
-  // CROPPING ENGINE (Universal)
+  // CROPPING ENGINE (Universal & Manual)
   // ==========================================
   let cropper = null;
   let activeCropType = 'card_front';
   let rawNamePassportImg = null;
+  let frontCardRawData = null;
+  let backCardRawData = null;
 
   const cropModal = document.getElementById('cropModal');
   const imageToCrop = document.getElementById('imageToCrop');
   const cropSaveBtn = document.getElementById('cropSaveBtn');
   const cropCancelBtn = document.getElementById('cropCancelBtn');
 
-  function openCropEngine(file, type) {
+  function openCropEngine(fileOrDataUrl, type) {
     activeCropType = type;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      imageToCrop.src = e.target.result;
+    
+    const handleLoadedImage = (src) => {
+      imageToCrop.src = src;
       cropModal.style.display = 'flex';
       if (cropper) cropper.destroy();
 
@@ -1297,7 +1316,62 @@
         autoCropArea: 0.98
       });
     };
-    reader.readAsDataURL(file);
+
+    if (typeof fileOrDataUrl === 'string') {
+      handleLoadedImage(fileOrDataUrl);
+    } else {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        handleLoadedImage(e.target.result);
+      };
+      reader.readAsDataURL(fileOrDataUrl);
+    }
+  }
+
+  // Auto-Crop & Center Fit algorithm for ID Cards
+  function autoFitCardToCanvas(dataUrl, targetCanvas, ctx, isFront) {
+    const img = new Image();
+    img.onload = function() {
+      ctx.clearRect(0, 0, CARD_W, CARD_H);
+
+      // Compute Center-Crop Dimensions
+      const srcRatio = img.width / img.height;
+      const targetRatio = CARD_W / CARD_H;
+      let sX = 0, sY = 0, sW = img.width, sH = img.height;
+
+      if (srcRatio > targetRatio) {
+        sW = img.height * targetRatio;
+        sX = (img.width - sW) / 2;
+      } else {
+        sH = img.width / targetRatio;
+        sY = (img.height - sH) / 2;
+      }
+
+      ctx.drawImage(img, sX, sY, sW, sH, 0, 0, CARD_W, CARD_H);
+
+      if (isFront) {
+        img1Loaded = true;
+        frontCardRawData = dataUrl;
+        document.getElementById('manualCropFrontBtn').style.display = 'inline-block';
+      } else {
+        img2Loaded = true;
+        backCardRawData = dataUrl;
+        document.getElementById('manualCropBackBtn').style.display = 'inline-block';
+      }
+
+      if (img1Loaded && img2Loaded) {
+        addCardBtn.disabled = false;
+      }
+    };
+    img.src = dataUrl;
+  }
+
+  function openManualCropForCard(side) {
+    if (side === 'front' && frontCardRawData) {
+      openCropEngine(frontCardRawData, 'card_front');
+    } else if (side === 'back' && backCardRawData) {
+      openCropEngine(backCardRawData, 'card_back');
+    }
   }
 
   cropSaveBtn.addEventListener('click', () => {
@@ -1354,7 +1428,7 @@
   }
 
   // ==========================================
-  // TAB 1: 5 CARDS SYSTEM LOGIC
+  // TAB 1: 5 CARDS SYSTEM LOGIC (AUTO FIT ON UPLOAD)
   // ==========================================
   const CARD_W = 1013, CARD_H = 638, A4_W = 2480, A4_H = 3508, GAP_2_5MM_PX = 30, MAX_CARDS = 5;
   let addedCardsCount = 0, img1Loaded = false, img2Loaded = false;
@@ -1371,17 +1445,29 @@
   const resetPageBtn = document.getElementById('resetPageBtn');
   const slotCounter = document.getElementById('slotCounter');
 
+  // Auto-Crop Priority on Front Upload
   document.getElementById('card1Input').addEventListener('change', (e) => {
-    if (e.target.files[0]) {
-      document.getElementById('file1Name').innerText = e.target.files[0].name;
-      openCropEngine(e.target.files[0], 'card_front');
+    const file = e.target.files[0];
+    if (file) {
+      document.getElementById('file1Name').innerText = `✅ Auto-Fitted: ${file.name}`;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        autoFitCardToCanvas(evt.target.result, canvas1, ctx1, true);
+      };
+      reader.readAsDataURL(file);
     }
   });
 
+  // Auto-Crop Priority on Back Upload
   document.getElementById('card2Input').addEventListener('change', (e) => {
-    if (e.target.files[0]) {
-      document.getElementById('file2Name').innerText = e.target.files[0].name;
-      openCropEngine(e.target.files[0], 'card_back');
+    const file = e.target.files[0];
+    if (file) {
+      document.getElementById('file2Name').innerText = `✅ Auto-Fitted: ${file.name}`;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        autoFitCardToCanvas(evt.target.result, canvas2, ctx2, false);
+      };
+      reader.readAsDataURL(file);
     }
   });
 
@@ -1421,11 +1507,14 @@
       ctx.textAlign = 'center';
       ctx.fillText(`${i === 0 ? 'Front' : 'Back'} Card Preview`, CARD_W / 2, CARD_H / 2);
     });
-    document.getElementById('file1Name').innerText = 'फ़ोटो चुनें व क्रॉप करें';
-    document.getElementById('file2Name').innerText = 'फ़ोटो चुनें व क्रॉप करें';
+    document.getElementById('file1Name').innerText = 'इमेज चुनें (Auto-Crop)';
+    document.getElementById('file2Name').innerText = 'इमेज चुनें (Auto-Crop)';
     document.getElementById('card1Input').value = '';
     document.getElementById('card2Input').value = '';
+    document.getElementById('manualCropFrontBtn').style.display = 'none';
+    document.getElementById('manualCropBackBtn').style.display = 'none';
     img1Loaded = false; img2Loaded = false; addCardBtn.disabled = true;
+    frontCardRawData = null; backCardRawData = null;
   }
 
   function resetCardA4Sheet() {
@@ -1866,7 +1955,7 @@
 
   // ==========================================================
   // TAB 5: CUSTOM IMAGE RESIZER
-  // ==========================================================
+  // ==========================================
   let originalResizerImg = null;
   let resizerOriginalWidth = 0;
   let resizerOriginalHeight = 0;
