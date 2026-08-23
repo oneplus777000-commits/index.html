@@ -8,13 +8,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- PDF.js Standalone for PDF Rendering & Extraction -->
+  <!-- PDF.js Standalone for PDF Rendering -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
   
   <!-- PDF-LIB for Pure Vector Merging -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 
-  <!-- jsPDF Library for ID/Photo Tab -->
+  <!-- jsPDF Library for ID/Photo Tab & Compression -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <!-- JSZip for Multi-page PDF to JPG Batch Download -->
@@ -144,20 +144,20 @@
     .tab-nav {
       display: flex;
       justify-content: center;
-      gap: 10px;
+      gap: 8px;
       margin-bottom: 15px;
       flex-wrap: wrap;
     }
 
     .tab-btn {
-      padding: 9px 16px;
+      padding: 9px 14px;
       background: rgba(15, 23, 42, 0.8);
       border: 1px solid var(--border-color);
       color: var(--text-muted);
       border-radius: 12px;
       cursor: pointer;
       font-weight: 600;
-      font-size: 13px;
+      font-size: 12px;
       transition: 0.3s;
     }
 
@@ -321,13 +321,13 @@
     }
 
     .qty-input {
-      width: 70px;
+      width: 80px;
       padding: 6px 10px;
       border-radius: 8px;
       background: rgba(15, 23, 42, 0.9);
       border: 1px solid var(--accent-blue);
       color: #fff;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 700;
       text-align: center;
       outline: none;
@@ -344,7 +344,38 @@
       font-weight: 600;
     }
 
-    /* Universal Gallery Styles */
+    /* Slider Styling */
+    .slider-range {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 8px;
+      border-radius: 5px;
+      background: #334155;
+      outline: none;
+      margin: 15px 0 10px 0;
+    }
+
+    .slider-range::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+    }
+
+    .size-badge-box {
+      display: flex;
+      justify-content: space-around;
+      background: rgba(15, 23, 42, 0.8);
+      padding: 12px;
+      border-radius: 10px;
+      margin-top: 10px;
+      border: 1px solid var(--border-color);
+    }
+
     .file-gallery-list {
       display: flex;
       flex-wrap: wrap;
@@ -465,14 +496,15 @@
   </div>
 </div>
 
-<!-- 3. Main Portal Application (5 All-in-One Tools) -->
+<!-- 3. Main Portal Application (6 All-in-One Tools) -->
 <div id="mainApp">
   <div class="tab-nav">
     <button class="tab-btn active" onclick="switchTab('tab-cards')">💳 ID Card (5 Slots)</button>
     <button class="tab-btn" onclick="switchTab('tab-passport')">👤 Passport Photos</button>
     <button class="tab-btn" onclick="switchTab('tab-4x6')">🖼️ 4×6 Photo Print</button>
     <button class="tab-btn" onclick="switchTab('tab-jpg-to-pdf')">📄 PDF, JPG, PNG to PDF</button>
-    <button class="tab-btn" onclick="switchTab('tab-pdf-to-jpg')">🖼️ PDF to JPG (Up to 1200 DPI)</button>
+    <button class="tab-btn" onclick="switchTab('tab-pdf-to-jpg')">🖼️ PDF to JPG (Manual DPI)</button>
+    <button class="tab-btn" onclick="switchTab('tab-pdf-compressor')">🗜️ PDF Compressor</button>
   </div>
 
   <div class="container">
@@ -652,11 +684,11 @@
       </div>
     </div>
 
-    <!-- TAB 5: PDF TO HIGH-DPI JPG CONVERTER (UP TO 1200 DPI) -->
+    <!-- TAB 5: PDF TO HIGH-DPI JPG CONVERTER (MANUAL & BUTTON DPI) -->
     <div id="tab-pdf-to-jpg" class="tab-content">
-      <div class="badge">Ultra High-Res • Custom DPI (72 to 1200 DPI) • Batch ZIP Export</div>
+      <div class="badge">Ultra High-Res • Manual & Quick DPI (72 to 1200 DPI) • Batch ZIP Export</div>
       <h1>PDF to High-DPI JPG Converter</h1>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">PDF फ़ाइल अपलोड करें और उसे अपने मनचाहे DPI रिज़ॉल्यूशन में साफ़ JPG में बदलें।</p>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">PDF फ़ाइल अपलोड करें और अपनी आवश्यकतानुसार DPI रिज़ॉल्यूशन टाइप या सेलेक्ट करें।</p>
 
       <div class="upload-section" style="margin-bottom: 15px;">
         <label class="upload-box" for="pdfToJpgInput" style="max-width: 420px;">
@@ -668,16 +700,17 @@
 
       <div id="pdfToJpgControls" style="display:none;">
         <div class="control-panel">
-          <span style="font-size: 13px; font-weight:600; color: var(--accent-blue);">⚙️ Select Output DPI Resolution:</span>
+          <span style="font-size: 13px; font-weight:600; color: var(--accent-blue);">⚙️ Quick Select or Type Custom DPI (Max 1200):</span>
           <div class="qty-select-group">
-            <button class="quick-qty-btn" onclick="setPdfDpi(72)">72 DPI (Web)</button>
-            <button class="quick-qty-btn" onclick="setPdfDpi(150)">150 DPI (Standard)</button>
-            <button class="quick-qty-btn" onclick="setPdfDpi(300)">300 DPI (High Print)</button>
-            <button class="quick-qty-btn" onclick="setPdfDpi(600)">600 DPI (Ultra HD)</button>
-            <button class="quick-qty-btn" onclick="setPdfDpi(1200)">1200 DPI (Max Crisp)</button>
+            <button class="quick-qty-btn" onclick="setPdfDpi(72)">72 DPI</button>
+            <button class="quick-qty-btn" onclick="setPdfDpi(150)">150 DPI</button>
+            <button class="quick-qty-btn" onclick="setPdfDpi(300)">300 DPI</button>
+            <button class="quick-qty-btn" onclick="setPdfDpi(600)">600 DPI</button>
+            <button class="quick-qty-btn" onclick="setPdfDpi(1200)">1200 DPI</button>
+            <input type="number" id="manualDpiInput" class="qty-input" value="300" min="50" max="1200" oninput="updateManualDpi(this.value)">
           </div>
           <div style="margin-top: 10px; font-size: 13px;">
-            Current Selected DPI: <strong id="currentDpiDisplay" style="color:#fbbf24;">300 DPI</strong>
+            Current Active DPI: <strong id="currentDpiDisplay" style="color:#fbbf24;">300 DPI</strong>
           </div>
         </div>
 
@@ -685,6 +718,49 @@
 
         <div class="btn-group">
           <button id="startPdfToJpgBtn" class="action-btn btn-download">🖼️ Convert & Download JPGs</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 6: PDF COMPRESSOR WITH LIVE SIZE & QUALITY SLIDER -->
+    <div id="tab-pdf-compressor" class="tab-content">
+      <div class="badge">Interactive Quality & Size Slider • Target KB/MB Preview • High-Speed Export</div>
+      <h1>PDF Size Compressor</h1>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">PDF फ़ाइल अपलोड करें, स्लाइडर से अपनी मनचाही फाइल साइज़ (KB/MB) सेट करें और डाउनलोड करें।</p>
+
+      <div class="upload-section" style="margin-bottom: 15px;">
+        <label class="upload-box" for="pdfCompressInput" style="max-width: 420px;">
+          <strong style="display:block; font-size:14px; margin-bottom:4px; color:var(--accent-blue);">🗜️ Select PDF to Compress</strong>
+          <div id="pdfCompressStatus" style="font-size: 12px; color: var(--text-muted);">क्लिक करके .pdf फाइल चुनें</div>
+        </label>
+        <input type="file" id="pdfCompressInput" accept="application/pdf">
+      </div>
+
+      <div id="compressorControlsArea" style="display:none;">
+        <div class="control-panel">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size: 13px; font-weight:600; color: var(--accent-blue);">🎚️ Compression Quality Slider:</span>
+            <span id="compressQualityLabel" style="font-weight:700; color:#fbbf24;">60% (Medium)</span>
+          </div>
+
+          <input type="range" id="compressQualitySlider" class="slider-range" min="10" max="95" value="60" oninput="onCompressSliderChange(this.value)">
+
+          <div class="size-badge-box">
+            <div>
+              <div style="font-size:11px; color:var(--text-muted);">Original File Size</div>
+              <strong id="origFileSizeDisplay" style="color:#f87171; font-size:14px;">0 KB</strong>
+            </div>
+            <div>
+              <div style="font-size:11px; color:var(--text-muted);">Estimated Download Size</div>
+              <strong id="estFileSizeDisplay" style="color:#34d399; font-size:14px;">0 KB</strong>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 10px; font-size: 12px; color: var(--text-muted);" id="compressProgressMsg"></div>
+
+        <div class="btn-group">
+          <button id="startCompressDownloadBtn" class="action-btn btn-download">📥 Compress & Download PDF</button>
         </div>
       </div>
     </div>
@@ -1253,12 +1329,10 @@
       const fileBytes = await file.arrayBuffer();
 
       if (file.type === 'application/pdf') {
-        // Load external PDF and merge all pages
         const externalPdf = await PDFDocument.load(fileBytes);
         const copiedPages = await mergedPdf.copyPages(externalPdf, externalPdf.getPageIndices());
         copiedPages.forEach((page) => mergedPdf.addPage(page));
       } else {
-        // Image File (JPG/PNG) -> Embed on Standard A4 Page (595.28 x 841.89 points)
         let embeddedImage;
         if (file.type === 'image/png') {
           embeddedImage = await mergedPdf.embedPng(fileBytes);
@@ -1287,13 +1361,22 @@
   });
 
   // ==========================================================
-  // TAB 5: PDF TO HIGH-DPI JPG CONVERTER (UP TO 1200 DPI)
-  // ==========================================================
+  // TAB 5: PDF TO HIGH-DPI JPG (MANUAL & BUTTON DPI)
+  // ==========================================
   let pdfToJpgDoc = null;
-  let selectedPdfDpi = 300;
+  let activeDpiValue = 300;
 
   function setPdfDpi(dpi) {
-    selectedPdfDpi = dpi;
+    activeDpiValue = dpi;
+    document.getElementById('manualDpiInput').value = dpi;
+    document.getElementById('currentDpiDisplay').innerText = `${dpi} DPI`;
+  }
+
+  function updateManualDpi(val) {
+    let dpi = parseInt(val) || 300;
+    if (dpi < 50) dpi = 50;
+    if (dpi > 1200) dpi = 1200;
+    activeDpiValue = dpi;
     document.getElementById('currentDpiDisplay').innerText = `${dpi} DPI`;
   }
 
@@ -1312,11 +1395,11 @@
     if (!pdfToJpgDoc) return;
 
     const progress = document.getElementById('pdfConversionProgress');
-    const scaleFactor = selectedPdfDpi / 72; // 72 DPI is base 1.0 scale
+    const scaleFactor = activeDpiValue / 72;
     const totalPages = pdfToJpgDoc.numPages;
 
     if (totalPages === 1) {
-      progress.innerText = `⏳ Rendering 1 page at ${selectedPdfDpi} DPI...`;
+      progress.innerText = `⏳ Rendering 1 page at ${activeDpiValue} DPI...`;
       const page = await pdfToJpgDoc.getPage(1);
       const viewport = page.getViewport({ scale: scaleFactor });
 
@@ -1330,15 +1413,15 @@
       canvas.toBlob((blob) => {
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
-        link.download = `Page_1_${selectedPdfDpi}DPI.jpg`;
+        link.download = `Page_1_${activeDpiValue}DPI.jpg`;
         link.click();
-        progress.innerText = `✅ Download Complete (1 Page @ ${selectedPdfDpi} DPI)`;
+        progress.innerText = `✅ Download Complete (1 Page @ ${activeDpiValue} DPI)`;
       }, 'image/jpeg', 0.95);
 
     } else {
       const zip = new JSZip();
       for (let i = 1; i <= totalPages; i++) {
-        progress.innerText = `⏳ Processing Page ${i} / ${totalPages} at ${selectedPdfDpi} DPI...`;
+        progress.innerText = `⏳ Processing Page ${i} / ${totalPages} at ${activeDpiValue} DPI...`;
         const page = await pdfToJpgDoc.getPage(i);
         const viewport = page.getViewport({ scale: scaleFactor });
 
@@ -1349,17 +1432,105 @@
 
         await page.render({ canvasContext: ctx, viewport: viewport }).promise;
         const imgData = canvas.toDataURL('image/jpeg', 0.95).split(',')[1];
-        zip.file(`Page_${i}_${selectedPdfDpi}DPI.jpg`, imgData, { base64: true });
+        zip.file(`Page_${i}_${activeDpiValue}DPI.jpg`, imgData, { base64: true });
       }
 
       progress.innerText = '📦 Creating ZIP archive...';
       const zipContent = await zip.generateAsync({ type: 'blob' });
       const link = document.createElement('a');
       link.href = URL.createObjectURL(zipContent);
-      link.download = `PDF_to_JPG_${selectedPdfDpi}DPI_Bundle.zip`;
+      link.download = `PDF_to_JPG_${activeDpiValue}DPI_Bundle.zip`;
       link.click();
       progress.innerText = `✅ Complete! ${totalPages} Pages Downloaded in ZIP.`;
     }
+  });
+
+  // ==========================================================
+  // TAB 6: INTERACTIVE PDF COMPRESSOR (LIVE SIZE PREVIEW)
+  // ==========================================================
+  let compressOriginalFile = null;
+  let compressPdfDoc = null;
+  let origFileSizeInKB = 0;
+
+  document.getElementById('pdfCompressInput').addEventListener('change', async function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    compressOriginalFile = file;
+    origFileSizeInKB = (file.size / 1024).toFixed(1);
+    
+    document.getElementById('pdfCompressStatus').innerText = `✅ ${file.name}`;
+    document.getElementById('origFileSizeDisplay').innerText = formatBytes(file.size);
+
+    const arrayBuffer = await file.arrayBuffer();
+    compressPdfDoc = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
+
+    document.getElementById('compressorControlsArea').style.display = 'block';
+    onCompressSliderChange(document.getElementById('compressQualitySlider').value);
+  });
+
+  function onCompressSliderChange(val) {
+    const quality = parseInt(val);
+    let levelText = 'Medium';
+    if (quality < 35) levelText = 'High Compression (Smallest Size)';
+    else if (quality > 75) levelText = 'Light Compression (High Quality)';
+    
+    document.getElementById('compressQualityLabel').innerText = `${quality}% (${levelText})`;
+
+    // Calculate Estimated Size in Real-Time
+    const ratio = Math.pow(quality / 100, 1.3);
+    const estBytes = compressOriginalFile.size * Math.max(0.15, ratio);
+    document.getElementById('estFileSizeDisplay').innerText = formatBytes(estBytes);
+  }
+
+  function formatBytes(bytes) {
+    if (bytes < 1024) return bytes + ' Bytes';
+    else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+    else return (bytes / 1048576).toFixed(2) + ' MB';
+  }
+
+  document.getElementById('startCompressDownloadBtn').addEventListener('click', async () => {
+    if (!compressPdfDoc) return;
+
+    const progress = document.getElementById('compressProgressMsg');
+    const qualityVal = parseInt(document.getElementById('compressQualitySlider').value);
+    const jpegQuality = qualityVal / 100;
+    
+    // Scale down DPI proportionally for target file compression
+    const renderScale = Math.max(1.0, (qualityVal / 100) * 2.2); 
+    const totalPages = compressPdfDoc.numPages;
+
+    progress.innerText = `⏳ Compressing ${totalPages} pages...`;
+
+    const { jsPDF } = window.jspdf;
+    let outPdf = null;
+
+    for (let i = 1; i <= totalPages; i++) {
+      progress.innerText = `⏳ Compressing Page ${i} of ${totalPages}...`;
+      const page = await compressPdfDoc.getPage(i);
+      const viewport = page.getViewport({ scale: renderScale });
+
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+
+      await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+      const imgData = canvas.toDataURL('image/jpeg', jpegQuality);
+
+      // Determine Page Dimensions (A4 / Portrait / Landscape)
+      const orientation = viewport.width > viewport.height ? 'landscape' : 'portrait';
+      if (i === 1) {
+        outPdf = new jsPDF({ orientation: orientation, unit: 'pt', format: [viewport.width, viewport.height] });
+      } else {
+        outPdf.addPage([viewport.width, viewport.height], orientation);
+      }
+
+      outPdf.addImage(imgData, 'JPEG', 0, 0, viewport.width, viewport.height, undefined, 'FAST');
+    }
+
+    progress.innerText = `✅ Compression Complete! Downloading...`;
+    outPdf.save(`Compressed_${qualityVal}pct_${compressOriginalFile.name}`);
   });
 
   function initAllCanvases() {
