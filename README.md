@@ -623,11 +623,11 @@
       </div>
     </div>
 
-    <!-- TAB 3: NAME & DATE PASSPORT PHOTO MAKER (EXTRA BOLD & LARGE FONT) -->
+    <!-- TAB 3: NAME & DATE PASSPORT PHOTO MAKER (UPDATED: 3-LINE VERTICAL & AUTO-WRAP) -->
     <div id="tab-name-passport" class="tab-content">
-      <div class="badge">Govt / Exam Standard • Name, DOB & Current Date Label</div>
+      <div class="badge">Govt / Exam Standard • Auto-Wrap Name • Vertical DOB & DOP</div>
       <h1>Name & Date Passport Photo Maker</h1>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">पासपोर्ट फोटो के नीचे नाम, जन्मतिथि (DOB) और फोटो की तारीख (DOP) बोल्ड और बड़े अक्षरों में प्रिंट करें।</p>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">नाम सबसे ऊपर (बड़ा नाम होने पर नीचे सरकेगा), बीच में DOB और सबसे नीचे DOP प्रिंट होगी।</p>
 
       <div class="upload-section" style="margin-bottom:10px;">
         <label class="upload-box" for="namePassportInput" style="max-width: 380px;">
@@ -641,7 +641,7 @@
         <div style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center;">
           <div style="flex:1; min-width:200px;">
             <label style="font-size:11px; color:var(--text-muted); display:block; margin-bottom:3px;">👤 Candidate Name (नाम):</label>
-            <input type="text" id="candNameInput" class="text-field-input" placeholder="e.g. HARSHAL MARATHE" oninput="renderNamePassportPreview()">
+            <input type="text" id="candNameInput" class="text-field-input" placeholder="e.g. HARSHAL SATISH MARATHE" oninput="renderNamePassportPreview()">
           </div>
           <div style="flex:1; min-width:140px;">
             <label style="font-size:11px; color:var(--text-muted); display:block; margin-bottom:3px;">🎂 Date of Birth (DOB):</label>
@@ -667,7 +667,7 @@
       <div class="preview-container">
         <div class="preview-box">
           <h4>Preview with Name & Date Strip</h4>
-          <canvas id="namePassportCanvas" width="413" height="531" style="width: 150px;"></canvas>
+          <canvas id="namePassportCanvas" width="413" height="531" style="width: 155px;"></canvas>
         </div>
       </div>
 
@@ -1342,7 +1342,7 @@
   });
 
   // ==========================================================
-  // TAB 3: NAME & DATE PASSPORT PHOTO ENGINE (UPDATED: EXTRA LARGE & BOLD)
+  // TAB 3: NAME & DATE PASSPORT (WORD-WRAP & 3-TIER HIERARCHY)
   // ==========================================================
   const namePassportCanvas = document.getElementById('namePassportCanvas');
   const namePassportCtx = namePassportCanvas.getContext('2d');
@@ -1363,6 +1363,26 @@
     }
   });
 
+  // Smart Word-Wrapping Helper
+  function wrapNameText(context, text, maxWidth) {
+    const words = text.split(' ');
+    const lines = [];
+    let currentLine = words[0];
+
+    for (let i = 1; i < words.length; i++) {
+      const word = words[i];
+      const width = context.measureText(currentLine + " " + word).width;
+      if (width < maxWidth) {
+        currentLine += " " + word;
+      } else {
+        lines.push(currentLine);
+        currentLine = word;
+      }
+    }
+    lines.push(currentLine);
+    return lines;
+  }
+
   function renderNamePassportPreview() {
     namePassportCtx.fillStyle = '#ffffff';
     namePassportCtx.fillRect(0, 0, 413, 531);
@@ -1375,15 +1395,23 @@
     const cDob = document.getElementById('candDobInput').value.trim();
     const cDop = document.getElementById('candDopInput').value.trim();
 
-    // Expanded Height White Strip (135px) for Large, High-Contrast Text
     if (cName || cDob || cDop) {
-      const stripHeight = 135;
-      const stripY = 531 - stripHeight;
+      namePassportCtx.font = '900 24px Poppins, Arial, sans-serif';
+      const nameLines = cName ? wrapNameText(namePassportCtx, cName.toUpperCase(), 390) : [];
       
+      let dateLineCount = 0;
+      if (cDob) dateLineCount++;
+      if (cDop) dateLineCount++;
+
+      const totalTextLines = nameLines.length + dateLineCount;
+      const stripHeight = Math.max(125, totalTextLines * 34 + 16);
+      const stripY = 531 - stripHeight;
+
+      // Draw Pure White Base Strip
       namePassportCtx.fillStyle = '#ffffff';
       namePassportCtx.fillRect(0, stripY, 413, stripHeight);
 
-      // Distinct Black Separation Border Line
+      // Black Divider Top Line
       namePassportCtx.strokeStyle = '#000000';
       namePassportCtx.lineWidth = 3;
       namePassportCtx.beginPath();
@@ -1394,28 +1422,25 @@
       namePassportCtx.fillStyle = '#000000';
       namePassportCtx.textAlign = 'center';
 
-      let yPos = stripY + 38;
-      
-      // Candidate Name - 27px Super Bold
-      if (cName) {
-        namePassportCtx.font = '900 27px Poppins, Arial, sans-serif';
-        namePassportCtx.fillText(cName.toUpperCase(), 413 / 2, yPos);
-        yPos += 36;
+      let yPos = stripY + 28;
+
+      // 1. TOP: Name Lines (Super Bold 24px)
+      namePassportCtx.font = '900 24px Poppins, Arial, sans-serif';
+      nameLines.forEach(line => {
+        namePassportCtx.fillText(line, 413 / 2, yPos);
+        yPos += 30;
+      });
+
+      // 2. MIDDLE: Date of Birth (DOB) (Bold 20px)
+      namePassportCtx.font = '700 20px Poppins, Arial, sans-serif';
+      if (cDob) {
+        namePassportCtx.fillText(cDob, 413 / 2, yPos);
+        yPos += 28;
       }
 
-      // DOB / DOP - 22px Bold
-      namePassportCtx.font = '700 22px Poppins, Arial, sans-serif';
-      let dateLine = '';
-      if (cDob && cDop) {
-        dateLine = `${cDob}  |  ${cDop}`;
-      } else if (cDob) {
-        dateLine = cDob;
-      } else if (cDop) {
-        dateLine = cDop;
-      }
-
-      if (dateLine) {
-        namePassportCtx.fillText(dateLine, 413 / 2, yPos);
+      // 3. BOTTOM: Date of Present / Photo (DOP) (Bold 20px)
+      if (cDop) {
+        namePassportCtx.fillText(cDop, 413 / 2, yPos);
       }
     }
   }
