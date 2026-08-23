@@ -440,6 +440,48 @@
       margin-top: 4px;
     }
 
+    /* History Table Styles */
+    .history-table-container {
+      margin-top: 15px;
+      overflow-x: auto;
+      background: rgba(15, 23, 42, 0.7);
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      text-align: left;
+    }
+
+    .history-table th, .history-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .history-table th {
+      background: rgba(30, 41, 59, 0.9);
+      color: var(--accent-blue);
+      font-weight: 600;
+    }
+
+    .history-table tr:hover {
+      background: rgba(56, 189, 248, 0.05);
+    }
+
+    .history-download-btn {
+      background: #0284c7;
+      color: #fff;
+      border: none;
+      padding: 5px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
     #cropModal {
       display: none;
       position: fixed;
@@ -508,7 +550,7 @@
   </div>
 </div>
 
-<!-- 3. Main Portal Application -->
+<!-- 3. Main Portal Application (All Tools + 48-Hr Print History) -->
 <div id="mainApp">
   <div class="tab-nav">
     <button class="tab-btn active" onclick="switchTab('tab-cards')">💳 ID Card (5 Slots)</button>
@@ -519,6 +561,7 @@
     <button class="tab-btn" onclick="switchTab('tab-jpg-to-pdf')">📄 PDF, JPG, PNG to PDF</button>
     <button class="tab-btn" onclick="switchTab('tab-pdf-to-jpg')">🖼️ PDF to JPG (Manual DPI)</button>
     <button class="tab-btn" onclick="switchTab('tab-pdf-compressor')">🗜️ PDF Compressor</button>
+    <button class="tab-btn" onclick="switchTab('tab-history')" style="border-color: rgba(56, 189, 248, 0.5);">📂 48-Hr History</button>
   </div>
 
   <div class="container">
@@ -623,7 +666,7 @@
       </div>
     </div>
 
-    <!-- TAB 3: NAME & DATE PASSPORT PHOTO MAKER (WITH 3 FONT SIZE SLIDERS) -->
+    <!-- TAB 3: NAME & DATE PASSPORT PHOTO MAKER -->
     <div id="tab-name-passport" class="tab-content">
       <div class="badge">Govt / Exam Standard • 3 Separate Font Sliders • Auto DOB Label</div>
       <h1>Name & Date Passport Photo Maker</h1>
@@ -638,10 +681,8 @@
       </div>
 
       <div class="control-panel" style="text-align:left;">
-        <!-- Inputs & Sliders Grid -->
         <div style="display:flex; flex-direction:column; gap:10px;">
           
-          <!-- Name Row -->
           <div style="background:rgba(15,23,42,0.6); padding:8px 12px; border-radius:8px; border:1px solid var(--border-color);">
             <div style="display:flex; justify-content:space-between; align-items:center;">
               <label style="font-size:11px; color:var(--text-muted);">👤 Candidate Name:</label>
@@ -651,7 +692,6 @@
             <input type="range" id="nameFontSlider" class="slider-range" min="14" max="36" value="24" oninput="updateNameFontSize(this.value)">
           </div>
 
-          <!-- DOB Row -->
           <div style="background:rgba(15,23,42,0.6); padding:8px 12px; border-radius:8px; border:1px solid var(--border-color);">
             <div style="display:flex; justify-content:space-between; align-items:center;">
               <label style="font-size:11px; color:var(--text-muted);">🎂 Date of Birth (DOB):</label>
@@ -661,7 +701,6 @@
             <input type="range" id="dobFontSlider" class="slider-range" min="12" max="30" value="20" oninput="updateDobFontSize(this.value)">
           </div>
 
-          <!-- DOP Row -->
           <div style="background:rgba(15,23,42,0.6); padding:8px 12px; border-radius:8px; border:1px solid var(--border-color);">
             <div style="display:flex; justify-content:space-between; align-items:center;">
               <label style="font-size:11px; color:var(--text-muted);">📅 Photo Date (DOP):</label>
@@ -755,7 +794,7 @@
       </div>
     </div>
 
-    <!-- TAB 5: CUSTOM IMAGE RESIZER (PX, MM, CM) -->
+    <!-- TAB 5: CUSTOM IMAGE RESIZER -->
     <div id="tab-resizer" class="tab-content">
       <div class="badge">Resize in Pixels (px) • Millimeters (mm) • Centimeters (cm)</div>
       <h1>Custom Image Resizer</h1>
@@ -840,7 +879,7 @@
       </div>
     </div>
 
-    <!-- TAB 7: PDF TO HIGH-DPI JPG CONVERTER (MANUAL & BUTTON DPI) -->
+    <!-- TAB 7: PDF TO HIGH-DPI JPG CONVERTER -->
     <div id="tab-pdf-to-jpg" class="tab-content">
       <div class="badge">Ultra High-Res • Manual & Quick DPI (72 to 1200 DPI) • Batch ZIP Export</div>
       <h1>PDF to High-DPI JPG Converter</h1>
@@ -878,7 +917,7 @@
       </div>
     </div>
 
-    <!-- TAB 8: PDF COMPRESSOR WITH LIVE SIZE & QUALITY SLIDER -->
+    <!-- TAB 8: PDF COMPRESSOR -->
     <div id="tab-pdf-compressor" class="tab-content">
       <div class="badge">Interactive Quality & Size Slider • Target KB/MB Preview • High-Speed Export</div>
       <h1>PDF Size Compressor</h1>
@@ -921,6 +960,35 @@
       </div>
     </div>
 
+    <!-- TAB 9: 48-HOUR PRINT HISTORY -->
+    <div id="tab-history" class="tab-content">
+      <div class="badge">Automatic 48-Hour Auto-Delete Storage • All Features Supported</div>
+      <h1>48-Hour Print & Download History</h1>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">आपके द्वारा पिछले 48 घंटों में डाउनलोड की गई सभी फाइल्स यहाँ सुरक्षित हैं। 48 घंटे बाद ये अपने-आप हट जाएँगी।</p>
+
+      <div style="text-align: right; margin-bottom: 10px;">
+        <button onclick="clearAllHistoryDB()" class="action-btn btn-reset" style="padding: 6px 14px; font-size: 11px;">🗑️ Clear Entire History Now</button>
+      </div>
+
+      <div class="history-table-container">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Type / Feature</th>
+              <th>File Name</th>
+              <th>Generated Time</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody">
+            <tr>
+              <td colspan="4" style="text-align:center; color:var(--text-muted); padding:20px;">कोई पुराना रिकॉर्ड नहीं मिला।</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <footer style="margin-top: 25px; font-size: 12px; color: var(--text-muted);">
       Designed & Developed by <strong>JAYESH BHAVSAR @ 2026 ALL RIGHTS RESERVED</strong>
     </footer>
@@ -947,6 +1015,133 @@
   const AUTH_EMAIL = "oneplus777000@gmail.com";
   const DEFAULT_PASS = "Pass@123";
 
+  // ==========================================================
+  // INDEXEDDB 48-HOUR STORAGE ENGINE
+  // ==========================================================
+  const DB_NAME = 'PrintPortal48HrDB';
+  const DB_STORE = 'print_records';
+  const RETENTION_MS = 48 * 60 * 60 * 1000; // 48 Hours
+
+  function openHistoryDB() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open(DB_NAME, 1);
+      request.onupgradeneeded = function(e) {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains(DB_STORE)) {
+          db.createObjectStore(DB_STORE, { keyPath: 'id', autoIncrement: true });
+        }
+      };
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  async function saveToHistory(featureName, fileName, blobOrDataUrl, fileType) {
+    try {
+      const db = await openHistoryDB();
+      const tx = db.transaction(DB_STORE, 'readwrite');
+      const store = tx.objectStore(DB_STORE);
+      
+      const record = {
+        feature: featureName,
+        fileName: fileName,
+        data: blobOrDataUrl,
+        fileType: fileType,
+        timestamp: Date.now(),
+        dateFormatted: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
+      };
+
+      store.add(record);
+      tx.oncomplete = () => {
+        cleanupOldHistoryRecords();
+      };
+    } catch(err) {
+      console.error("Storage error:", err);
+    }
+  }
+
+  async function cleanupOldHistoryRecords() {
+    try {
+      const db = await openHistoryDB();
+      const tx = db.transaction(DB_STORE, 'readwrite');
+      const store = tx.objectStore(DB_STORE);
+      const now = Date.now();
+
+      const request = store.openCursor();
+      request.onsuccess = function(e) {
+        const cursor = e.target.result;
+        if (cursor) {
+          if (now - cursor.value.timestamp > RETENTION_MS) {
+            cursor.delete();
+          }
+          cursor.continue();
+        }
+      };
+    } catch(err) {}
+  }
+
+  async function renderHistoryTable() {
+    try {
+      await cleanupOldHistoryRecords();
+      const db = await openHistoryDB();
+      const tx = db.transaction(DB_STORE, 'readonly');
+      const store = tx.objectStore(DB_STORE);
+      const request = store.getAll();
+
+      request.onsuccess = function() {
+        const records = request.result || [];
+        const tbody = document.getElementById('historyTableBody');
+        tbody.innerHTML = '';
+
+        if (!records.length) {
+          tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:20px;">कोई 48-घंटे पुराना प्रिंट रिकॉर्ड नहीं मिला।</td></tr>`;
+          return;
+        }
+
+        // Show latest on top
+        records.reverse().forEach(rec => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><strong style="color:var(--accent-blue);">${rec.feature}</strong></td>
+            <td>${rec.fileName}</td>
+            <td style="color:#94a3b8; font-size:11px;">${rec.dateFormatted}</td>
+            <td><button class="history-download-btn" onclick="reDownloadHistoryFile(${rec.id})">📥 Download</button></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      };
+    } catch(err) {}
+  }
+
+  async function reDownloadHistoryFile(recordId) {
+    const db = await openHistoryDB();
+    const tx = db.transaction(DB_STORE, 'readonly');
+    const store = tx.objectStore(DB_STORE);
+    const request = store.get(recordId);
+
+    request.onsuccess = function() {
+      const rec = request.result;
+      if (!rec) return;
+
+      const link = document.createElement('a');
+      if (typeof rec.data === 'string') {
+        link.href = rec.data;
+      } else {
+        link.href = URL.createObjectURL(rec.data);
+      }
+      link.download = rec.fileName;
+      link.click();
+    };
+  }
+
+  async function clearAllHistoryDB() {
+    if (!confirm('क्या आप 48-घंटे के सभी रिकॉर्ड्स तुरंत मिटाना चाहते हैं?')) return;
+    const db = await openHistoryDB();
+    const tx = db.transaction(DB_STORE, 'readwrite');
+    tx.objectStore(DB_STORE).clear();
+    tx.oncomplete = () => renderHistoryTable();
+  }
+
   function getStoredPassword() {
     return localStorage.getItem('system_auth_pwd') || DEFAULT_PASS;
   }
@@ -957,6 +1152,10 @@
     
     event.target.classList.add('active');
     document.getElementById(tabId).classList.add('active');
+
+    if (tabId === 'tab-history') {
+      renderHistoryTable();
+    }
   }
 
   const loginScreen = document.getElementById('loginScreen');
@@ -979,7 +1178,6 @@
 
   sessionStorage.removeItem('isLoggedIn');
 
-  // Auto-fill Current Date in DOP field (Format: DD/MM/YYYY)
   const today = new Date();
   const curDay = String(today.getDate()).padStart(2, '0');
   const curMonth = String(today.getMonth() + 1).padStart(2, '0');
@@ -1052,6 +1250,7 @@
       mainApp.style.display = 'block';
       errorMsg.style.display = 'none';
       initAllCanvases();
+      cleanupOldHistoryRecords();
     } else {
       errorMsg.style.display = 'block';
     }
@@ -1257,7 +1456,11 @@
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
     pdf.addImage(a4Canvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 210, 297);
-    pdf.save(`A4_Cards_Sheet_${addedCardsCount}_Cards.pdf`);
+    
+    const fileName = `A4_Cards_Sheet_${addedCardsCount}_Cards.pdf`;
+    const blob = pdf.output('blob');
+    pdf.save(fileName);
+    saveToHistory('ID Card Print (5-Slots)', fileName, blob, 'application/pdf');
   });
 
   // ==========================================
@@ -1350,19 +1553,24 @@
 
   document.getElementById('downloadPassportPdfBtn').addEventListener('click', () => {
     const { jsPDF } = window.jspdf;
+    let fileName = '';
+    let pdf;
     if (passportSheetFormat === '4x6') {
-      const pdf = new jsPDF({ orientation: 'landscape', unit: 'in', format: [4, 6] });
+      pdf = new jsPDF({ orientation: 'landscape', unit: 'in', format: [4, 6] });
       pdf.addImage(passportSheetCanvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 6, 4);
-      pdf.save(`Passport_Photos_4x6_${passportQtyInput.value}_Qty.pdf`);
+      fileName = `Passport_Photos_4x6_${passportQtyInput.value}_Qty.pdf`;
     } else {
-      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
       pdf.addImage(passportSheetCanvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 210, 297);
-      pdf.save(`Passport_Photos_A4_${passportQtyInput.value}_Qty.pdf`);
+      fileName = `Passport_Photos_A4_${passportQtyInput.value}_Qty.pdf`;
     }
+    const blob = pdf.output('blob');
+    pdf.save(fileName);
+    saveToHistory('Passport Photos', fileName, blob, 'application/pdf');
   });
 
   // ==========================================================
-  // TAB 3: NAME & DATE PASSPORT (3 INDEPENDENT FONT SLIDERS)
+  // TAB 3: NAME & DATE PASSPORT (3 FONT SLIDERS)
   // ==========================================================
   const namePassportCanvas = document.getElementById('namePassportCanvas');
   const namePassportCtx = namePassportCanvas.getContext('2d');
@@ -1405,7 +1613,6 @@
     }
   });
 
-  // Smart Word-Wrapping Helper
   function wrapNameText(context, text, maxWidth) {
     const words = text.split(' ');
     const lines = [];
@@ -1437,13 +1644,11 @@
     let rawDob = document.getElementById('candDobInput').value.trim();
     let rawDop = document.getElementById('candDopInput').value.trim();
 
-    // Auto-prefix 'DOB:' if user just enters date
     let formattedDob = '';
     if (rawDob) {
       formattedDob = rawDob.toUpperCase().startsWith('DOB:') ? rawDob : `DOB: ${rawDob}`;
     }
 
-    // Auto-prefix 'DOP:' if user enters date
     let formattedDop = '';
     if (rawDop) {
       formattedDop = rawDop.toUpperCase().startsWith('DOP:') ? rawDop : `DOP: ${rawDop}`;
@@ -1457,7 +1662,6 @@
       if (formattedDob) dateLineCount++;
       if (formattedDop) dateLineCount++;
 
-      // Dynamically calculate strip height based on individual font sizes & line count
       const nameBlockHeight = nameLines.length * (currentNameFontSize + 8);
       const dobBlockHeight = formattedDob ? (currentDobFontSize + 8) : 0;
       const dopBlockHeight = formattedDop ? (currentDopFontSize + 8) : 0;
@@ -1465,11 +1669,9 @@
       const stripHeight = Math.max(120, nameBlockHeight + dobBlockHeight + dopBlockHeight + 16);
       const stripY = 531 - stripHeight;
 
-      // Draw Pure White Base Strip
       namePassportCtx.fillStyle = '#ffffff';
       namePassportCtx.fillRect(0, stripY, 413, stripHeight);
 
-      // Black Divider Top Line
       namePassportCtx.strokeStyle = '#000000';
       namePassportCtx.lineWidth = 3;
       namePassportCtx.beginPath();
@@ -1482,14 +1684,12 @@
 
       let yPos = stripY + currentNameFontSize + 6;
 
-      // 1. TOP: Name Lines (Controlled by Name Slider)
       namePassportCtx.font = `900 ${currentNameFontSize}px Poppins, Arial, sans-serif`;
       nameLines.forEach(line => {
         namePassportCtx.fillText(line, 413 / 2, yPos);
         yPos += currentNameFontSize + 6;
       });
 
-      // 2. MIDDLE: Date of Birth (DOB) (Controlled by DOB Slider)
       if (formattedDob) {
         yPos += 2;
         namePassportCtx.font = `700 ${currentDobFontSize}px Poppins, Arial, sans-serif`;
@@ -1497,7 +1697,6 @@
         yPos += currentDobFontSize + 6;
       }
 
-      // 3. BOTTOM: Date of Photo / Present (DOP) (Controlled by DOP Slider)
       if (formattedDop) {
         yPos += 2;
         namePassportCtx.font = `700 ${currentDopFontSize}px Poppins, Arial, sans-serif`;
@@ -1574,15 +1773,20 @@
 
   document.getElementById('downloadNamePassportPdfBtn').addEventListener('click', () => {
     const { jsPDF } = window.jspdf;
+    let fileName = '';
+    let pdf;
     if (namePassportSheetFormat === '4x6') {
-      const pdf = new jsPDF({ orientation: 'landscape', unit: 'in', format: [4, 6] });
+      pdf = new jsPDF({ orientation: 'landscape', unit: 'in', format: [4, 6] });
       pdf.addImage(namePassportSheetCanvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 6, 4);
-      pdf.save(`Name_Date_Passport_4x6_${namePassportQtyInput.value}_Qty.pdf`);
+      fileName = `Name_Date_Passport_4x6_${namePassportQtyInput.value}_Qty.pdf`;
     } else {
-      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
       pdf.addImage(namePassportSheetCanvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 210, 297);
-      pdf.save(`Name_Date_Passport_A4_${namePassportQtyInput.value}_Qty.pdf`);
+      fileName = `Name_Date_Passport_A4_${namePassportQtyInput.value}_Qty.pdf`;
     }
+    const blob = pdf.output('blob');
+    pdf.save(fileName);
+    saveToHistory('Name & Date Passport', fileName, blob, 'application/pdf');
   });
 
   // ==========================================
@@ -1611,7 +1815,10 @@
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'in', format: [4, 6] });
     pdf.addImage(canvas4x6.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 4, 6);
-    pdf.save('Photo_4x6_Print.pdf');
+    const fileName = 'Photo_4x6_Print.pdf';
+    const blob = pdf.output('blob');
+    pdf.save(fileName);
+    saveToHistory('4x6 Photo (Single)', fileName, blob, 'application/pdf');
   });
 
   document.getElementById('generateA4Custom4x6Btn').addEventListener('click', () => {
@@ -1651,12 +1858,15 @@
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
     pdf.addImage(a4_4x6_SheetCanvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 210, 297);
-    pdf.save(`4x6_Photos_A4_Sheet_${photo4x6QtyInput.value}_Qty.pdf`);
+    const fileName = `4x6_Photos_A4_Sheet_${photo4x6QtyInput.value}_Qty.pdf`;
+    const blob = pdf.output('blob');
+    pdf.save(fileName);
+    saveToHistory('4x6 Photo A4 Sheet', fileName, blob, 'application/pdf');
   });
 
   // ==========================================================
-  // TAB 5: CUSTOM IMAGE RESIZER (PX, MM, CM)
-  // ==========================================
+  // TAB 5: CUSTOM IMAGE RESIZER
+  // ==========================================================
   let originalResizerImg = null;
   let resizerOriginalWidth = 0;
   let resizerOriginalHeight = 0;
@@ -1764,19 +1974,27 @@
   document.getElementById('downloadResizedJpgBtn').addEventListener('click', () => {
     if (!originalResizerImg) return;
     const dims = getPixelDimensions();
+    const dataUrl = resizerCanvas.toDataURL('image/jpeg', 0.95);
+    const fileName = `Resized_${dims.width}x${dims.height}px.jpg`;
+    
     const link = document.createElement('a');
-    link.href = resizerCanvas.toDataURL('image/jpeg', 0.95);
-    link.download = `Resized_${dims.width}x${dims.height}px.jpg`;
+    link.href = dataUrl;
+    link.download = fileName;
     link.click();
+    saveToHistory('Image Resizer (JPG)', fileName, dataUrl, 'image/jpeg');
   });
 
   document.getElementById('downloadResizedPngBtn').addEventListener('click', () => {
     if (!originalResizerImg) return;
     const dims = getPixelDimensions();
+    const dataUrl = resizerCanvas.toDataURL('image/png');
+    const fileName = `Resized_${dims.width}x${dims.height}px.png`;
+
     const link = document.createElement('a');
-    link.href = resizerCanvas.toDataURL('image/png');
-    link.download = `Resized_${dims.width}x${dims.height}px.png`;
+    link.href = dataUrl;
+    link.download = fileName;
     link.click();
+    saveToHistory('Image Resizer (PNG)', fileName, dataUrl, 'image/png');
   });
 
   // ==========================================================
@@ -1874,10 +2092,13 @@
 
     const mergedPdfBytes = await mergedPdf.save();
     const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
+    const fileName = `Merged_Combined_Document.pdf`;
+    
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = `Merged_Combined_Document.pdf`;
+    link.download = fileName;
     link.click();
+    saveToHistory('Universal PDF Merge', fileName, blob, 'application/pdf');
   });
 
   // ==========================================================
@@ -1931,11 +2152,13 @@
       await page.render({ canvasContext: ctx, viewport: viewport }).promise;
 
       canvas.toBlob((blob) => {
+        const fileName = `Page_1_${activeDpiValue}DPI.jpg`;
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
-        link.download = `Page_1_${activeDpiValue}DPI.jpg`;
+        link.download = fileName;
         link.click();
         progress.innerText = `✅ Download Complete (1 Page @ ${activeDpiValue} DPI)`;
+        saveToHistory('PDF to JPG (Single)', fileName, blob, 'image/jpeg');
       }, 'image/jpeg', 0.95);
 
     } else {
@@ -1957,16 +2180,18 @@
 
       progress.innerText = '📦 Creating ZIP archive...';
       const zipContent = await zip.generateAsync({ type: 'blob' });
+      const fileName = `PDF_to_JPG_${activeDpiValue}DPI_Bundle.zip`;
       const link = document.createElement('a');
       link.href = URL.createObjectURL(zipContent);
-      link.download = `PDF_to_JPG_${activeDpiValue}DPI_Bundle.zip`;
+      link.download = fileName;
       link.click();
       progress.innerText = `✅ Complete! ${totalPages} Pages Downloaded in ZIP.`;
+      saveToHistory('PDF to JPG (Batch ZIP)', fileName, zipContent, 'application/zip');
     }
   });
 
   // ==========================================================
-  // TAB 8: INTERACTIVE PDF COMPRESSOR (LIVE SIZE PREVIEW)
+  // TAB 8: INTERACTIVE PDF COMPRESSOR
   // ==========================================
   let compressOriginalFile = null;
   let compressPdfDoc = null;
@@ -2046,8 +2271,11 @@
       outPdf.addImage(imgData, 'JPEG', 0, 0, viewport.width, viewport.height, undefined, 'FAST');
     }
 
+    const fileName = `Compressed_${qualityVal}pct_${compressOriginalFile.name}`;
+    const blob = outPdf.output('blob');
     progress.innerText = `✅ Compression Complete! Downloading...`;
-    outPdf.save(`Compressed_${qualityVal}pct_${compressOriginalFile.name}`);
+    outPdf.save(fileName);
+    saveToHistory('PDF Compressor', fileName, blob, 'application/pdf');
   });
 
   function initAllCanvases() {
