@@ -577,13 +577,13 @@
     <button class="tab-btn" onclick="switchTab('tab-jpg-to-pdf')">📄 PDF, JPG, PNG to PDF</button>
     <button class="tab-btn" onclick="switchTab('tab-pdf-to-jpg')">🖼️ PDF to JPG (Manual DPI)</button>
     <button class="tab-btn" onclick="switchTab('tab-pdf-compressor')">🗜️ PDF Compressor</button>
-    <button class="tab-btn" onclick="switchTab('tab-history')" style="border-color: rgba(56, 189, 248, 0.5);">📂 48-Hr History</button>
+    <button class="tab-btn" onclick="switchTab('tab-history')" style="border-color: rgba(56, 189, 248, 0.5);">📂 30-Day History</button>
   </div>
 
   <div class="container">
     <button id="logoutBtn" class="logout-btn">🔒 Logout</button>
 
-    <!-- TAB 1: 5 CARDS SYSTEM (AUTO DIMENSION FIT + MANUAL CROP) -->
+    <!-- TAB 1: 5 CARDS SYSTEM -->
     <div id="tab-cards" class="tab-content active">
       <div class="badge">Auto-Dimension Crop • 2.5mm Gap • Broad Black Border • 5 Cards</div>
       <h1>Card Generator System</h1>
@@ -978,11 +978,11 @@
       </div>
     </div>
 
-    <!-- TAB 9: 48-HOUR PRINT HISTORY -->
+    <!-- TAB 9: 30-DAY PRINT HISTORY -->
     <div id="tab-history" class="tab-content">
-      <div class="badge">Automatic 48-Hour Auto-Delete Storage • All Features Supported</div>
-      <h1>48-Hour Print & Download History</h1>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">आपके द्वारा पिछले 48 घंटों में डाउनलोड की गई सभी फाइल्स यहाँ सुरक्षित हैं। 48 घंटे बाद ये अपने-आप हट जाएँगी।</p>
+      <div class="badge">Automatic 30-Day Auto-Delete Storage • All Features Supported</div>
+      <h1>30-Day Print & Download History</h1>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">आपके द्वारा पिछले 30 दिनों में डाउनलोड की गई सभी फाइल्स यहाँ सुरक्षित हैं। 30 दिन बाद ये अपने-आप हट जाएँगी।</p>
 
       <div style="text-align: right; margin-bottom: 10px;">
         <button onclick="clearAllHistoryDB()" class="action-btn btn-reset" style="padding: 6px 14px; font-size: 11px;">🗑️ Clear Entire History Now</button>
@@ -1000,7 +1000,7 @@
           </thead>
           <tbody id="historyTableBody">
             <tr>
-              <td colspan="4" style="text-align:center; color:var(--text-muted); padding:20px;">कोई पुराना रिकॉर्ड नहीं मिला।</td>
+              <td colspan="4" style="text-align:center; color:var(--text-muted); padding:20px;">कोई 30-दिन पुराना रिकॉर्ड नहीं मिला।</td>
             </tr>
           </tbody>
         </table>
@@ -1034,11 +1034,11 @@
   const DEFAULT_PASS = "Pass@123";
 
   // ==========================================================
-  // INDEXEDDB 48-HOUR STORAGE ENGINE
+  // INDEXEDDB 30-DAY STORAGE ENGINE
   // ==========================================================
-  const DB_NAME = 'PrintPortal48HrDB';
+  const DB_NAME = 'PrintPortal30DayDB';
   const DB_STORE = 'print_records';
-  const RETENTION_MS = 48 * 60 * 60 * 1000;
+  const RETENTION_MS = 30 * 24 * 60 * 60 * 1000; // 30 Days in Milliseconds
 
   function openHistoryDB() {
     return new Promise((resolve, reject) => {
@@ -1112,7 +1112,7 @@
         tbody.innerHTML = '';
 
         if (!records.length) {
-          tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:20px;">कोई 48-घंटे पुराना प्रिंट रिकॉर्ड नहीं मिला।</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:20px;">कोई 30-दिन पुराना प्रिंट रिकॉर्ड नहीं मिला।</td></tr>`;
           return;
         }
 
@@ -1152,7 +1152,7 @@
   }
 
   async function clearAllHistoryDB() {
-    if (!confirm('क्या आप 48-घंटे के सभी रिकॉर्ड्स तुरंत मिटाना चाहते हैं?')) return;
+    if (!confirm('क्या आप 30-दिन के सभी रिकॉर्ड्स तुरंत मिटाना चाहते हैं?')) return;
     const db = await openHistoryDB();
     const tx = db.transaction(DB_STORE, 'readwrite');
     tx.objectStore(DB_STORE).clear();
@@ -1328,13 +1328,11 @@
     }
   }
 
-  // Auto-Crop & Center Fit algorithm for ID Cards
   function autoFitCardToCanvas(dataUrl, targetCanvas, ctx, isFront) {
     const img = new Image();
     img.onload = function() {
       ctx.clearRect(0, 0, CARD_W, CARD_H);
 
-      // Compute Center-Crop Dimensions
       const srcRatio = img.width / img.height;
       const targetRatio = CARD_W / CARD_H;
       let sX = 0, sY = 0, sW = img.width, sH = img.height;
@@ -1428,7 +1426,7 @@
   }
 
   // ==========================================
-  // TAB 1: 5 CARDS SYSTEM LOGIC (AUTO FIT ON UPLOAD)
+  // TAB 1: 5 CARDS SYSTEM LOGIC
   // ==========================================
   const CARD_W = 1013, CARD_H = 638, A4_W = 2480, A4_H = 3508, GAP_2_5MM_PX = 30, MAX_CARDS = 5;
   let addedCardsCount = 0, img1Loaded = false, img2Loaded = false;
@@ -1445,7 +1443,6 @@
   const resetPageBtn = document.getElementById('resetPageBtn');
   const slotCounter = document.getElementById('slotCounter');
 
-  // Auto-Crop Priority on Front Upload
   document.getElementById('card1Input').addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -1458,7 +1455,6 @@
     }
   });
 
-  // Auto-Crop Priority on Back Upload
   document.getElementById('card2Input').addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
