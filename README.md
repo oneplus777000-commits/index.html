@@ -6,7 +6,7 @@
   <title>ID CARD PRINT & CONVERTER PORTAL</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   
   <!-- PDF.js Standalone -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
@@ -508,7 +508,7 @@
   </div>
 </div>
 
-<!-- 3. Main Portal Application (8 Comprehensive Tools) -->
+<!-- 3. Main Portal Application -->
 <div id="mainApp">
   <div class="tab-nav">
     <button class="tab-btn active" onclick="switchTab('tab-cards')">💳 ID Card (5 Slots)</button>
@@ -623,11 +623,11 @@
       </div>
     </div>
 
-    <!-- TAB 3: NAME & DATE PASSPORT PHOTO MAKER -->
+    <!-- TAB 3: NAME & DATE PASSPORT PHOTO MAKER (EXTRA BOLD & LARGE FONT) -->
     <div id="tab-name-passport" class="tab-content">
       <div class="badge">Govt / Exam Standard • Name, DOB & Current Date Label</div>
       <h1>Name & Date Passport Photo Maker</h1>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">पासपोर्ट फोटो के नीचे नाम, जन्मतिथि (DOB) और फोटो की तारीख (DOP) ऑटोमैटिक प्रिंट करें।</p>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">पासपोर्ट फोटो के नीचे नाम, जन्मतिथि (DOB) और फोटो की तारीख (DOP) बोल्ड और बड़े अक्षरों में प्रिंट करें।</p>
 
       <div class="upload-section" style="margin-bottom:10px;">
         <label class="upload-box" for="namePassportInput" style="max-width: 380px;">
@@ -667,7 +667,7 @@
       <div class="preview-container">
         <div class="preview-box">
           <h4>Preview with Name & Date Strip</h4>
-          <canvas id="namePassportCanvas" width="413" height="531" style="width: 140px;"></canvas>
+          <canvas id="namePassportCanvas" width="413" height="531" style="width: 150px;"></canvas>
         </div>
       </div>
 
@@ -735,7 +735,7 @@
       </div>
     </div>
 
-    <!-- TAB 5: CUSTOM IMAGE RESIZER (PIXELS, MM, CM) -->
+    <!-- TAB 5: CUSTOM IMAGE RESIZER (PX, MM, CM) -->
     <div id="tab-resizer" class="tab-content">
       <div class="badge">Resize in Pixels (px) • Millimeters (mm) • Centimeters (cm)</div>
       <h1>Custom Image Resizer</h1>
@@ -1342,8 +1342,8 @@
   });
 
   // ==========================================================
-  // TAB 3: NAME & DATE PASSPORT PHOTO ENGINE
-  // ==========================================
+  // TAB 3: NAME & DATE PASSPORT PHOTO ENGINE (UPDATED: EXTRA LARGE & BOLD)
+  // ==========================================================
   const namePassportCanvas = document.getElementById('namePassportCanvas');
   const namePassportCtx = namePassportCanvas.getContext('2d');
   const namePassportSheetCanvas = document.getElementById('namePassportSheetCanvas');
@@ -1375,21 +1375,36 @@
     const cDob = document.getElementById('candDobInput').value.trim();
     const cDop = document.getElementById('candDopInput').value.trim();
 
+    // Expanded Height White Strip (135px) for Large, High-Contrast Text
     if (cName || cDob || cDop) {
+      const stripHeight = 135;
+      const stripY = 531 - stripHeight;
+      
       namePassportCtx.fillStyle = '#ffffff';
-      namePassportCtx.fillRect(0, 420, 413, 111);
+      namePassportCtx.fillRect(0, stripY, 413, stripHeight);
+
+      // Distinct Black Separation Border Line
+      namePassportCtx.strokeStyle = '#000000';
+      namePassportCtx.lineWidth = 3;
+      namePassportCtx.beginPath();
+      namePassportCtx.moveTo(0, stripY);
+      namePassportCtx.lineTo(413, stripY);
+      namePassportCtx.stroke();
 
       namePassportCtx.fillStyle = '#000000';
       namePassportCtx.textAlign = 'center';
 
-      let yPos = 445;
+      let yPos = stripY + 38;
+      
+      // Candidate Name - 27px Super Bold
       if (cName) {
-        namePassportCtx.font = 'bold 20px Poppins, Arial, sans-serif';
+        namePassportCtx.font = '900 27px Poppins, Arial, sans-serif';
         namePassportCtx.fillText(cName.toUpperCase(), 413 / 2, yPos);
-        yPos += 26;
+        yPos += 36;
       }
 
-      namePassportCtx.font = 'bold 16px Poppins, Arial, sans-serif';
+      // DOB / DOP - 22px Bold
+      namePassportCtx.font = '700 22px Poppins, Arial, sans-serif';
       let dateLine = '';
       if (cDob && cDop) {
         dateLine = `${cDob}  |  ${cDop}`;
@@ -1555,13 +1570,13 @@
 
   // ==========================================================
   // TAB 5: CUSTOM IMAGE RESIZER (PX, MM, CM)
-  // ==========================================================
+  // ==========================================
   let originalResizerImg = null;
   let resizerOriginalWidth = 0;
   let resizerOriginalHeight = 0;
   const resizerCanvas = document.getElementById('resizerPreviewCanvas');
   const resizerCtx = resizerCanvas.getContext('2d');
-  const DPI_SCALE = 300; // Standard Print DPI
+  const DPI_SCALE = 300;
 
   document.getElementById('resizerImageInput').addEventListener('change', function(e) {
     const file = e.target.files[0];
