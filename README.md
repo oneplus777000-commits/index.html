@@ -8,13 +8,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- PDF.js Standalone for PDF Rendering -->
+  <!-- PDF.js Standalone -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
   
   <!-- PDF-LIB for Pure Vector Merging -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 
-  <!-- jsPDF Library for ID/Photo Tab & Compression -->
+  <!-- jsPDF Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <!-- JSZip for Multi-page PDF to JPG Batch Download -->
@@ -333,6 +333,19 @@
       outline: none;
     }
 
+    .text-field-input {
+      width: 100%;
+      max-width: 260px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--accent-blue);
+      color: #fff;
+      font-size: 13px;
+      outline: none;
+      margin-bottom: 8px;
+    }
+
     .quick-qty-btn {
       padding: 5px 12px;
       background: #334155;
@@ -344,7 +357,6 @@
       font-weight: 600;
     }
 
-    /* Slider Styling */
     .slider-range {
       -webkit-appearance: none;
       width: 100%;
@@ -496,12 +508,14 @@
   </div>
 </div>
 
-<!-- 3. Main Portal Application (6 All-in-One Tools) -->
+<!-- 3. Main Portal Application (8 Comprehensive Tools) -->
 <div id="mainApp">
   <div class="tab-nav">
     <button class="tab-btn active" onclick="switchTab('tab-cards')">💳 ID Card (5 Slots)</button>
     <button class="tab-btn" onclick="switchTab('tab-passport')">👤 Passport Photos</button>
+    <button class="tab-btn" onclick="switchTab('tab-name-passport')">📝 Name & Date Passport</button>
     <button class="tab-btn" onclick="switchTab('tab-4x6')">🖼️ 4×6 Photo Print</button>
+    <button class="tab-btn" onclick="switchTab('tab-resizer')">📐 Image Resizer</button>
     <button class="tab-btn" onclick="switchTab('tab-jpg-to-pdf')">📄 PDF, JPG, PNG to PDF</button>
     <button class="tab-btn" onclick="switchTab('tab-pdf-to-jpg')">🖼️ PDF to JPG (Manual DPI)</button>
     <button class="tab-btn" onclick="switchTab('tab-pdf-compressor')">🗜️ PDF Compressor</button>
@@ -559,7 +573,7 @@
       </div>
     </div>
 
-    <!-- TAB 2: PASSPORT SIZE PHOTOS -->
+    <!-- TAB 2: PASSPORT SIZE PHOTOS (STANDARD) -->
     <div id="tab-passport" class="tab-content">
       <div class="badge">Standard 35mm × 45mm • Manual Quantity Selection</div>
       <h1>Passport Photo Generator</h1>
@@ -609,7 +623,71 @@
       </div>
     </div>
 
-    <!-- TAB 3: 4x6 PHOTO PRINT -->
+    <!-- TAB 3: NAME & DATE PASSPORT PHOTO MAKER -->
+    <div id="tab-name-passport" class="tab-content">
+      <div class="badge">Govt / Exam Standard • Name, DOB & Current Date Label</div>
+      <h1>Name & Date Passport Photo Maker</h1>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">पासपोर्ट फोटो के नीचे नाम, जन्मतिथि (DOB) और फोटो की तारीख (DOP) ऑटोमैटिक प्रिंट करें।</p>
+
+      <div class="upload-section" style="margin-bottom:10px;">
+        <label class="upload-box" for="namePassportInput" style="max-width: 380px;">
+          <strong style="display:block; font-size:14px; margin-bottom:4px;">📁 Upload Candidate Photo</strong>
+          <div id="namePassportFileName" style="font-size: 12px; color: var(--text-muted);">फ़ोटो चुनें व क्रॉप करें</div>
+        </label>
+        <input type="file" id="namePassportInput" accept="image/*">
+      </div>
+
+      <div class="control-panel" style="text-align:left;">
+        <div style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center;">
+          <div style="flex:1; min-width:200px;">
+            <label style="font-size:11px; color:var(--text-muted); display:block; margin-bottom:3px;">👤 Candidate Name (नाम):</label>
+            <input type="text" id="candNameInput" class="text-field-input" placeholder="e.g. HARSHAL MARATHE" oninput="renderNamePassportPreview()">
+          </div>
+          <div style="flex:1; min-width:140px;">
+            <label style="font-size:11px; color:var(--text-muted); display:block; margin-bottom:3px;">🎂 Date of Birth (DOB):</label>
+            <input type="text" id="candDobInput" class="text-field-input" placeholder="DOB: DD/MM/YYYY" oninput="renderNamePassportPreview()">
+          </div>
+          <div style="flex:1; min-width:140px;">
+            <label style="font-size:11px; color:var(--text-muted); display:block; margin-bottom:3px;">📅 Photo Date (DOP / Current):</label>
+            <input type="text" id="candDopInput" class="text-field-input" placeholder="DOP: DD/MM/YYYY" oninput="renderNamePassportPreview()">
+          </div>
+        </div>
+
+        <div style="margin-top:8px; text-align:center;">
+          <span style="font-size: 12px; font-weight:600; color: var(--accent-blue);">🔢 फ़ोटो संख्या:</span>
+          <input type="number" id="namePassportQtyInput" class="qty-input" value="8" min="1" max="30">
+          <button class="quick-qty-btn" onclick="setNamePassportQty(4)">4</button>
+          <button class="quick-qty-btn" onclick="setNamePassportQty(6)">6</button>
+          <button class="quick-qty-btn" onclick="setNamePassportQty(8)">8</button>
+          <button class="quick-qty-btn" onclick="setNamePassportQty(12)">12</button>
+          <button class="quick-qty-btn" onclick="setNamePassportQty(30)">30</button>
+        </div>
+      </div>
+
+      <div class="preview-container">
+        <div class="preview-box">
+          <h4>Preview with Name & Date Strip</h4>
+          <canvas id="namePassportCanvas" width="413" height="531" style="width: 140px;"></canvas>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button id="make4x6NamePassportBtn" class="action-btn btn-add" disabled>🖼️ Generate 4×6 Sheet</button>
+        <button id="makeA4NamePassportBtn" class="action-btn btn-add" disabled>📄 Generate A4 Sheet</button>
+      </div>
+
+      <div style="margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+        <h3 id="namePassportSheetTitle" style="font-size: 15px; color: var(--accent-blue); margin-bottom: 6px;">Sheet Preview</h3>
+        <div style="display:inline-block; max-width: 250px; background:#fff; border-radius:6px; overflow:hidden; border: 1px solid #475569;">
+          <canvas id="namePassportSheetCanvas" width="1800" height="1200" style="width: 100%; display:block;"></canvas>
+        </div>
+        <div class="btn-group">
+          <button id="downloadNamePassportPdfBtn" class="action-btn btn-download" disabled>📥 Download Name & Date Sheet PDF</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: 4x6 PHOTO PRINT -->
     <div id="tab-4x6" class="tab-content">
       <div class="badge">Clear 300 DPI • 1200 × 1800 px • Max 4 Photos</div>
       <h1>4×6 Photo Print Generator</h1>
@@ -657,7 +735,65 @@
       </div>
     </div>
 
-    <!-- TAB 4: UNIVERSAL (PDF, JPG, PNG TO PDF) CONVERTER -->
+    <!-- TAB 5: CUSTOM IMAGE RESIZER (PIXELS, MM, CM) -->
+    <div id="tab-resizer" class="tab-content">
+      <div class="badge">Resize in Pixels (px) • Millimeters (mm) • Centimeters (cm)</div>
+      <h1>Custom Image Resizer</h1>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">किसी भी इमेज को अपनी ज़रूरत के अनुसार Width और Height (px, mm, cm) में रीसाइज़ करें।</p>
+
+      <div class="upload-section" style="margin-bottom: 15px;">
+        <label class="upload-box" for="resizerImageInput" style="max-width: 400px;">
+          <strong style="display:block; font-size:14px; margin-bottom:4px; color:var(--accent-blue);">📁 Select Image to Resize</strong>
+          <div id="resizerFileName" style="font-size: 12px; color: var(--text-muted);">क्लिक करके इमेज चुनें (JPG / PNG)</div>
+        </label>
+        <input type="file" id="resizerImageInput" accept="image/*">
+      </div>
+
+      <div id="resizerControlsPanel" style="display:none;">
+        <div class="control-panel" style="text-align:left;">
+          <div style="display:flex; flex-wrap:wrap; gap:12px; justify-content:center; align-items:center;">
+            <div>
+              <label style="font-size:11px; color:var(--text-muted); display:block; margin-bottom:3px;">📏 Unit (इकाई):</label>
+              <select id="resizerUnitSelect" class="text-field-input" style="max-width:110px;" onchange="onResizerUnitChange()">
+                <option value="px" selected>Pixels (px)</option>
+                <option value="mm">Millimeters (mm)</option>
+                <option value="cm">Centimeters (cm)</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:11px; color:var(--text-muted); display:block; margin-bottom:3px;">↔️ Width (चौड़ाई):</label>
+              <input type="number" id="resizerWidthInput" class="qty-input" style="width:100px;" value="300" oninput="onResizerDimensionChange('width')">
+            </div>
+            <div>
+              <label style="font-size:11px; color:var(--text-muted); display:block; margin-bottom:3px;">↕️ Height (ऊंचाई):</label>
+              <input type="number" id="resizerHeightInput" class="qty-input" style="width:100px;" value="300" oninput="onResizerDimensionChange('height')">
+            </div>
+          </div>
+
+          <div style="margin-top:10px; display:flex; justify-content:center; align-items:center; gap:15px; font-size:12px; color:var(--text-muted);">
+            <label style="cursor:pointer; display:flex; align-items:center; gap:5px;">
+              <input type="checkbox" id="resizerAspectLock"> Lock Aspect Ratio (अनुपात लॉक रखें)
+            </label>
+            <span style="color:var(--accent-blue);">DPI: 300 (for mm/cm)</span>
+          </div>
+        </div>
+
+        <div class="preview-container">
+          <div class="preview-box">
+            <h4>Resized Output Preview</h4>
+            <canvas id="resizerPreviewCanvas" style="max-width: 250px; max-height: 250px;"></canvas>
+            <div id="resizerOutputInfo" style="font-size:11px; color:var(--accent-blue); margin-top:5px;">0 x 0 px</div>
+          </div>
+        </div>
+
+        <div class="btn-group">
+          <button id="downloadResizedJpgBtn" class="action-btn btn-download">📥 Download JPG Image</button>
+          <button id="downloadResizedPngBtn" class="action-btn btn-add">📥 Download PNG Image</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 6: UNIVERSAL (PDF, JPG, PNG TO PDF) CONVERTER -->
     <div id="tab-jpg-to-pdf" class="tab-content">
       <div class="badge">Universal File Merger • PDF, JPG, PNG Support • Combined PDF Export</div>
       <h1>PDF, JPG, PNG to PDF Converter</h1>
@@ -684,7 +820,7 @@
       </div>
     </div>
 
-    <!-- TAB 5: PDF TO HIGH-DPI JPG CONVERTER (MANUAL & BUTTON DPI) -->
+    <!-- TAB 7: PDF TO HIGH-DPI JPG CONVERTER (MANUAL & BUTTON DPI) -->
     <div id="tab-pdf-to-jpg" class="tab-content">
       <div class="badge">Ultra High-Res • Manual & Quick DPI (72 to 1200 DPI) • Batch ZIP Export</div>
       <h1>PDF to High-DPI JPG Converter</h1>
@@ -722,7 +858,7 @@
       </div>
     </div>
 
-    <!-- TAB 6: PDF COMPRESSOR WITH LIVE SIZE & QUALITY SLIDER -->
+    <!-- TAB 8: PDF COMPRESSOR WITH LIVE SIZE & QUALITY SLIDER -->
     <div id="tab-pdf-compressor" class="tab-content">
       <div class="badge">Interactive Quality & Size Slider • Target KB/MB Preview • High-Speed Export</div>
       <h1>PDF Size Compressor</h1>
@@ -823,6 +959,13 @@
 
   sessionStorage.removeItem('isLoggedIn');
 
+  // Auto-fill Current Date in DOP field (Format: DD/MM/YYYY)
+  const today = new Date();
+  const curDay = String(today.getDate()).padStart(2, '0');
+  const curMonth = String(today.getMonth() + 1).padStart(2, '0');
+  const curYear = today.getFullYear();
+  document.getElementById('candDopInput').value = `DOP: ${curDay}/${curMonth}/${curYear}`;
+
   goToChangePwd.addEventListener('click', () => {
     loginScreen.style.display = 'none';
     changePwdScreen.style.display = 'block';
@@ -910,6 +1053,7 @@
   // ==========================================
   let cropper = null;
   let activeCropType = 'card_front';
+  let rawNamePassportImg = null;
 
   const cropModal = document.getElementById('cropModal');
   const imageToCrop = document.getElementById('imageToCrop');
@@ -925,7 +1069,7 @@
       if (cropper) cropper.destroy();
 
       let targetRatio = 1013 / 638;
-      if (type === 'passport') targetRatio = 35 / 45;
+      if (type === 'passport' || type === 'name_passport') targetRatio = 35 / 45;
       if (type === 'photo4x6') targetRatio = 1200 / 1800;
 
       cropper = new Cropper(imageToCrop, {
@@ -960,6 +1104,13 @@
       passportLoaded = true;
       document.getElementById('make4x6CustomPassportBtn').disabled = false;
       document.getElementById('makeA4CustomPassportBtn').disabled = false;
+    }
+    else if (activeCropType === 'name_passport') {
+      rawNamePassportImg = cropper.getCroppedCanvas({ width: 413, height: 531, imageSmoothingQuality: 'high' });
+      renderNamePassportPreview();
+      namePassportLoaded = true;
+      document.getElementById('make4x6NamePassportBtn').disabled = false;
+      document.getElementById('makeA4NamePassportBtn').disabled = false;
     }
     else if (activeCropType === 'photo4x6') {
       const croppedCanvas = cropper.getCroppedCanvas({ width: 1200, height: 1800, imageSmoothingQuality: 'high' });
@@ -1090,7 +1241,7 @@
   });
 
   // ==========================================
-  // TAB 2: PASSPORT SIZE PHOTOS
+  // TAB 2: PASSPORT SIZE PHOTOS (STANDARD)
   // ==========================================
   const passportCanvas = document.getElementById('passportCanvas');
   const passportCtx = passportCanvas.getContext('2d');
@@ -1190,8 +1341,151 @@
     }
   });
 
+  // ==========================================================
+  // TAB 3: NAME & DATE PASSPORT PHOTO ENGINE
   // ==========================================
-  // TAB 3: 4x6 PHOTO PRINT
+  const namePassportCanvas = document.getElementById('namePassportCanvas');
+  const namePassportCtx = namePassportCanvas.getContext('2d');
+  const namePassportSheetCanvas = document.getElementById('namePassportSheetCanvas');
+  const namePassportSheetCtx = namePassportSheetCanvas.getContext('2d');
+  const namePassportQtyInput = document.getElementById('namePassportQtyInput');
+  let namePassportLoaded = false;
+  let namePassportSheetFormat = '4x6';
+
+  function setNamePassportQty(qty) {
+    namePassportQtyInput.value = qty;
+  }
+
+  document.getElementById('namePassportInput').addEventListener('change', (e) => {
+    if (e.target.files[0]) {
+      document.getElementById('namePassportFileName').innerText = e.target.files[0].name;
+      openCropEngine(e.target.files[0], 'name_passport');
+    }
+  });
+
+  function renderNamePassportPreview() {
+    namePassportCtx.fillStyle = '#ffffff';
+    namePassportCtx.fillRect(0, 0, 413, 531);
+
+    if (rawNamePassportImg) {
+      namePassportCtx.drawImage(rawNamePassportImg, 0, 0, 413, 531);
+    }
+
+    const cName = document.getElementById('candNameInput').value.trim();
+    const cDob = document.getElementById('candDobInput').value.trim();
+    const cDop = document.getElementById('candDopInput').value.trim();
+
+    if (cName || cDob || cDop) {
+      namePassportCtx.fillStyle = '#ffffff';
+      namePassportCtx.fillRect(0, 420, 413, 111);
+
+      namePassportCtx.fillStyle = '#000000';
+      namePassportCtx.textAlign = 'center';
+
+      let yPos = 445;
+      if (cName) {
+        namePassportCtx.font = 'bold 20px Poppins, Arial, sans-serif';
+        namePassportCtx.fillText(cName.toUpperCase(), 413 / 2, yPos);
+        yPos += 26;
+      }
+
+      namePassportCtx.font = 'bold 16px Poppins, Arial, sans-serif';
+      let dateLine = '';
+      if (cDob && cDop) {
+        dateLine = `${cDob}  |  ${cDop}`;
+      } else if (cDob) {
+        dateLine = cDob;
+      } else if (cDop) {
+        dateLine = cDop;
+      }
+
+      if (dateLine) {
+        namePassportCtx.fillText(dateLine, 413 / 2, yPos);
+      }
+    }
+  }
+
+  document.getElementById('make4x6NamePassportBtn').addEventListener('click', () => {
+    if (!namePassportLoaded) return;
+    namePassportSheetFormat = '4x6';
+    const targetQty = Math.max(1, Math.min(8, parseInt(namePassportQtyInput.value) || 8));
+
+    namePassportSheetCanvas.width = 1800;
+    namePassportSheetCanvas.height = 1200;
+
+    namePassportSheetCtx.fillStyle = '#ffffff';
+    namePassportSheetCtx.fillRect(0, 0, 1800, 1200);
+
+    const pw = 413, ph = 531;
+    const startX = 50, startY = 50, gapX = 20, gapY = 35;
+    const maxCols = 4;
+
+    let placed = 0;
+    for (let r = 0; r < 2; r++) {
+      for (let c = 0; c < maxCols; c++) {
+        if (placed >= targetQty) break;
+        const x = startX + c * (pw + gapX);
+        const y = startY + r * (ph + gapY);
+        namePassportSheetCtx.drawImage(namePassportCanvas, x, y, pw, ph);
+        namePassportSheetCtx.strokeStyle = '#000000';
+        namePassportSheetCtx.lineWidth = 2;
+        namePassportSheetCtx.strokeRect(x, y, pw, ph);
+        placed++;
+      }
+    }
+
+    document.getElementById('namePassportSheetTitle').innerText = `Name & Date 4×6 Sheet (${targetQty} Photos Generated)`;
+    document.getElementById('downloadNamePassportPdfBtn').disabled = false;
+  });
+
+  document.getElementById('makeA4NamePassportBtn').addEventListener('click', () => {
+    if (!namePassportLoaded) return;
+    namePassportSheetFormat = 'a4';
+    const targetQty = Math.max(1, Math.min(30, parseInt(namePassportQtyInput.value) || 30));
+
+    namePassportSheetCanvas.width = 2480;
+    namePassportSheetCanvas.height = 3508;
+
+    namePassportSheetCtx.fillStyle = '#ffffff';
+    namePassportSheetCtx.fillRect(0, 0, 2480, 3508);
+
+    const pw = 413, ph = 531;
+    const startX = 75, startY = 80, gapX = 30, gapY = 40;
+    const maxCols = 5;
+
+    let placed = 0;
+    for (let r = 0; r < 6; r++) {
+      for (let c = 0; c < maxCols; c++) {
+        if (placed >= targetQty) break;
+        const x = startX + c * (pw + gapX);
+        const y = startY + r * (ph + gapY);
+        namePassportSheetCtx.drawImage(namePassportCanvas, x, y, pw, ph);
+        namePassportSheetCtx.strokeStyle = '#000000';
+        namePassportSheetCtx.lineWidth = 2;
+        namePassportSheetCtx.strokeRect(x, y, pw, ph);
+        placed++;
+      }
+    }
+
+    document.getElementById('namePassportSheetTitle').innerText = `Name & Date A4 Sheet (${targetQty} Photos Generated)`;
+    document.getElementById('downloadNamePassportPdfBtn').disabled = false;
+  });
+
+  document.getElementById('downloadNamePassportPdfBtn').addEventListener('click', () => {
+    const { jsPDF } = window.jspdf;
+    if (namePassportSheetFormat === '4x6') {
+      const pdf = new jsPDF({ orientation: 'landscape', unit: 'in', format: [4, 6] });
+      pdf.addImage(namePassportSheetCanvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 6, 4);
+      pdf.save(`Name_Date_Passport_4x6_${namePassportQtyInput.value}_Qty.pdf`);
+    } else {
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      pdf.addImage(namePassportSheetCanvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 210, 297);
+      pdf.save(`Name_Date_Passport_A4_${namePassportQtyInput.value}_Qty.pdf`);
+    }
+  });
+
+  // ==========================================
+  // TAB 4: 4x6 PHOTO PRINT
   // ==========================================
   const canvas4x6 = document.getElementById('canvas4x6');
   const ctx4x6 = canvas4x6.getContext('2d');
@@ -1260,7 +1554,132 @@
   });
 
   // ==========================================================
-  // TAB 4: UNIVERSAL (PDF, JPG, PNG TO PDF) MERGE ENGINE
+  // TAB 5: CUSTOM IMAGE RESIZER (PX, MM, CM)
+  // ==========================================================
+  let originalResizerImg = null;
+  let resizerOriginalWidth = 0;
+  let resizerOriginalHeight = 0;
+  const resizerCanvas = document.getElementById('resizerPreviewCanvas');
+  const resizerCtx = resizerCanvas.getContext('2d');
+  const DPI_SCALE = 300; // Standard Print DPI
+
+  document.getElementById('resizerImageInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    document.getElementById('resizerFileName').innerText = `✅ ${file.name}`;
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      originalResizerImg = new Image();
+      originalResizerImg.onload = function() {
+        resizerOriginalWidth = originalResizerImg.width;
+        resizerOriginalHeight = originalResizerImg.height;
+
+        document.getElementById('resizerUnitSelect').value = 'px';
+        document.getElementById('resizerWidthInput').value = resizerOriginalWidth;
+        document.getElementById('resizerHeightInput').value = resizerOriginalHeight;
+
+        document.getElementById('resizerControlsPanel').style.display = 'block';
+        updateResizerCanvas();
+      };
+      originalResizerImg.src = evt.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  function getPixelDimensions() {
+    const unit = document.getElementById('resizerUnitSelect').value;
+    const wVal = parseFloat(document.getElementById('resizerWidthInput').value) || 1;
+    const hVal = parseFloat(document.getElementById('resizerHeightInput').value) || 1;
+
+    let targetW = wVal;
+    let targetH = hVal;
+
+    if (unit === 'mm') {
+      targetW = Math.round((wVal / 25.4) * DPI_SCALE);
+      targetH = Math.round((hVal / 25.4) * DPI_SCALE);
+    } else if (unit === 'cm') {
+      targetW = Math.round((wVal / 2.54) * DPI_SCALE);
+      targetH = Math.round((hVal / 2.54) * DPI_SCALE);
+    }
+
+    return {
+      width: Math.max(1, targetW),
+      height: Math.max(1, targetH)
+    };
+  }
+
+  function updateResizerCanvas() {
+    if (!originalResizerImg) return;
+    const dims = getPixelDimensions();
+
+    resizerCanvas.width = dims.width;
+    resizerCanvas.height = dims.height;
+
+    resizerCtx.clearRect(0, 0, dims.width, dims.height);
+    resizerCtx.drawImage(originalResizerImg, 0, 0, dims.width, dims.height);
+
+    const unit = document.getElementById('resizerUnitSelect').value;
+    const wInp = document.getElementById('resizerWidthInput').value;
+    const hInp = document.getElementById('resizerHeightInput').value;
+
+    document.getElementById('resizerOutputInfo').innerText = `Target: ${wInp} x ${hInp} ${unit} (${dims.width} x ${dims.height} px)`;
+  }
+
+  function onResizerDimensionChange(changed) {
+    if (!originalResizerImg) return;
+    const isLocked = document.getElementById('resizerAspectLock').checked;
+
+    if (isLocked && resizerOriginalWidth > 0 && resizerOriginalHeight > 0) {
+      const ratio = resizerOriginalHeight / resizerOriginalWidth;
+      if (changed === 'width') {
+        const w = parseFloat(document.getElementById('resizerWidthInput').value) || 0;
+        document.getElementById('resizerHeightInput').value = (w * ratio).toFixed(1);
+      } else {
+        const h = parseFloat(document.getElementById('resizerHeightInput').value) || 0;
+        document.getElementById('resizerWidthInput').value = (h / ratio).toFixed(1);
+      }
+    }
+    updateResizerCanvas();
+  }
+
+  function onResizerUnitChange() {
+    if (!originalResizerImg) return;
+    const unit = document.getElementById('resizerUnitSelect').value;
+
+    if (unit === 'px') {
+      document.getElementById('resizerWidthInput').value = resizerOriginalWidth;
+      document.getElementById('resizerHeightInput').value = resizerOriginalHeight;
+    } else if (unit === 'mm') {
+      document.getElementById('resizerWidthInput').value = ((resizerOriginalWidth / DPI_SCALE) * 25.4).toFixed(1);
+      document.getElementById('resizerHeightInput').value = ((resizerOriginalHeight / DPI_SCALE) * 25.4).toFixed(1);
+    } else if (unit === 'cm') {
+      document.getElementById('resizerWidthInput').value = ((resizerOriginalWidth / DPI_SCALE) * 2.54).toFixed(2);
+      document.getElementById('resizerHeightInput').value = ((resizerOriginalHeight / DPI_SCALE) * 2.54).toFixed(2);
+    }
+    updateResizerCanvas();
+  }
+
+  document.getElementById('downloadResizedJpgBtn').addEventListener('click', () => {
+    if (!originalResizerImg) return;
+    const dims = getPixelDimensions();
+    const link = document.createElement('a');
+    link.href = resizerCanvas.toDataURL('image/jpeg', 0.95);
+    link.download = `Resized_${dims.width}x${dims.height}px.jpg`;
+    link.click();
+  });
+
+  document.getElementById('downloadResizedPngBtn').addEventListener('click', () => {
+    if (!originalResizerImg) return;
+    const dims = getPixelDimensions();
+    const link = document.createElement('a');
+    link.href = resizerCanvas.toDataURL('image/png');
+    link.download = `Resized_${dims.width}x${dims.height}px.png`;
+    link.click();
+  });
+
+  // ==========================================================
+  // TAB 6: UNIVERSAL (PDF, JPG, PNG TO PDF) MERGE ENGINE
   // ==========================================================
   let universalFiles = [];
 
@@ -1361,7 +1780,7 @@
   });
 
   // ==========================================================
-  // TAB 5: PDF TO HIGH-DPI JPG (MANUAL & BUTTON DPI)
+  // TAB 7: PDF TO HIGH-DPI JPG (MANUAL & BUTTON DPI)
   // ==========================================
   let pdfToJpgDoc = null;
   let activeDpiValue = 300;
@@ -1446,8 +1865,8 @@
   });
 
   // ==========================================================
-  // TAB 6: INTERACTIVE PDF COMPRESSOR (LIVE SIZE PREVIEW)
-  // ==========================================================
+  // TAB 8: INTERACTIVE PDF COMPRESSOR (LIVE SIZE PREVIEW)
+  // ==========================================
   let compressOriginalFile = null;
   let compressPdfDoc = null;
   let origFileSizeInKB = 0;
@@ -1477,7 +1896,6 @@
     
     document.getElementById('compressQualityLabel').innerText = `${quality}% (${levelText})`;
 
-    // Calculate Estimated Size in Real-Time
     const ratio = Math.pow(quality / 100, 1.3);
     const estBytes = compressOriginalFile.size * Math.max(0.15, ratio);
     document.getElementById('estFileSizeDisplay').innerText = formatBytes(estBytes);
@@ -1496,7 +1914,6 @@
     const qualityVal = parseInt(document.getElementById('compressQualitySlider').value);
     const jpegQuality = qualityVal / 100;
     
-    // Scale down DPI proportionally for target file compression
     const renderScale = Math.max(1.0, (qualityVal / 100) * 2.2); 
     const totalPages = compressPdfDoc.numPages;
 
@@ -1518,7 +1935,6 @@
       await page.render({ canvasContext: ctx, viewport: viewport }).promise;
       const imgData = canvas.toDataURL('image/jpeg', jpegQuality);
 
-      // Determine Page Dimensions (A4 / Portrait / Landscape)
       const orientation = viewport.width > viewport.height ? 'landscape' : 'portrait';
       if (i === 1) {
         outPdf = new jsPDF({ orientation: orientation, unit: 'pt', format: [viewport.width, viewport.height] });
@@ -1543,6 +1959,13 @@
     passportCtx.font = 'bold 20px Poppins';
     passportCtx.textAlign = 'center';
     passportCtx.fillText('Passport Preview', 413 / 2, 531 / 2);
+
+    namePassportCtx.fillStyle = '#ffffff';
+    namePassportCtx.fillRect(0, 0, 413, 531);
+    namePassportCtx.fillStyle = '#94a3b8';
+    namePassportCtx.font = 'bold 20px Poppins';
+    namePassportCtx.textAlign = 'center';
+    namePassportCtx.fillText('Name & Date Preview', 413 / 2, 531 / 2);
 
     ctx4x6.fillStyle = '#ffffff';
     ctx4x6.fillRect(0, 0, 1200, 1800);
