@@ -3,26 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ID CARD PRINT & REAL PDF EDITOR PORTAL</title>
+  <title>ID CARD PRINT & CONVERTER PORTAL</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- PDF.js Standalone (Worker-Free Inline Mode) -->
+  <!-- PDF.js Standalone for PDF Rendering & Extraction -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
   
-  <!-- PDF-LIB (Pure Vector Engine) -->
+  <!-- PDF-LIB for Pure Vector Merging -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 
-  <!-- jsPDF for ID/Photo Tab -->
+  <!-- jsPDF Library for ID/Photo Tab -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <!-- JSZip for Multi-page PDF to JPG Batch Download -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
   <!-- Cropper.js -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-
-  <!-- Fabric.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
 
   <style>
     :root {
@@ -344,76 +344,57 @@
       font-weight: 600;
     }
 
-    /* ==================================================== */
-    /* REAL VECTOR PDF EDITOR CSS */
-    /* ==================================================== */
-    .pdffiller-header-bar {
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 12px 12px 0 0;
-      padding: 10px 15px;
+    /* Universal Gallery Styles */
+    .file-gallery-list {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
       flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .pdffiller-tools {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .p-tool-btn {
-      background: #334155;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: #f8fafc;
-      padding: 8px 14px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      transition: 0.2s;
-    }
-
-    .p-tool-btn:hover { background: #475569; }
-    .p-tool-btn.active { background: #0284c7; border-color: #38bdf8; }
-
-    .p-done-btn {
-      background: #f97316;
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      font-size: 13px;
-      font-weight: 700;
-      border-radius: 8px;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
-      transition: 0.2s;
-    }
-    .p-done-btn:hover { background: #ea580c; transform: translateY(-1px); }
-
-    .pdffiller-editor-viewport {
-      background: #475569;
-      padding: 25px 15px;
-      border-radius: 0 0 12px 12px;
-      border: 1px solid #334155;
-      border-top: none;
-      overflow: auto;
-      max-height: 75vh;
-      display: flex;
+      gap: 12px;
       justify-content: center;
+      margin: 15px 0;
+      max-height: 280px;
+      overflow-y: auto;
+      padding: 12px;
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
     }
 
-    .canvas-container-shadow {
-      box-shadow: 0 15px 35px rgba(0,0,0,0.6);
-      background: #ffffff;
-      display: inline-block;
+    .gallery-thumb-item {
+      position: relative;
+      width: 90px;
+      height: 115px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      background: #0f172a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+      text-align: center;
+    }
+
+    .gallery-thumb-item img {
+      width: 100%;
+      height: 75px;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+
+    .gallery-thumb-item .pdf-icon-box {
+      font-size: 28px;
+      margin-bottom: 2px;
+    }
+
+    .gallery-thumb-item .file-label {
+      font-size: 9px;
+      color: #94a3b8;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 100%;
+      margin-top: 4px;
     }
 
     #cropModal {
@@ -447,7 +428,7 @@
 <body>
 
 <div class="portal-main-heading">
-  ID CARD PRINT PORTAL
+  ID CARD PRINT & CONVERTER PORTAL
 </div>
 
 <!-- 1. Login Screen -->
@@ -484,13 +465,14 @@
   </div>
 </div>
 
-<!-- 3. Main Portal Application -->
+<!-- 3. Main Portal Application (5 All-in-One Tools) -->
 <div id="mainApp">
   <div class="tab-nav">
     <button class="tab-btn active" onclick="switchTab('tab-cards')">💳 ID Card (5 Slots)</button>
     <button class="tab-btn" onclick="switchTab('tab-passport')">👤 Passport Photos</button>
     <button class="tab-btn" onclick="switchTab('tab-4x6')">🖼️ 4×6 Photo Print</button>
-    <button class="tab-btn" onclick="switchTab('tab-live-pdf')">🛠️ Real Vector PDF Editor</button>
+    <button class="tab-btn" onclick="switchTab('tab-jpg-to-pdf')">📄 PDF, JPG, PNG to PDF</button>
+    <button class="tab-btn" onclick="switchTab('tab-pdf-to-jpg')">🖼️ PDF to JPG (Up to 1200 DPI)</button>
   </div>
 
   <div class="container">
@@ -643,49 +625,67 @@
       </div>
     </div>
 
-    <!-- TAB 4: REAL VECTOR PDF EDITOR (FIXED INTEGRATION) -->
-    <div id="tab-live-pdf" class="tab-content">
-      <div class="badge">Pure Vector PDF Engine • In-Place Text Edit • 100% Reliable Render</div>
-      <h1>Real Vector PDF Document Editor</h1>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">PDF चुनें। सभी लिखे हुए टेक्स्ट पर <strong>डबल-क्लिक करके सीधे एडिट करें</strong> या टूल्स का उपयोग करें।</p>
+    <!-- TAB 4: UNIVERSAL (PDF, JPG, PNG TO PDF) CONVERTER -->
+    <div id="tab-jpg-to-pdf" class="tab-content">
+      <div class="badge">Universal File Merger • PDF, JPG, PNG Support • Combined PDF Export</div>
+      <h1>PDF, JPG, PNG to PDF Converter</h1>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">एक साथ कई <strong>PDF, JPG या PNG</strong> फ़ाइलें सिलेक्ट करें और उन सभी को मिलाकर एक सिंगल PDF बनाएँ।</p>
 
       <div class="upload-section" style="margin-bottom: 15px;">
-        <label class="upload-box" for="realPdfInput" style="max-width: 380px;">
-          <strong style="display:block; font-size:14px; margin-bottom:4px; color:var(--accent-blue);">📄 Select PDF File to Edit</strong>
-          <div id="realPdfFileName" style="font-size: 12px; color: var(--text-muted);">क्लिक करके .pdf फाइल लोड करें</div>
+        <label class="upload-box" for="universalMultiInput" style="max-width: 450px;">
+          <strong style="display:block; font-size:14px; margin-bottom:4px; color:var(--accent-blue);">📁 Select Files (PDF, JPG, PNG Allowed)</strong>
+          <div id="universalMultiStatus" style="font-size: 12px; color: var(--text-muted);">क्लिक करके PDF या इमेज फ़ाइलें चुनें</div>
         </label>
-        <input type="file" id="realPdfInput" accept="application/pdf">
+        <input type="file" id="universalMultiInput" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple>
       </div>
 
-      <!-- Real PDF Editor UI Container -->
-      <div id="realEditorArea" style="display:none; text-align: left;">
-        
-        <div class="pdffiller-header-bar">
-          <div class="pdffiller-tools">
-            <button id="toolAddText" class="p-tool-btn">✍️ Text Box</button>
-            <button id="toolWhiteout" class="p-tool-btn">⬜ Whiteout / Erase</button>
-            <button id="toolBlackout" class="p-tool-btn">⬛ Blackout</button>
-            <button id="toolSign" class="p-tool-btn">✏️ Freehand Sign</button>
-            <button id="toolDelete" class="p-tool-btn" style="color:#f87171;">🗑️ Delete</button>
-          </div>
+      <div id="universalGalleryContainer" style="display:none;">
+        <div style="font-size: 12px; color: var(--accent-blue); font-weight: 600; margin-bottom: 6px;">
+          Selected Files (<span id="universalSelectedCount">0</span>):
+        </div>
+        <div id="universalGalleryList" class="file-gallery-list"></div>
 
-          <div style="display:flex; align-items:center; gap:8px;">
-            <div style="font-size:12px; color:#94a3b8; display:flex; align-items:center; gap:6px;">
-              <button id="rPrevPage" class="quick-qty-btn">◀</button>
-              <span>Page <b id="rCurPageNum" style="color:#fff;">1</b> / <span id="rTotalPageNum">1</span></span>
-              <button id="rNextPage" class="quick-qty-btn">▶</button>
-            </div>
-            <button id="saveRealPdfBtn" class="p-done-btn">💾 SAVE & DOWNLOAD PDF</button>
+        <div class="btn-group">
+          <button id="convertUniversalToPdfBtn" class="action-btn btn-download">📥 Convert & Download Combined PDF</button>
+          <button id="clearUniversalListBtn" class="action-btn btn-reset">🔄 Clear Selection</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: PDF TO HIGH-DPI JPG CONVERTER (UP TO 1200 DPI) -->
+    <div id="tab-pdf-to-jpg" class="tab-content">
+      <div class="badge">Ultra High-Res • Custom DPI (72 to 1200 DPI) • Batch ZIP Export</div>
+      <h1>PDF to High-DPI JPG Converter</h1>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">PDF फ़ाइल अपलोड करें और उसे अपने मनचाहे DPI रिज़ॉल्यूशन में साफ़ JPG में बदलें।</p>
+
+      <div class="upload-section" style="margin-bottom: 15px;">
+        <label class="upload-box" for="pdfToJpgInput" style="max-width: 420px;">
+          <strong style="display:block; font-size:14px; margin-bottom:4px; color:var(--accent-blue);">📄 Select PDF File to Convert</strong>
+          <div id="pdfToJpgStatus" style="font-size: 12px; color: var(--text-muted);">क्लिक करके .pdf फाइल चुनें</div>
+        </label>
+        <input type="file" id="pdfToJpgInput" accept="application/pdf">
+      </div>
+
+      <div id="pdfToJpgControls" style="display:none;">
+        <div class="control-panel">
+          <span style="font-size: 13px; font-weight:600; color: var(--accent-blue);">⚙️ Select Output DPI Resolution:</span>
+          <div class="qty-select-group">
+            <button class="quick-qty-btn" onclick="setPdfDpi(72)">72 DPI (Web)</button>
+            <button class="quick-qty-btn" onclick="setPdfDpi(150)">150 DPI (Standard)</button>
+            <button class="quick-qty-btn" onclick="setPdfDpi(300)">300 DPI (High Print)</button>
+            <button class="quick-qty-btn" onclick="setPdfDpi(600)">600 DPI (Ultra HD)</button>
+            <button class="quick-qty-btn" onclick="setPdfDpi(1200)">1200 DPI (Max Crisp)</button>
+          </div>
+          <div style="margin-top: 10px; font-size: 13px;">
+            Current Selected DPI: <strong id="currentDpiDisplay" style="color:#fbbf24;">300 DPI</strong>
           </div>
         </div>
 
-        <!-- High-DPI Single Fabric Unified Canvas -->
-        <div class="pdffiller-editor-viewport">
-          <div class="canvas-container-shadow">
-            <canvas id="pdfUnifiedCanvas"></canvas>
-          </div>
-        </div>
+        <div style="margin-top: 10px; font-size: 12px; color: var(--text-muted);" id="pdfConversionProgress"></div>
 
+        <div class="btn-group">
+          <button id="startPdfToJpgBtn" class="action-btn btn-download">🖼️ Convert & Download JPGs</button>
+        </div>
       </div>
     </div>
 
@@ -708,7 +708,6 @@
 </div>
 
 <script>
-  // Disable external worker to avoid Cross-Origin blocking
   if (typeof pdfjsLib !== 'undefined') {
     pdfjsLib.GlobalWorkerOptions.workerSrc = '';
   }
@@ -726,10 +725,6 @@
     
     event.target.classList.add('active');
     document.getElementById(tabId).classList.add('active');
-
-    if (tabId === 'tab-live-pdf' && pdfFabricCanvas) {
-      pdfFabricCanvas.requestRenderAll();
-    }
   }
 
   const loginScreen = document.getElementById('loginScreen');
@@ -1189,300 +1184,182 @@
   });
 
   // ==========================================================
-  // TAB 4: REAL VECTOR PDF ENGINE (WORKER-FREE 100% RELIABLE)
+  // TAB 4: UNIVERSAL (PDF, JPG, PNG TO PDF) MERGE ENGINE
   // ==========================================================
-  let originalPdfBytes = null;
-  let pdfjsDocInstance = null;
-  let rCurrentPage = 1;
-  let rTotalPages = 1;
-  let pdfFabricCanvas = null;
-  let activePdfScale = 1.75;
-  let pageViewportWidth = 595, pageViewportHeight = 842;
-  let isPdfDraw = false;
+  let universalFiles = [];
 
-  document.getElementById('realPdfInput').addEventListener('change', async function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
+  document.getElementById('universalMultiInput').addEventListener('change', function(e) {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
 
-    document.getElementById('realPdfFileName').innerText = `✅ ${file.name}`;
-    originalPdfBytes = await file.arrayBuffer();
-
-    try {
-      pdfjsDocInstance = await pdfjsLib.getDocument({ data: new Uint8Array(originalPdfBytes.slice(0)) }).promise;
-      rTotalPages = pdfjsDocInstance.numPages;
-      rCurrentPage = 1;
-
-      document.getElementById('rTotalPageNum').innerText = rTotalPages;
-      document.getElementById('rCurPageNum').innerText = rCurrentPage;
-      document.getElementById('realEditorArea').style.display = 'block';
-
-      renderUnifiedPdfEditor(rCurrentPage);
-    } catch(err) {
-      alert("PDF लोड करने में समस्या: " + err.message);
-    }
+    universalFiles = universalFiles.concat(files);
+    renderUniversalGallery();
   });
 
-  async function renderUnifiedPdfEditor(pageNum) {
-    if (!pdfjsDocInstance) return;
+  function renderUniversalGallery() {
+    const gallery = document.getElementById('universalGalleryList');
+    const container = document.getElementById('universalGalleryContainer');
+    const countDisplay = document.getElementById('universalSelectedCount');
 
-    const page = await pdfjsDocInstance.getPage(pageNum);
-    const viewport = page.getViewport({ scale: activePdfScale });
-    pageViewportWidth = viewport.width;
-    pageViewportHeight = viewport.height;
+    gallery.innerHTML = '';
+    countDisplay.innerText = universalFiles.length;
 
-    // 1. Direct Render to Canvas
-    const offscreenCanvas = document.createElement('canvas');
-    const offscreenCtx = offscreenCanvas.getContext('2d');
-    offscreenCanvas.width = viewport.width;
-    offscreenCanvas.height = viewport.height;
-
-    await page.render({ canvasContext: offscreenCtx, viewport: viewport }).promise;
-    const highResBgUrl = offscreenCanvas.toDataURL('image/png');
-
-    // 2. Setup Unified Interactive Fabric Canvas
-    if (!pdfFabricCanvas) {
-      pdfFabricCanvas = new fabric.Canvas('pdfUnifiedCanvas', {
-        preserveObjectStacking: true,
-        selection: true
-      });
+    if (universalFiles.length > 0) {
+      container.style.display = 'block';
+    } else {
+      container.style.display = 'none';
+      return;
     }
 
-    pdfFabricCanvas.setWidth(viewport.width);
-    pdfFabricCanvas.setHeight(viewport.height);
-    pdfFabricCanvas.clear();
+    universalFiles.forEach((file) => {
+      const item = document.createElement('div');
+      item.className = 'gallery-thumb-item';
 
-    // 3. Set Background & Layer Editable Text Elements
-    fabric.Image.fromURL(highResBgUrl, function(img) {
-      img.set({
-        left: 0,
-        top: 0,
-        selectable: false,
-        evented: false
-      });
-      pdfFabricCanvas.setBackgroundImage(img, function() {
-        
-        // Extract Text Content for Direct In-Place Edit
-        page.getTextContent().then(function(textContent) {
-          if (textContent && textContent.items) {
-            textContent.items.forEach(function(textItem) {
-              const str = textItem.str;
-              if (!str || str.trim() === '') return;
+      if (file.type === 'application/pdf') {
+        const icon = document.createElement('div');
+        icon.className = 'pdf-icon-box';
+        icon.innerText = '📄';
+        item.appendChild(icon);
+      } else {
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        item.appendChild(img);
+      }
 
-              const tx = pdfjsLib.Util.transform(viewport.transform, textItem.transform);
-              const fontSize = Math.round(Math.sqrt((tx[0] * tx[0]) + (tx[1] * tx[1]))) || 13;
-              const posX = Math.round(tx[4]);
-              const posY = Math.round(tx[5] - fontSize);
+      const label = document.createElement('div');
+      label.className = 'file-label';
+      label.innerText = file.name;
+      label.title = file.name;
+      item.appendChild(label);
 
-              const editableText = new fabric.IText(str, {
-                left: posX,
-                top: posY,
-                fontSize: fontSize,
-                fontFamily: 'Helvetica, Arial, sans-serif',
-                fill: '#000000',
-                backgroundColor: '#ffffff',
-                stroke: '#0284c7',
-                strokeWidth: 1,
-                strokeDashArray: [3, 3],
-                padding: 2,
-                cornerColor: '#0284c7',
-                cornerSize: 6,
-                transparentCorners: false
-              });
-
-              pdfFabricCanvas.add(editableText);
-            });
-          }
-          pdfFabricCanvas.requestRenderAll();
-        });
-
-      });
+      gallery.appendChild(item);
     });
   }
 
-  // Page Controls
-  document.getElementById('rPrevPage').addEventListener('click', () => {
-    if (rCurrentPage <= 1) return;
-    rCurrentPage--;
-    document.getElementById('rCurPageNum').innerText = rCurrentPage;
-    renderUnifiedPdfEditor(rCurrentPage);
+  document.getElementById('clearUniversalListBtn').addEventListener('click', () => {
+    universalFiles = [];
+    renderUniversalGallery();
+    document.getElementById('universalMultiInput').value = '';
   });
 
-  document.getElementById('rNextPage').addEventListener('click', () => {
-    if (rCurrentPage >= rTotalPages) return;
-    rCurrentPage++;
-    document.getElementById('rCurPageNum').innerText = rCurrentPage;
-    renderUnifiedPdfEditor(rCurrentPage);
-  });
+  document.getElementById('convertUniversalToPdfBtn').addEventListener('click', async () => {
+    if (!universalFiles.length) return;
 
-  // 1. Add Text Tool
-  document.getElementById('toolAddText').addEventListener('click', () => {
-    if (!pdfFabricCanvas) return;
-    const txt = new fabric.IText('New Text', {
-      left: 100,
-      top: 100,
-      fontSize: 20,
-      fill: '#000000',
-      backgroundColor: '#ffffff',
-      stroke: '#0284c7',
-      strokeWidth: 1.5,
-      strokeDashArray: [4, 4],
-      padding: 4,
-      fontFamily: 'Helvetica, Arial, sans-serif'
-    });
-    pdfFabricCanvas.add(txt);
-    pdfFabricCanvas.setActiveObject(txt);
-    pdfFabricCanvas.requestRenderAll();
-  });
+    const { PDFDocument } = PDFLib;
+    const mergedPdf = await PDFDocument.create();
 
-  // 2. Whiteout / Erase Tool
-  document.getElementById('toolWhiteout').addEventListener('click', () => {
-    if (!pdfFabricCanvas) return;
-    const rect = new fabric.Rect({
-      left: 120,
-      top: 120,
-      width: 160,
-      height: 35,
-      fill: '#ffffff',
-      stroke: '#cbd5e1',
-      strokeWidth: 1.5,
-      cornerColor: '#0284c7'
-    });
-    pdfFabricCanvas.add(rect);
-    pdfFabricCanvas.setActiveObject(rect);
-    pdfFabricCanvas.requestRenderAll();
-  });
+    for (let i = 0; i < universalFiles.length; i++) {
+      const file = universalFiles[i];
+      const fileBytes = await file.arrayBuffer();
 
-  // 3. Blackout Tool
-  document.getElementById('toolBlackout').addEventListener('click', () => {
-    if (!pdfFabricCanvas) return;
-    const rect = new fabric.Rect({
-      left: 120,
-      top: 120,
-      width: 160,
-      height: 35,
-      fill: '#000000',
-      cornerColor: '#0284c7'
-    });
-    pdfFabricCanvas.add(rect);
-    pdfFabricCanvas.setActiveObject(rect);
-    pdfFabricCanvas.requestRenderAll();
-  });
+      if (file.type === 'application/pdf') {
+        // Load external PDF and merge all pages
+        const externalPdf = await PDFDocument.load(fileBytes);
+        const copiedPages = await mergedPdf.copyPages(externalPdf, externalPdf.getPageIndices());
+        copiedPages.forEach((page) => mergedPdf.addPage(page));
+      } else {
+        // Image File (JPG/PNG) -> Embed on Standard A4 Page (595.28 x 841.89 points)
+        let embeddedImage;
+        if (file.type === 'image/png') {
+          embeddedImage = await mergedPdf.embedPng(fileBytes);
+        } else {
+          embeddedImage = await mergedPdf.embedJpg(fileBytes);
+        }
 
-  // 4. Freehand Sign Tool
-  const toolSign = document.getElementById('toolSign');
-  toolSign.addEventListener('click', () => {
-    if (!pdfFabricCanvas) return;
-    isPdfDraw = !isPdfDraw;
-    pdfFabricCanvas.isDrawingMode = isPdfDraw;
-    if (isPdfDraw) {
-      toolSign.classList.add('active');
-      pdfFabricCanvas.freeDrawingBrush.color = '#000000';
-      pdfFabricCanvas.freeDrawingBrush.width = 3;
-    } else {
-      toolSign.classList.remove('active');
-    }
-  });
+        const page = mergedPdf.addPage([595.28, 841.89]);
+        const imgDims = embeddedImage.scaleToFit(555.28, 801.89);
 
-  // 5. Delete Tool
-  document.getElementById('toolDelete').addEventListener('click', () => {
-    if (!pdfFabricCanvas) return;
-    const obj = pdfFabricCanvas.getActiveObject();
-    if (obj) {
-      pdfFabricCanvas.remove(obj);
-      pdfFabricCanvas.requestRenderAll();
-    }
-  });
-
-  // ==========================================================
-  // REAL VECTOR PDF EXPORT ENGINE (PURE ORIGINAL PDF-LIB)
-  // ==========================================================
-  document.getElementById('saveRealPdfBtn').addEventListener('click', async () => {
-    if (!originalPdfBytes) return;
-
-    pdfFabricCanvas.discardActiveObject();
-    
-    // Hide helper dashed borders before final save
-    pdfFabricCanvas.getObjects().forEach(o => {
-      if (o.strokeDashArray) o.set({ stroke: 'transparent' });
-    });
-    pdfFabricCanvas.requestRenderAll();
-
-    const { PDFDocument, rgb, StandardFonts } = PDFLib;
-    const pdfDoc = await PDFDocument.load(originalPdfBytes);
-    const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
-    const pages = pdfDoc.getPages();
-    const targetPage = pages[rCurrentPage - 1];
-    const { width: pWidth, height: pHeight } = targetPage.getSize();
-
-    const scaleX = pWidth / pageViewportWidth;
-    const scaleY = pHeight / pageViewportHeight;
-
-    const overlayObjects = pdfFabricCanvas.getObjects();
-
-    for (const obj of overlayObjects) {
-      const objLeft = obj.left * scaleX;
-      const objTop = obj.top * scaleY;
-      const objWidth = (obj.width * (obj.scaleX || 1)) * scaleX;
-      const objHeight = (obj.height * (obj.scaleY || 1)) * scaleY;
-      
-      const pdfY = pHeight - objTop - objHeight;
-
-      if (obj.type === 'rect') {
-        const isBlack = obj.fill === '#000000';
-        targetPage.drawRectangle({
-          x: objLeft,
-          y: pdfY,
-          width: objWidth,
-          height: objHeight,
-          color: isBlack ? rgb(0, 0, 0) : rgb(1, 1, 1),
-          borderWidth: 0
-        });
-      } 
-      else if (obj.type === 'i-text' || obj.type === 'text') {
-        // Clean background underlay
-        targetPage.drawRectangle({
-          x: objLeft,
-          y: pdfY,
-          width: objWidth,
-          height: objHeight,
-          color: rgb(1, 1, 1),
-          borderWidth: 0
-        });
-
-        // Embed real vector text
-        const fontSize = (obj.fontSize || 13) * scaleX;
-        targetPage.drawText(obj.text || '', {
-          x: objLeft + (2 * scaleX),
-          y: pdfY + (3 * scaleY),
-          size: fontSize,
-          font: helveticaFont,
-          color: rgb(0, 0, 0)
-        });
-      }
-      else if (obj.type === 'path') {
-        const pathImgData = obj.toDataURL({ format: 'png', multiplier: 2.0 });
-        const embeddedPng = await pdfDoc.embedPng(pathImgData);
-        targetPage.drawImage(embeddedPng, {
-          x: objLeft,
-          y: pdfY,
-          width: objWidth,
-          height: objHeight
+        page.drawImage(embeddedImage, {
+          x: (595.28 - imgDims.width) / 2,
+          y: (841.89 - imgDims.height) / 2,
+          width: imgDims.width,
+          height: imgDims.height
         });
       }
     }
 
-    const modifiedPdfBytes = await pdfDoc.save();
-    const blob = new Blob([modifiedPdfBytes], { type: 'application/pdf' });
+    const mergedPdfBytes = await mergedPdf.save();
+    const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = `Edited_Original_Vector_PDF.pdf`;
+    link.download = `Merged_Combined_Document.pdf`;
     link.click();
+  });
 
-    // Restore dashed borders
-    pdfFabricCanvas.getObjects().forEach(o => {
-      if (o.type === 'i-text') o.set({ stroke: '#0284c7', strokeDashArray: [3, 3] });
-    });
-    pdfFabricCanvas.requestRenderAll();
+  // ==========================================================
+  // TAB 5: PDF TO HIGH-DPI JPG CONVERTER (UP TO 1200 DPI)
+  // ==========================================================
+  let pdfToJpgDoc = null;
+  let selectedPdfDpi = 300;
+
+  function setPdfDpi(dpi) {
+    selectedPdfDpi = dpi;
+    document.getElementById('currentDpiDisplay').innerText = `${dpi} DPI`;
+  }
+
+  document.getElementById('pdfToJpgInput').addEventListener('change', async function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    document.getElementById('pdfToJpgStatus').innerText = `✅ ${file.name}`;
+    const arrayBuffer = await file.arrayBuffer();
+
+    pdfToJpgDoc = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
+    document.getElementById('pdfToJpgControls').style.display = 'block';
+  });
+
+  document.getElementById('startPdfToJpgBtn').addEventListener('click', async () => {
+    if (!pdfToJpgDoc) return;
+
+    const progress = document.getElementById('pdfConversionProgress');
+    const scaleFactor = selectedPdfDpi / 72; // 72 DPI is base 1.0 scale
+    const totalPages = pdfToJpgDoc.numPages;
+
+    if (totalPages === 1) {
+      progress.innerText = `⏳ Rendering 1 page at ${selectedPdfDpi} DPI...`;
+      const page = await pdfToJpgDoc.getPage(1);
+      const viewport = page.getViewport({ scale: scaleFactor });
+
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+
+      await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+
+      canvas.toBlob((blob) => {
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `Page_1_${selectedPdfDpi}DPI.jpg`;
+        link.click();
+        progress.innerText = `✅ Download Complete (1 Page @ ${selectedPdfDpi} DPI)`;
+      }, 'image/jpeg', 0.95);
+
+    } else {
+      const zip = new JSZip();
+      for (let i = 1; i <= totalPages; i++) {
+        progress.innerText = `⏳ Processing Page ${i} / ${totalPages} at ${selectedPdfDpi} DPI...`;
+        const page = await pdfToJpgDoc.getPage(i);
+        const viewport = page.getViewport({ scale: scaleFactor });
+
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+
+        await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+        const imgData = canvas.toDataURL('image/jpeg', 0.95).split(',')[1];
+        zip.file(`Page_${i}_${selectedPdfDpi}DPI.jpg`, imgData, { base64: true });
+      }
+
+      progress.innerText = '📦 Creating ZIP archive...';
+      const zipContent = await zip.generateAsync({ type: 'blob' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(zipContent);
+      link.download = `PDF_to_JPG_${selectedPdfDpi}DPI_Bundle.zip`;
+      link.click();
+      progress.innerText = `✅ Complete! ${totalPages} Pages Downloaded in ZIP.`;
+    }
   });
 
   function initAllCanvases() {
