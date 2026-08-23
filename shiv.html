@@ -405,14 +405,14 @@
       border: 1px solid var(--border-color);
     }
 
-    /* Arranger & Gallery Card Styles */
+    /* Drag & Drop Card Styles */
     .file-gallery-list {
       display: flex;
       flex-wrap: wrap;
       gap: 14px;
       justify-content: center;
       margin: 15px 0;
-      max-height: 380px;
+      max-height: 420px;
       overflow-y: auto;
       padding: 14px;
       background: rgba(15, 23, 42, 0.6);
@@ -420,58 +420,80 @@
       border: 1px solid var(--border-color);
     }
 
-    .gallery-thumb-item {
+    .draggable-card {
       position: relative;
-      width: 115px;
+      width: 125px;
       background: #0f172a;
-      border: 1px solid rgba(56, 189, 248, 0.35);
-      border-radius: 8px;
-      padding: 6px 4px;
+      border: 2px solid rgba(56, 189, 248, 0.35);
+      border-radius: 10px;
+      padding: 6px 4px 8px 4px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.5);
+      cursor: grab;
+      user-select: none;
+      transition: transform 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
     }
 
-    .gallery-thumb-item canvas, .gallery-thumb-item img {
+    .draggable-card:active {
+      cursor: grabbing;
+    }
+
+    .draggable-card.dragging {
+      opacity: 0.4;
+      transform: scale(0.92);
+      border-color: #f59e0b;
+    }
+
+    .draggable-card.drag-over {
+      border: 2px dashed #38bdf8;
+      transform: scale(1.05);
+      background: rgba(56, 189, 248, 0.12);
+    }
+
+    .draggable-card canvas, .draggable-card img {
       width: 100%;
-      height: 120px;
+      height: 135px;
       object-fit: contain;
       background: #ffffff;
-      border-radius: 4px;
+      border-radius: 5px;
+      pointer-events: none;
     }
 
-    .gallery-thumb-item .file-label {
-      font-size: 10px;
+    .draggable-card .file-label {
+      font-size: 11px;
       color: #94a3b8;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
       width: 100%;
-      margin: 5px 0 3px 0;
-      font-weight: 500;
+      margin: 6px 0 2px 0;
+      font-weight: 600;
+      text-align: center;
+      pointer-events: none;
     }
 
-    .card-actions-row {
+    .card-tools-bar {
       display: flex;
-      gap: 4px;
+      gap: 6px;
       justify-content: center;
       width: 100%;
-      margin-top: 2px;
+      margin-top: 4px;
     }
 
-    .mini-action-btn {
+    .mini-tool-btn {
       background: #334155;
       color: #f8fafc;
-      border: 1px solid rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.15);
       border-radius: 4px;
-      padding: 3px 6px;
+      padding: 4px 8px;
       font-size: 11px;
       cursor: pointer;
       transition: 0.2s;
     }
-    .mini-action-btn:hover { background: #0284c7; }
-    .mini-action-btn.btn-del:hover { background: #ef4444; }
+    .mini-tool-btn:hover { background: #0284c7; }
+    .mini-tool-btn.btn-del:hover { background: #ef4444; }
 
     .item-delete-btn {
       position: absolute;
@@ -849,11 +871,11 @@
       </div>
     </div>
 
-    <!-- TAB 5: PDF ARRANGER (NEW FEATURE) -->
+    <!-- TAB 5: PDF ARRANGER (DRAG & DROP / HOLD & MOVE) -->
     <div id="tab-arranger" class="tab-content">
-      <div class="badge">Re-order Pages • Delete • Rotate 90° • Add Multiple PDFs</div>
+      <div class="badge">Drag & Drop To Re-order • Hold & Move • Rotate 90° • Cut Pages</div>
       <h1>PDF Page Arranger & Organizer</h1>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">PDF अपलोड करें, पेजों को आगे-पीछे सेट करें, अनचाहे पेज हटाएं, घुमाएं या और PDF पेजेस जोड़ें।</p>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">किसी भी पेज को <strong>पकड़कर (Hold करके) मनचाही जगह पर सरकाएँ</strong>।</p>
 
       <div class="upload-section" style="margin-bottom: 15px;">
         <label class="upload-box" for="arrangerPdfInput" style="max-width: 420px;">
@@ -878,11 +900,11 @@
       </div>
     </div>
 
-    <!-- TAB 6: UNIVERSAL (PDF, JPG, PNG TO PDF) MERGE & RE-ORDER -->
+    <!-- TAB 6: UNIVERSAL MERGE & RE-ORDER -->
     <div id="tab-jpg-to-pdf" class="tab-content">
-      <div class="badge">Universal File Merger • Re-order (◀ / ▶) • Individual Delete (✖)</div>
+      <div class="badge">Universal File Merger • Drag & Drop Re-order • Individual Delete</div>
       <h1>PDF, JPG, PNG to PDF Converter</h1>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">एक साथ कई <strong>PDF, JPG या PNG</strong> फ़ाइलें सिलेक्ट करें, उन्हें आगे-पीछे <strong>(◀ / ▶)</strong> से क्रमबद्ध करें और PDF बनाएँ।</p>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">फ़ाइलों को <strong>माउस से पकड़कर आगे-पीछे क्रमबद्ध करें</strong> और कंबाइंड PDF बनाएँ।</p>
 
       <div class="upload-section" style="margin-bottom: 15px;">
         <label class="upload-box" for="universalMultiInput" style="max-width: 450px;">
@@ -2016,9 +2038,10 @@
   });
 
   // ==========================================================
-  // TAB 5: PDF ARRANGER ENGINE (RE-ORDER, ROTATE, CUT, ADD)
+  // TAB 5: PDF ARRANGER ENGINE (DRAG & DROP / HOLD & MOVE)
   // ==========================================================
   let arrangedPdfPagesList = [];
+  let draggedArrangerIdx = null;
 
   document.getElementById('arrangerPdfInput').addEventListener('change', async function(e) {
     const files = Array.from(e.target.files);
@@ -2070,7 +2093,41 @@
 
     arrangedPdfPagesList.forEach((item, idx) => {
       const card = document.createElement('div');
-      card.className = 'gallery-thumb-item';
+      card.className = 'draggable-card';
+      card.draggable = true;
+      card.dataset.index = idx;
+
+      // Drag and Drop Events
+      card.addEventListener('dragstart', (e) => {
+        draggedArrangerIdx = idx;
+        card.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+
+      card.addEventListener('dragend', () => {
+        card.classList.remove('dragging');
+        document.querySelectorAll('.draggable-card').forEach(c => c.classList.remove('drag-over'));
+      });
+
+      card.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        card.classList.add('drag-over');
+      });
+
+      card.addEventListener('dragleave', () => {
+        card.classList.remove('drag-over');
+      });
+
+      card.addEventListener('drop', (e) => {
+        e.preventDefault();
+        card.classList.remove('drag-over');
+        if (draggedArrangerIdx !== null && draggedArrangerIdx !== idx) {
+          const itemToMove = arrangedPdfPagesList.splice(draggedArrangerIdx, 1)[0];
+          arrangedPdfPagesList.splice(idx, 0, itemToMove);
+          renderArrangerGrid();
+        }
+      });
 
       const img = document.createElement('img');
       img.src = item.thumbDataUrl;
@@ -2082,51 +2139,34 @@
       label.innerText = `Page ${idx + 1}`;
       card.appendChild(label);
 
-      // Card Action Buttons (◀, ▶, 🔄, 🗑️)
-      const actionsRow = document.createElement('div');
-      actionsRow.className = 'card-actions-row';
-
-      const leftBtn = document.createElement('button');
-      leftBtn.className = 'mini-action-btn';
-      leftBtn.innerHTML = '◀';
-      leftBtn.title = 'Move Left';
-      leftBtn.onclick = () => moveArrangerPage(idx, -1);
-
-      const rightBtn = document.createElement('button');
-      rightBtn.className = 'mini-action-btn';
-      rightBtn.innerHTML = '▶';
-      rightBtn.title = 'Move Right';
-      rightBtn.onclick = () => moveArrangerPage(idx, 1);
+      // Card Tools (Rotate & Delete only - No arrow buttons needed)
+      const toolsBar = document.createElement('div');
+      toolsBar.className = 'card-tools-bar';
 
       const rotateBtn = document.createElement('button');
-      rotateBtn.className = 'mini-action-btn';
-      rotateBtn.innerHTML = '🔄';
+      rotateBtn.className = 'mini-tool-btn';
+      rotateBtn.innerHTML = '🔄 Rotate';
       rotateBtn.title = 'Rotate 90°';
-      rotateBtn.onclick = () => rotateArrangerPage(idx);
+      rotateBtn.onclick = (e) => {
+        e.stopPropagation();
+        rotateArrangerPage(idx);
+      };
 
       const delBtn = document.createElement('button');
-      delBtn.className = 'mini-action-btn btn-del';
+      delBtn.className = 'mini-tool-btn btn-del';
       delBtn.innerHTML = '🗑️';
       delBtn.title = 'Delete Page';
-      delBtn.onclick = () => deleteArrangerPage(idx);
+      delBtn.onclick = (e) => {
+        e.stopPropagation();
+        deleteArrangerPage(idx);
+      };
 
-      actionsRow.appendChild(leftBtn);
-      actionsRow.appendChild(rightBtn);
-      actionsRow.appendChild(rotateBtn);
-      actionsRow.appendChild(delBtn);
+      toolsBar.appendChild(rotateBtn);
+      toolsBar.appendChild(delBtn);
+      card.appendChild(toolsBar);
 
-      card.appendChild(actionsRow);
       grid.appendChild(card);
     });
-  }
-
-  function moveArrangerPage(index, direction) {
-    const targetIdx = index + direction;
-    if (targetIdx < 0 || targetIdx >= arrangedPdfPagesList.length) return;
-    const temp = arrangedPdfPagesList[index];
-    arrangedPdfPagesList[index] = arrangedPdfPagesList[targetIdx];
-    arrangedPdfPagesList[targetIdx] = temp;
-    renderArrangerGrid();
   }
 
   function rotateArrangerPage(index) {
@@ -2152,7 +2192,6 @@
     const { PDFDocument, degrees } = PDFLib;
     const outPdf = await PDFDocument.create();
 
-    // Grouping source buffers to prevent multiple re-parsing
     const loadedDocsMap = new Map();
 
     for (const pageObj of arrangedPdfPagesList) {
@@ -2184,9 +2223,10 @@
   });
 
   // ==========================================================
-  // TAB 6: UNIVERSAL MERGE ENGINE (WITH RE-ORDER & INDIVIDUAL DELETE)
+  // TAB 6: UNIVERSAL MERGE (DRAG & DROP RE-ORDER SUPPORT)
   // ==========================================================
   let universalFiles = [];
+  let draggedUniversalIdx = null;
 
   document.getElementById('universalMultiInput').addEventListener('change', function(e) {
     const files = Array.from(e.target.files);
@@ -2199,15 +2239,6 @@
 
   function removeUniversalFile(index) {
     universalFiles.splice(index, 1);
-    renderUniversalGallery();
-  }
-
-  function moveUniversalFile(index, direction) {
-    const targetIdx = index + direction;
-    if (targetIdx < 0 || targetIdx >= universalFiles.length) return;
-    const temp = universalFiles[index];
-    universalFiles[index] = universalFiles[targetIdx];
-    universalFiles[targetIdx] = temp;
     renderUniversalGallery();
   }
 
@@ -2228,7 +2259,39 @@
 
     universalFiles.forEach((file, idx) => {
       const item = document.createElement('div');
-      item.className = 'gallery-thumb-item';
+      item.className = 'draggable-card';
+      item.draggable = true;
+
+      item.addEventListener('dragstart', (e) => {
+        draggedUniversalIdx = idx;
+        item.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+
+      item.addEventListener('dragend', () => {
+        item.classList.remove('dragging');
+        document.querySelectorAll('#universalGalleryList .draggable-card').forEach(c => c.classList.remove('drag-over'));
+      });
+
+      item.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        item.classList.add('drag-over');
+      });
+
+      item.addEventListener('dragleave', () => {
+        item.classList.remove('drag-over');
+      });
+
+      item.addEventListener('drop', (e) => {
+        e.preventDefault();
+        item.classList.remove('drag-over');
+        if (draggedUniversalIdx !== null && draggedUniversalIdx !== idx) {
+          const moved = universalFiles.splice(draggedUniversalIdx, 1)[0];
+          universalFiles.splice(idx, 0, moved);
+          renderUniversalGallery();
+        }
+      });
 
       // Cross (✖) Delete Button
       const delBtn = document.createElement('button');
@@ -2243,7 +2306,11 @@
 
       if (file.type === 'application/pdf') {
         const icon = document.createElement('div');
-        icon.className = 'pdf-icon-box';
+        icon.style.height = '135px';
+        icon.style.display = 'flex';
+        icon.style.alignItems = 'center';
+        icon.style.justifyContent = 'center';
+        icon.style.fontSize = '36px';
         icon.innerText = '📄';
         item.appendChild(icon);
       } else {
@@ -2257,26 +2324,6 @@
       label.innerText = file.name;
       label.title = file.name;
       item.appendChild(label);
-
-      // Re-order Controls (◀ / ▶)
-      const actionsRow = document.createElement('div');
-      actionsRow.className = 'card-actions-row';
-
-      const leftBtn = document.createElement('button');
-      leftBtn.className = 'mini-action-btn';
-      leftBtn.innerHTML = '◀';
-      leftBtn.title = 'Move Left';
-      leftBtn.onclick = () => moveUniversalFile(idx, -1);
-
-      const rightBtn = document.createElement('button');
-      rightBtn.className = 'mini-action-btn';
-      rightBtn.innerHTML = '▶';
-      rightBtn.title = 'Move Right';
-      rightBtn.onclick = () => moveUniversalFile(idx, 1);
-
-      actionsRow.appendChild(leftBtn);
-      actionsRow.appendChild(rightBtn);
-      item.appendChild(actionsRow);
 
       gallery.appendChild(item);
     });
