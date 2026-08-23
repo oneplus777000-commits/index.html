@@ -871,24 +871,24 @@
       </div>
     </div>
 
-    <!-- TAB 5: PDF ARRANGER (DRAG & DROP / HOLD & MOVE) -->
+    <!-- TAB 5: PDF, JPG, PNG ARRANGER (DRAG & DROP / HOLD & MOVE) -->
     <div id="tab-arranger" class="tab-content">
-      <div class="badge">Drag & Drop To Re-order • Hold & Move • Rotate 90° • Cut Pages</div>
-      <h1>PDF Page Arranger & Organizer</h1>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">किसी भी पेज को <strong>पकड़कर (Hold करके) मनचाही जगह पर सरकाएँ</strong>।</p>
+      <div class="badge">Multi-Format Arranger • PDF, JPG, PNG Support • Hold & Move Re-order</div>
+      <h1>PDF, JPG, PNG Page Arranger & Organizer</h1>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">PDF या इमेज (JPG/PNG) अपलोड करें और पेजों को <strong>पकड़कर (Hold करके) मनचाही जगह पर सरकाएँ</strong>।</p>
 
       <div class="upload-section" style="margin-bottom: 15px;">
-        <label class="upload-box" for="arrangerPdfInput" style="max-width: 420px;">
-          <strong style="display:block; font-size:14px; margin-bottom:4px; color:var(--accent-blue);">📑 Select / Add PDF to Arrange</strong>
-          <div id="arrangerStatus" style="font-size: 12px; color: var(--text-muted);">क्लिक करके .pdf फाइल अपलोड करें</div>
+        <label class="upload-box" for="arrangerPdfInput" style="max-width: 450px;">
+          <strong style="display:block; font-size:14px; margin-bottom:4px; color:var(--accent-blue);">📑 Select Files (PDF, JPG, PNG Allowed)</strong>
+          <div id="arrangerStatus" style="font-size: 12px; color: var(--text-muted);">क्लिक करके PDF या इमेज फ़ाइलें अपलोड करें</div>
         </label>
-        <input type="file" id="arrangerPdfInput" accept="application/pdf" multiple>
+        <input type="file" id="arrangerPdfInput" accept="application/pdf,image/jpeg,image/png,image/jpg" multiple>
       </div>
 
       <div id="arrangerContainerArea" style="display:none;">
         <div style="display:flex; justify-content:space-between; align-items:center; max-width:900px; margin:0 auto 10px auto;">
-          <span style="font-size: 13px; font-weight:600; color: var(--accent-blue);">Total Pages: <strong id="arrangerTotalPagesCount" style="color:#fbbf24;">0</strong></span>
-          <label for="arrangerPdfInput" class="action-btn btn-add" style="padding:6px 14px; font-size:11px; cursor:pointer;">➕ Add More PDF Files</label>
+          <span style="font-size: 13px; font-weight:600; color: var(--accent-blue);">Total Pages/Images: <strong id="arrangerTotalPagesCount" style="color:#fbbf24;">0</strong></span>
+          <label for="arrangerPdfInput" class="action-btn btn-add" style="padding:6px 14px; font-size:11px; cursor:pointer;">➕ Add More Files</label>
         </div>
 
         <div id="arrangerGridList" class="file-gallery-list"></div>
@@ -2038,7 +2038,7 @@
   });
 
   // ==========================================================
-  // TAB 5: PDF ARRANGER ENGINE (DRAG & DROP / HOLD & MOVE)
+  // TAB 5: PDF, JPG, PNG ARRANGER ENGINE (HOLD & MOVE DRAG & DROP)
   // ==========================================================
   let arrangedPdfPagesList = [];
   let draggedArrangerIdx = null;
@@ -2048,24 +2048,41 @@
     if (!files.length) return;
 
     for (const file of files) {
-      const arrayBuffer = await file.arrayBuffer();
-      const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
+      if (file.type === 'application/pdf') {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
 
-      for (let i = 1; i <= pdf.numPages; i++) {
-        const page = await pdf.getPage(i);
-        const viewport = page.getViewport({ scale: 0.35 });
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const viewport = page.getViewport({ scale: 0.35 });
 
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          canvas.width = viewport.width;
+          canvas.height = viewport.height;
 
-        await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+          await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+
+          arrangedPdfPagesList.push({
+            type: 'pdf',
+            sourceBytes: arrayBuffer,
+            pageIndex: i - 1,
+            thumbDataUrl: canvas.toDataURL('image/jpeg', 0.8),
+            rotation: 0,
+            originalDocName: file.name
+          });
+        }
+      } else {
+        // JPG / PNG Images
+        const arrayBuffer = await file.arrayBuffer();
+        const thumbUrl = URL.createObjectURL(file);
 
         arrangedPdfPagesList.push({
+          type: 'image',
+          mimeType: file.type,
           sourceBytes: arrayBuffer,
-          pageIndex: i - 1,
-          thumbDataUrl: canvas.toDataURL('image/jpeg', 0.8),
+          pageIndex: 0,
+          thumbDataUrl: thumbUrl,
           rotation: 0,
           originalDocName: file.name
         });
@@ -2097,7 +2114,7 @@
       card.draggable = true;
       card.dataset.index = idx;
 
-      // Drag and Drop Events
+      // HTML5 Drag and Drop Events
       card.addEventListener('dragstart', (e) => {
         draggedArrangerIdx = idx;
         card.classList.add('dragging');
@@ -2106,7 +2123,7 @@
 
       card.addEventListener('dragend', () => {
         card.classList.remove('dragging');
-        document.querySelectorAll('.draggable-card').forEach(c => c.classList.remove('drag-over'));
+        document.querySelectorAll('#arrangerGridList .draggable-card').forEach(c => c.classList.remove('drag-over'));
       });
 
       card.addEventListener('dragover', (e) => {
@@ -2136,10 +2153,10 @@
 
       const label = document.createElement('div');
       label.className = 'file-label';
-      label.innerText = `Page ${idx + 1}`;
+      label.innerText = `${item.type === 'pdf' ? 'Page' : 'Img'} ${idx + 1}`;
       card.appendChild(label);
 
-      // Card Tools (Rotate & Delete only - No arrow buttons needed)
+      // Card Tools (Rotate & Delete - Drag to Move)
       const toolsBar = document.createElement('div');
       toolsBar.className = 'card-tools-bar';
 
@@ -2191,24 +2208,47 @@
 
     const { PDFDocument, degrees } = PDFLib;
     const outPdf = await PDFDocument.create();
-
     const loadedDocsMap = new Map();
 
     for (const pageObj of arrangedPdfPagesList) {
-      let srcDoc = loadedDocsMap.get(pageObj.sourceBytes);
-      if (!srcDoc) {
-        srcDoc = await PDFDocument.load(pageObj.sourceBytes);
-        loadedDocsMap.set(pageObj.sourceBytes, srcDoc);
-      }
+      if (pageObj.type === 'pdf') {
+        let srcDoc = loadedDocsMap.get(pageObj.sourceBytes);
+        if (!srcDoc) {
+          srcDoc = await PDFDocument.load(pageObj.sourceBytes);
+          loadedDocsMap.set(pageObj.sourceBytes, srcDoc);
+        }
 
-      const [copiedPage] = await outPdf.copyPages(srcDoc, [pageObj.pageIndex]);
-      
-      if (pageObj.rotation !== 0) {
-        const currentRot = copiedPage.getRotation().angle;
-        copiedPage.setRotation(degrees(currentRot + pageObj.rotation));
-      }
+        const [copiedPage] = await outPdf.copyPages(srcDoc, [pageObj.pageIndex]);
+        
+        if (pageObj.rotation !== 0) {
+          const currentRot = copiedPage.getRotation().angle;
+          copiedPage.setRotation(degrees(currentRot + pageObj.rotation));
+        }
 
-      outPdf.addPage(copiedPage);
+        outPdf.addPage(copiedPage);
+      } else {
+        // Embedding JPG/PNG on standard A4 Page
+        let embeddedImg;
+        if (pageObj.mimeType === 'image/png') {
+          embeddedImg = await outPdf.embedPng(pageObj.sourceBytes);
+        } else {
+          embeddedImg = await outPdf.embedJpg(pageObj.sourceBytes);
+        }
+
+        const page = outPdf.addPage([595.28, 841.89]);
+        const imgDims = embeddedImg.scaleToFit(555.28, 801.89);
+
+        if (pageObj.rotation !== 0) {
+          page.setRotation(degrees(pageObj.rotation));
+        }
+
+        page.drawImage(embeddedImg, {
+          x: (595.28 - imgDims.width) / 2,
+          y: (841.89 - imgDims.height) / 2,
+          width: imgDims.width,
+          height: imgDims.height
+        });
+      }
     }
 
     const pdfBytes = await outPdf.save();
